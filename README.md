@@ -207,111 +207,59 @@ Errors: `400` (validation, ProblemDetails with `errors`), `404` (ProblemDetails)
 
 ## 6. Roadmap (phases)
 
-Each phase = one `feat/phase-N-xxx` branch, [Conventional Commits](https://www.conventionalcommits.org/) **in English**, then merge into `main`.
-A phase is **done** when its validation criteria are met.
+Tasks are tracked on the **[GitHub project board](https://github.com/users/Patajuade/projects/2)**: one milestone per phase, one issue per task (labels `area:frontend`, `area:backend`, `area:infra`, `area:i18n`, `type:test`, `bonus`). This section only keeps the big picture: what each phase teaches and how we know it's done.
+
+Each phase = one `feat/phase-N-xxx` branch, [Conventional Commits](https://www.conventionalcommits.org/) **in English** referencing their issue (`Closes #12`), then merge into `main`.
+A phase is **done** when all its milestone issues are closed and its validation criteria are met.
 
 ### Phase 0 — Environment
-- [ ] Upgrade Node: **Node 24 LTS** (currently 18.12, incompatible with recent Angular and Nx). Tip: use [fnm](https://github.com/Schniz/fnm) or nvm-windows to manage versions.
-- [ ] Install the **.NET 10 SDK** (only SDK 6 is currently present).
-- [ ] Install the EF Core tool: `dotnet tool install --global dotnet-ef`.
-- [ ] VS Code extensions: *Nx Console*, *Angular Language Service*, *C# Dev Kit*, *Tailwind CSS IntelliSense*, *ESLint*, *Prettier*, *SQLite Viewer*.
+**Tasks:** [Phase 0 milestone](https://github.com/Patajuade/recip-e-book/milestone/1)
 - **Validation**: `node -v` ≥ 24, `dotnet --list-sdks` lists 10.x.
 
 ### Phase 1 — Nx workspace
-- [ ] Initialize Nx in the existing repo (`npx nx@latest init`), then `nx add @nx/angular` and `nx add @nx/dotnet`. *Check the exact commands in the Nx docs when running them.*
-- [ ] Fix `.gitignore`: do **not** ignore `package-lock.json` (it must be committed), add Nx entries (`.nx/cache`, `.nx/workspace-data`), .NET (`bin/`, `obj/`, `*.user`, `.vs/`) and SQLite (`*.db`, `*.db-shm`, `*.db-wal`), remove root Angular paths that no longer apply.
-- [ ] Add `.editorconfig` (indentation, line endings, C# rules) and Prettier.
+**Tasks:** [Phase 1 milestone](https://github.com/Patajuade/recip-e-book/milestone/2)
 - **Validation**: `nx graph` opens, `git status` clean after commit.
 
 ### Phase 2 — Backend foundations
-- [ ] `dotnet new web -o apps/api -n RecipEBook.Api`, `dotnet new xunit -o apps/api-tests -n RecipEBook.Api.Tests`, `RecipEBook.slnx` at the root.
-- [ ] Check that Nx detects both projects and their tasks: `nx show project RecipEBook.Api` (exact name depends on the plugin).
-- [ ] Minimal `Program.cs`: OpenAPI + Scalar (dev only), ProblemDetails, `/health` healthcheck.
-- [ ] An empty `MapGroup("/api")` ready for features.
-- [ ] First integration test with `WebApplicationFactory` on `/health`.
+**Tasks:** [Phase 2 milestone](https://github.com/Patajuade/recip-e-book/milestone/3)
 - **Concepts**: hosting model, DI container (`builder.Services`), middleware pipeline, configuration (`appsettings`, `IOptions`), MSBuild ↔ Nx integration.
 - **Validation**: the API starts, `/health` returns 200, `/scalar` shows the docs, tests pass via Nx.
 
 ### Phase 3 — Domain & persistence
-- [ ] Domain entities (section 5).
-- [ ] `AppDbContext` + `IEntityTypeConfiguration<T>` configurations (lengths, indexes, relationships, ordering).
-- [ ] SQLite via a connection string in `appsettings.Development.json`.
-- [ ] First migration (`dotnet ef migrations add Initial`) + applied at startup in dev.
-- [ ] Demo data (2–3 recipes) via EF Core seeding (`UseSeeding` / `UseAsyncSeeding`).
+**Tasks:** [Phase 3 milestone](https://github.com/Patajuade/recip-e-book/milestone/4)
 - **Concepts**: migrations, 1-n and n-n relationships, change tracking, `AsNoTracking`, projections.
 - **Validation**: the database is created, demo recipes are present.
 
 ### Phase 4 — Recipe CRUD API
-- [ ] Section 5 endpoints in `Features/Recipes` and `Features/Tags`, with `TypedResults`.
-- [ ] Request/response DTOs + manual mapping (no AutoMapper).
-- [ ] Request validation (title required, lengths, quantities ≥ 0…).
-- [ ] Title search and tag filter on the list.
-- [ ] Integration tests for each endpoint (happy path + 400 + 404), on an in-memory SQLite database.
+**Tasks:** [Phase 4 milestone](https://github.com/Patajuade/recip-e-book/milestone/5)
 - **Concepts**: model binding, `Results<Ok<T>, NotFound>`, LINQ → SQL projections, handling child collections on update.
 - **Validation**: the full CRUD is usable from Scalar, tests pass.
 
 ### Phase 5 — Frontend foundations
-- [ ] Generate the app: `nx g @nx/angular:application apps/web` (standalone, routing, zoneless, Vitest if offered).
-- [ ] Install and configure **Tailwind v4** in `apps/web` (PostCSS `@tailwindcss/postcss`, `@import "tailwindcss"` in `styles.css`). Make sure Tailwind also scans the libs (`@source "../../../libs"`).
-- [ ] Generate the section 4 libs (`nx g @nx/angular:library ...`) with their tags. Enable `@nx/enforce-module-boundaries`.
-- [ ] **i18n**: install Transloco, create `en.json` / `fr.json`, default language = browser language (fallback `en`), persisted in `localStorage`, EN/FR switcher in the header, update `<html lang>`.
-- [ ] **TanStack Query**: `provideTanStackQuery(new QueryClient())` in `app.config.ts`, devtools in dev.
-- [ ] `provideHttpClient(withFetch(), withInterceptors([...]))` + `Accept-Language` interceptor.
-- [ ] `proxy.conf.json`: `/api` → .NET API URL.
-- [ ] Global layout: header (title, navigation, language switcher), content area. Responsive from the start.
-- [ ] Routing: `/recipes`, `/recipes/new`, `/recipes/:id`, `/recipes/:id/edit`, redirect `/` → `/recipes`, 404 page. Lazy-loaded feature. `withComponentInputBinding()` to receive `:id` as an `input()`.
-- [ ] Run frontend + backend together: `nx run-many -t serve` (or equivalent target).
+**Tasks:** [Phase 5 milestone](https://github.com/Patajuade/recip-e-book/milestone/6)
 - **Concepts**: `app.config.ts` (providers), bootstrap, router, standalone components, DI, functional interceptors, Nx Angular libs.
 - **Validation**: `nx serve web` shows the Tailwind-styled layout, navigation works, switching EN ↔ FR updates the UI without a page reload.
 
 ### Phase 6 — Browse recipes
-- [ ] TypeScript models (`data-access/recipe.model.ts`).
-- [ ] `RecipeApi` (`providedIn: 'root'`, `inject(HttpClient)`, converted to Promise with `lastValueFrom`).
-- [ ] TanStack query options + key factory (`recipeKeys.list(filters)`, `recipeKeys.detail(id)`).
-- [ ] List page: `injectQuery`, loading / error / empty states (translated), `recipe-card` component.
-- [ ] Title search (signal + debounce) and tag filter. Filters are signals read inside the query → automatic refetch.
-- [ ] Detail page: ingredients, steps, times, notes, tags. Dates formatted according to the active language.
-- [ ] Translated `duration` pipe (minutes → "1 hr 15 min" / "1 h 15").
+**Tasks:** [Phase 6 milestone](https://github.com/Patajuade/recip-e-book/milestone/7)
 - **Concepts**: signals, `computed`, `input()` / `output()`, `@if` / `@for` (with `track`), pipes, smart vs dumb components, signal-based TanStack Query, `HttpClient` and Observables (the bare minimum).
 - **Validation**: list and detail show API data, in EN and FR.
 
 ### Phase 7 — Create & edit a recipe
-- [ ] Typed reactive form: simple fields + `FormArray` for ingredients and steps (add, remove, reorder via CDK drag & drop).
-- [ ] The same component handles creation and editing.
-- [ ] TanStack mutations (`injectMutation`) + `invalidateQueries` on list and detail on success.
-- [ ] Tag input with autocomplete (`GET /api/tags`, CDK overlay).
-- [ ] Translated validation errors (client) + display of server ProblemDetails.
-- [ ] Deletion with a confirmation dialog (Tailwind-styled CDK Dialog).
-- [ ] Functional `canDeactivate` guard: warn when the form has unsaved changes.
-- [ ] Confirmation toast after saving.
+**Tasks:** [Phase 7 milestone](https://github.com/Patajuade/recip-e-book/milestone/8)
 - **Concepts**: Reactive Forms, validators, `FormArray`, functional guards, CDK (dialog, overlay, drag-drop), mutations and cache invalidation.
 - **Validation**: I can write my improvised soup from A to Z, edit it, delete it. The list updates without reloading.
 
 ### Phase 8 — UX polish, backend i18n & state
-- [ ] HTTP interceptor for global error handling (translated toast).
-- [ ] API-side error message localization (`AddLocalization`, `UseRequestLocalization` with `en` / `fr`, `.resx` files).
-- [ ] "Cooking mode": step-by-step view, large text, screen kept awake (Wake Lock API).
-- [ ] Tailwind dark mode (optional).
-- [ ] `@defer` for non-critical blocks (optional).
-- [ ] Check no translation key is missing (Transloco `missingHandler`, or a key-checking tool).
+**Tasks:** [Phase 8 milestone](https://github.com/Patajuade/recip-e-book/milestone/9)
 - **Validation**: the app is pleasant on mobile and desktop, fully translated, server errors included.
 
 ### Phase 9 — Quality & tooling
-- [ ] Frontend unit tests (Vitest) on key components, pipes and services.
-- [ ] TS type generation from OpenAPI, as an Nx task depending on the API build.
-- [ ] GitHub Actions: `nx affected -t lint test build` (frontend and backend) on every PR, with .NET 10 SDK and Node 24.
-- [ ] Optional: Playwright e2e tests (`apps/web-e2e`), including language switching.
+**Tasks:** [Phase 9 milestone](https://github.com/Patajuade/recip-e-book/milestone/10)
 - **Validation**: green CI.
 
 ### Phase 10 — Bonus (pick any, in any order)
-- [ ] Authentication (ASP.NET Core Identity + cookies, or an external provider) → per-user recipes.
-- [ ] Recipe photos (upload, local storage then blob).
-- [ ] Favorites, personal rating, "cooked X times".
-- [ ] Quantity scaling by number of servings.
-- [ ] Predefined, translated units.
-- [ ] PWA (offline browsing).
-- [ ] .NET Aspire to orchestrate frontend + backend + database.
-- [ ] Move to PostgreSQL (Docker) and deploy (Azure, Fly.io…).
+**Tasks:** [Phase 10 milestone](https://github.com/Patajuade/recip-e-book/milestone/11)
 
 ---
 
@@ -319,21 +267,8 @@ A phase is **done** when its validation criteria are met.
 
 **Current phase: 0 — Environment**
 
-| Phase | Status |
-|---|---|
-| 0. Environment | ⏳ To do |
-| 1. Nx workspace | ⏳ To do |
-| 2. Backend foundations | ⏳ To do |
-| 3. Domain & persistence | ⏳ To do |
-| 4. CRUD API | ⏳ To do |
-| 5. Frontend foundations | ⏳ To do |
-| 6. Browse | ⏳ To do |
-| 7. Create & edit | ⏳ To do |
-| 8. UX polish & backend i18n | ⏳ To do |
-| 9. Quality & CI | ⏳ To do |
-| 10. Bonus | ⏳ To do |
-
-Legend: ⏳ To do · 🚧 In progress · ✅ Done
+- Task-level progress: [project board](https://github.com/users/Patajuade/projects/2) (Todo / In Progress / Done).
+- Phase-level progress: [milestones](https://github.com/Patajuade/recip-e-book/milestones) (open/closed issue ratio).
 
 ### Decisions
 <!-- Add any decision that departs from the plan here, with the date and the reason. -->
@@ -343,6 +278,7 @@ Legend: ⏳ To do · 🚧 In progress · ✅ Done
 - 2026-10-17 — **EN/FR i18n with Transloco** (runtime) over `@angular/localize` (one build per language).
 - 2026-10-17 — **TanStack Query (Angular adapter)** over `httpResource()` alone: already familiar, handles caching and invalidation. Adapter still *experimental* → pinned version.
 - 2026-10-17 — **Documentation and commits in English**; conversation with the agent in French.
+- 2026-10-17 — **Kanban on GitHub Projects** (over Notion): issues link to commits/PRs and everything stays in the repo.
 
 ### Session log
 <!-- One entry per session, most recent first. Format:
@@ -353,9 +289,9 @@ Legend: ⏳ To do · 🚧 In progress · ✅ Done
 - Open questions: …
 -->
 #### 2026-10-17 — Planning
-- Done: defined pitch, stack, architecture and roadmap. Added Nx, Tailwind, EN/FR i18n and TanStack Query at the developer's request. Docs switched to English.
-- Finding: Node 18.12 and .NET SDK 6 installed → upgrade needed (phase 0). Docker missing → SQLite in dev. `gh` CLI not installed.
-- Next step: choose the kanban tool, then phase 0, then phase 1.
+- Done: defined pitch, stack, architecture and roadmap. Added Nx, Tailwind, EN/FR i18n and TanStack Query at the developer's request. Docs switched to English. Created the GitHub project board: 6 labels, 11 milestones, 60 issues (#1–#60).
+- Finding: Node 18.12 and .NET SDK 6 installed → upgrade needed (phase 0). Docker missing → SQLite in dev. `gh` CLI installed and authenticated (with `project` scope).
+- Next step: phase 0 (#1–#4), then phase 1.
 
 ---
 
@@ -363,7 +299,7 @@ Legend: ⏳ To do · 🚧 In progress · ✅ Done
 
 If you're a Claude agent picking up this project:
 
-1. **Read this whole README**, especially [Progress & log](#7-progress--log), to know where we are.
+1. **Read this whole README**, especially [Progress & log](#7-progress--log), then check the [project board](https://github.com/users/Patajuade/projects/2) to know where we are.
 2. **Languages**: talk with the developer **in French**. Write all documentation, code comments and **commit messages in English**.
 3. **Teaching mode**: the goal is as much learning as shipping.
    - Move in **small steps**, explain every new concept (Angular or .NET) before or while introducing it.
@@ -375,7 +311,11 @@ If you're a Claude agent picking up this project:
 6. **i18n**: every new UI string needs its key in both `en.json` **and** `fr.json`.
 7. **Nx**: generate apps and libs with Nx generators (not by hand), respect tags and module boundaries.
 8. **Git**: one branch per phase, Conventional Commits in English, only commit/push when asked.
-9. **End of session**: update the phase's checkboxes, the status table, the "Current phase" line, and add a log entry.
+9. **Board (GitHub Projects, via `gh`)**:
+   - At the start of a session, check the board and the current milestone's open issues.
+   - When starting an issue, move it to *In Progress* (`gh project item-edit`). Reference it in commits/PRs (`Closes #N`) so it closes and moves to *Done* once merged into `main`. Issues closed outside a merge must be closed manually.
+   - New task discovered along the way → create an issue in the right milestone with the right labels, and add it to the board. Don't add tasks to this README.
+10. **End of session**: update the "Current phase" line if needed and add a session log entry (issues done, concepts learned, next step).
 
 ---
 

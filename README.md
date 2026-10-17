@@ -1,392 +1,430 @@
 # recip-e-book
 
-A little project for me to remember my prodigious cooking experiments, and recipes i liked.
+A little project for me to remember my prodigious cooking experiments, and recipes I liked.
 
-> **Ce README est la source de vérité du projet** : pitch, choix techniques, architecture, plan de route et avancement.
-> Tout agent (humain ou Claude) qui reprend le projet commence par lire ce fichier, puis la section [Avancement](#7-avancement--journal).
+> **This README is the project's source of truth**: pitch, technical choices, architecture, roadmap and progress.
+> Any agent (human or Claude) picking up the project starts by reading this file, then the [Progress](#7-progress--log) section.
 
 ---
 
-## Sommaire
+## Table of contents
 
 1. [Pitch](#1-pitch)
-2. [Objectifs pédagogiques](#2-objectifs-pédagogiques)
-3. [Stack technique & choix](#3-stack-technique--choix)
+2. [Learning goals](#2-learning-goals)
+3. [Tech stack & choices](#3-tech-stack--choices)
 4. [Architecture](#4-architecture)
-5. [Modèle de données & API](#5-modèle-de-données--api)
-6. [Plan de route (phases)](#6-plan-de-route-phases)
-7. [Avancement & journal](#7-avancement--journal)
-8. [Instructions pour l'agent](#8-instructions-pour-lagent)
-9. [Aide-mémoire React → Angular](#9-aide-mémoire-react--angular)
-10. [Commandes utiles](#10-commandes-utiles)
+5. [Data model & API](#5-data-model--api)
+6. [Roadmap (phases)](#6-roadmap-phases)
+7. [Progress & log](#7-progress--log)
+8. [Agent instructions](#8-agent-instructions)
+9. [React → Angular cheat sheet](#9-react--angular-cheat-sheet)
+10. [Useful commands](#10-useful-commands)
 
 ---
 
 ## 1. Pitch
 
-Une application web pour **écrire et consulter mes recettes**, comme un livre de cuisine personnel.
+A web app to **write down and browse my recipes**, like a personal cookbook.
 
-> *« J'ai créé une super soupe ce soir un peu au pif, j'aimerais l'écrire quelque part et pouvoir consulter mon livre de cuisine. »*
+> *"I made a great soup tonight, a bit improvised. I'd like to write it down somewhere and be able to browse my cookbook."*
 
-**MVP (ce qu'on doit avoir à la fin) :**
-- Créer une recette (titre, description, ingrédients, étapes, temps, portions, notes, tags).
-- Lister mes recettes, en chercher une par titre ou par tag.
-- Consulter le détail d'une recette.
-- Modifier / supprimer une recette.
+**MVP (what we must have at the end):**
+- Create a recipe (title, description, ingredients, steps, times, servings, notes, tags).
+- List my recipes, search by title or tag.
+- View a recipe's details.
+- Edit / delete a recipe.
+- **Multilingual English / French** UI, with on-the-fly language switching.
 
-**Hors MVP (bonus, voir phase 10)** : authentification multi-utilisateur, photos, favoris, mise à l'échelle des portions, import depuis une URL, PWA hors-ligne, déploiement.
-
----
-
-## 2. Objectifs pédagogiques
-
-La développeuse vient de **React** (apps modernes, Expo, monorepo Nx) et veut **apprendre Angular moderne** grâce à ce projet. Elle a des bases légères en **ASP.NET** et un peu d'expérience en **Entity Framework**.
-
-Donc :
-- **Frontend** : apprendre l'Angular d'aujourd'hui (standalone, signals, nouveau control flow, zoneless), pas l'Angular de 2018 (NgModules, RxJS partout, `*ngIf`).
-- **Backend** : une API .NET propre et moderne (Minimal APIs, EF Core, OpenAPI), sans sur-architecture.
-- Comprendre **le pourquoi** de chaque choix, avec des analogies React quand c'est utile.
+**Out of MVP (bonus, see phase 10)**: multi-user authentication, photos, favorites, serving scaling, import from URL, offline PWA, deployment.
 
 ---
 
-## 3. Stack technique & choix
+## 2. Learning goals
+
+The developer comes from **React** (modern apps, Expo, Nx monorepos, Tailwind, TanStack Query) and wants to **learn modern Angular** through this project. She has light **ASP.NET** basics and some **Entity Framework** experience.
+
+Therefore:
+- **Frontend**: learn today's Angular (standalone, signals, new control flow, zoneless), not 2018 Angular (NgModules, RxJS everywhere, `*ngIf`).
+- **Backend**: a clean, modern .NET API (Minimal APIs, EF Core, OpenAPI), without over-engineering.
+- **Reuse familiar tools** (Nx, Tailwind, TanStack Query) to focus the learning effort on Angular and .NET.
+- Understand **the why** behind each choice, with React analogies where helpful.
+
+---
+
+## 3. Tech stack & choices
+
+### Monorepo
+| Topic | Choice | Why |
+|---|---|---|
+| Tool | **Nx** (≥ 22) | Already familiar. Handles Angular **and** .NET in the same project graph |
+| Angular | Official **`@nx/angular`** plugin | Nx generators for Angular apps and libs |
+| .NET | Official **`@nx/dotnet`** plugin (Nx 22+) | Detects `.csproj` files, infers MSBuild tasks (build, test…), with caching and `affected`. Replaces the deprecated community plugin `@nx-dotnet/core` |
+| Boundaries | Nx tags + ESLint rule `@nx/enforce-module-boundaries` | Prevents e.g. a `ui` lib from importing a `data-access` lib |
 
 ### Frontend
-| Sujet | Choix | Pourquoi |
+| Topic | Choice | Why |
 |---|---|---|
-| Framework | **Angular** (dernière version stable, ≥ 21) via Angular CLI | Outil officiel, le plus pédagogique pour apprendre Angular |
-| Composants | **Standalone** uniquement (pas de NgModule) | Standard actuel |
-| Réactivité | **Signals** (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`) | L'avenir d'Angular, proche du mental model des hooks |
-| Détection de changements | **Zoneless** | Défaut des nouvelles apps Angular récentes |
-| Templates | **Control flow** `@if` / `@for` / `@switch`, `@defer` | Remplace `*ngIf` / `*ngFor` |
-| Injection | Fonction **`inject()`** | Plus de constructeurs à rallonge |
-| Données serveur | **`httpResource()`** / `resource()` pour les lectures, `HttpClient` pour les mutations | Équivalent « léger » de React Query, basé sur les signals |
-| Formulaires | **Reactive Forms typés** (`FormBuilder`, `FormArray`) — *Signal Forms* à évaluer si stables dans la version utilisée | Les FormArray sont parfaits pour les listes d'ingrédients/étapes |
-| État global | Services + signals. **NgRx SignalStore** en option (phase 8) | Pas besoin de Redux pour un CRUD |
-| UI / Style | **Angular Material** (+ CDK) avec SCSS | Apprendre l'écosystème Angular (theming, directives, CDK). Alternative : Tailwind v4 |
-| Tests | **Vitest** (runner par défaut des versions récentes du CLI) + Angular Testing Library en option | Familier venant de React |
-| Qualité | ESLint (`angular-eslint`) + Prettier | |
-| Style guide | Conventions de nommage récentes (`recipe-list.ts` au lieu de `recipe-list.component.ts`) | Style guide officiel actuel |
+| Framework | **Angular** (latest stable, ≥ 21) | |
+| Components | **Standalone** only (no NgModule) | Current standard |
+| Reactivity | **Signals** (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`) | Angular's future, close to the hooks mental model |
+| Change detection | **Zoneless** | Default for new recent Angular apps |
+| Templates | **Control flow** `@if` / `@for` / `@switch`, `@defer` | Replaces `*ngIf` / `*ngFor` |
+| Injection | **`inject()`** function | No more bloated constructors |
+| Server data | **TanStack Query** for Angular (`@tanstack/angular-query-experimental`): `injectQuery`, `injectMutation`. Query functions call `HttpClient` | Already familiar. Provides caching and post-mutation invalidation, which `httpResource()` (native) does not. ⚠️ Adapter flagged *experimental* (breaking changes possible even in patches): pin the version |
+| Forms | **Typed Reactive Forms** (`FormBuilder`, `FormArray`). *Signal Forms* to evaluate if stable in the version used | FormArrays are perfect for ingredient/step lists |
+| Global state | Services + signals. The TanStack cache covers server state | No need for Redux in a CRUD app |
+| Styling | **Tailwind CSS v4** | Already familiar |
+| Headless components | **Angular CDK** (dialog, overlay, drag & drop, a11y). Angular Aria to evaluate if available | Behavior and accessibility provided, 100% Tailwind styling |
+| i18n | **Transloco** (`@jsverse/transloco`): `en.json` / `fr.json` files, runtime language switching | Angular's native i18n (`@angular/localize`) translates at build time: one build per language and a page reload to switch |
+| Date/number formatting | Angular locale data (`registerLocaleData`) + `date` / `number` pipes bound to the active language (or `@jsverse/transloco-locale`) | "17 oct. 2026" vs "Oct 17, 2026" |
+| Tests | **Vitest** + optionally Angular Testing Library | Familiar coming from React |
+| Quality | ESLint (Nx config + `angular-eslint`) + Prettier | |
+| Style guide | Recent naming conventions (`recipe-list.ts` instead of `recipe-list.component.ts`) | Current official style guide |
 
 ### Backend
-| Sujet | Choix | Pourquoi |
+| Topic | Choice | Why |
 |---|---|---|
-| Runtime | **.NET 10 (LTS)** | Version LTS courante |
-| API | **ASP.NET Core Minimal APIs** organisées par feature (`MapGroup`, `TypedResults`) | Moderne, peu de cérémonie, proche d'Express/Fastify |
-| Organisation | **Vertical slices** (dossier par feature) dans un seul projet API | Pas de Clean Architecture à 4 projets : inutile pour ce périmètre |
-| ORM | **Entity Framework Core 10** | Déjà un peu connu |
-| Base de données | **SQLite** en dev (fichier local, zéro installation) | Docker n'est pas installé ; migration vers PostgreSQL possible plus tard |
-| Validation | Validation intégrée des Minimal APIs (`AddValidation()` + DataAnnotations). FluentValidation si besoin de règles complexes | Natif depuis .NET 10 |
-| Erreurs | **ProblemDetails** (RFC 9457) via `AddProblemDetails()` | Format d'erreur standard, facile à consommer côté front |
-| Documentation | **OpenAPI** natif (`Microsoft.AspNetCore.OpenApi`) + **Scalar** comme UI | Swashbuckle n'est plus le défaut |
-| Tests | **xUnit** + `WebApplicationFactory` (tests d'intégration) | Teste l'API de bout en bout |
+| Runtime | **.NET 10 (LTS)** | Current LTS |
+| API | **ASP.NET Core Minimal APIs** organized by feature (`MapGroup`, `TypedResults`) | Modern, low ceremony, close to Express/Fastify |
+| Organization | **Vertical slices** (one folder per feature) in a single API project | No 4-project Clean Architecture: overkill for this scope |
+| ORM | **Entity Framework Core 10** | Already somewhat familiar |
+| Database | **SQLite** in dev (local file, zero install) | Docker isn't installed. Migration to PostgreSQL possible later |
+| Validation | Built-in Minimal API validation (`AddValidation()` + DataAnnotations). FluentValidation if complex rules are needed | Native since .NET 10 |
+| Errors | **ProblemDetails** (RFC 9457) via `AddProblemDetails()` | Standard error format, easy to consume on the frontend |
+| i18n | Recipe **content** isn't translated (it's what the user writes). The frontend sends `Accept-Language`. The backend localizes its error messages (`RequestLocalization` + `.resx`) in phase 8 | UI strings are translated on the frontend |
+| Docs | Native **OpenAPI** (`Microsoft.AspNetCore.OpenApi`) + **Scalar** as UI | Swashbuckle is no longer the default |
+| Tests | **xUnit** + `WebApplicationFactory` (integration tests) | Tests the API end to end |
 
-### Glue front ↔ back
-- En dev, le **proxy du serveur Angular** redirige `/api/*` vers l'API .NET → pas de souci CORS.
-- Phase 9 : **génération du client TypeScript** depuis le document OpenAPI (ex. `openapi-typescript` ou `ng-openapi-gen`) pour avoir des types partagés sans les écrire deux fois.
-
-### Pourquoi pas Nx ?
-Nx sait gérer Angular + .NET (`@nx-dotnet`), mais ajoute une couche d'abstraction au-dessus du CLI Angular. Pour **apprendre** Angular, mieux vaut utiliser le CLI directement. Le dépôt est quand même un monorepo simple (`frontend/` + `backend/`). Migrer vers Nx plus tard reste possible.
+### Frontend ↔ backend glue
+- In dev, the **Angular dev server proxy** forwards `/api/*` to the .NET API → no CORS issues.
+- An HTTP interceptor adds the `Accept-Language` header based on the active language.
+- Phase 9: **TypeScript type generation** from the OpenAPI document (e.g. `openapi-typescript`), exposed as an Nx task, so types aren't written twice.
 
 ---
 
 ## 4. Architecture
 
-### Arborescence cible
+### Target tree
 ```
 recip-e-book/
-├── README.md                  ← ce fichier (plan + avancement)
-├── CLAUDE.md                  ← pointeur pour les agents Claude
+├── README.md                       ← this file (plan + progress)
+├── CLAUDE.md                       ← pointer for Claude agents
+├── nx.json                         ← plugins (@nx/angular, @nx/dotnet), cache, targetDefaults
+├── package.json
+├── tsconfig.base.json              ← path aliases to libs (@recip-e-book/...)
+├── RecipEBook.slnx                 ← .NET solution (for the IDE and MSBuild)
 ├── .editorconfig
-├── .gitignore
-├── .github/workflows/ci.yml   ← phase 9
-├── docs/
-│   └── decisions/             ← notes de décision (ADR courtes) si besoin
-├── backend/
-│   ├── RecipEBook.slnx
-│   ├── src/
-│   │   └── RecipEBook.Api/
-│   │       ├── Program.cs
-│   │       ├── appsettings*.json
-│   │       ├── Domain/                    ← entités : Recipe, Ingredient, RecipeStep, Tag
-│   │       ├── Infrastructure/
-│   │       │   └── Persistence/           ← AppDbContext, configurations EF, Migrations/
-│   │       ├── Features/
-│   │       │   └── Recipes/               ← endpoints, DTOs (requests/responses), mapping
-│   │       │       ├── RecipeEndpoints.cs
-│   │       │       ├── CreateRecipe.cs
-│   │       │       ├── GetRecipe.cs
-│   │       │       ├── ListRecipes.cs
-│   │       │       ├── UpdateRecipe.cs
-│   │       │       └── DeleteRecipe.cs
-│   │       └── Common/                    ← extensions, gestion d'erreurs, config
-│   └── tests/
-│       └── RecipEBook.Api.Tests/
-└── frontend/
-    ├── angular.json
-    ├── proxy.conf.json
-    └── src/
-        ├── main.ts
-        ├── styles.scss
-        └── app/
-            ├── app.ts / app.config.ts / app.routes.ts
-            ├── core/                      ← layout (shell, header), interceptors, gestion d'erreurs
-            ├── shared/                    ← composants UI génériques, pipes (ex. durée)
-            └── features/
-                └── recipes/
-                    ├── recipes.routes.ts  ← routes lazy-loadées de la feature
-                    ├── data-access/       ← modèles TS, recipe-api.ts (HttpClient), état
-                    ├── pages/             ← composants « smart » routés : list, detail, edit
-                    └── ui/                ← composants « dumb » : recipe-card, ingredient-list…
+├── .github/workflows/ci.yml        ← phase 9 (nx affected)
+├── docs/decisions/                 ← short decision records (ADRs) if needed
+├── apps/
+│   ├── web/                        ← Angular app (shell): app.config.ts, app.routes.ts, layout
+│   │   ├── proxy.conf.json
+│   │   ├── public/i18n/            ← en.json, fr.json
+│   │   └── src/
+│   ├── api/                        ← RecipEBook.Api.csproj
+│   │   ├── Program.cs
+│   │   ├── Domain/                 ← entities: Recipe, Ingredient, RecipeStep, Tag
+│   │   ├── Infrastructure/Persistence/   ← AppDbContext, EF configurations, Migrations/
+│   │   ├── Features/Recipes/       ← one file per use case (Create, Get, List, Update, Delete)
+│   │   ├── Features/Tags/
+│   │   ├── Common/                 ← extensions, errors, localization
+│   │   └── Resources/              ← .resx error messages (phase 8)
+│   └── api-tests/                  ← RecipEBook.Api.Tests.csproj (xUnit)
+└── libs/
+    └── web/
+        ├── recipes/
+        │   ├── feature/            ← routed pages (list, detail, edit) + recipes.routes.ts
+        │   ├── data-access/        ← TS models, recipe-api.ts (HttpClient), TanStack query options
+        │   └── ui/                 ← presentational components: recipe-card, ingredient-list…
+        └── shared/
+            ├── ui/                 ← generic Tailwind components: button, input, dialog, tag-chip…
+            ├── i18n/               ← Transloco config, language switcher, Accept-Language interceptor
+            └── util/               ← pipes (duration), helpers
 ```
 
-### Principes
-- **Frontend** : séparation *pages* (smart, branchées sur les données, routées) / *ui* (dumb, uniquement `input()` / `output()`). Routes de feature en **lazy loading** (`loadChildren` / `loadComponent`).
-- **Backend** : chaque fichier de `Features/Recipes` contient un cas d'usage complet (request DTO, handler, response DTO). Les entités ne sortent **jamais** de l'API : on renvoie des DTOs.
-- **Pas d'abstraction prématurée** : pas de repository générique au-dessus d'EF Core (le `DbContext` est déjà un unit of work), pas de MediatR.
+### Nx tags & dependency rules
+| Lib tag | Can import |
+|---|---|
+| `type:app` | anything |
+| `type:feature` | `feature`, `data-access`, `ui`, `util` |
+| `type:data-access` | `data-access`, `util` |
+| `type:ui` | `ui`, `util` |
+| `type:util` | `util` |
+
+Plus `scope:recipes` / `scope:shared`: a `scope:recipes` lib can import `scope:shared`, not the other way around.
+
+### Principles
+- **Frontend**: split between *feature* (pages, data-connected, routed) and *ui* (presentational, only `input()` / `output()`). Feature routes are **lazy loaded** (`loadChildren`).
+- **Data**: each `data-access` lib exposes TanStack *query options* and *mutations* (centralized query keys, e.g. `['recipes', 'list', filters]`). Components never make direct HTTP calls.
+- **i18n**: no hardcoded UI text in templates, everything goes through Transloco keys (`recipes.list.title`).
+- **Backend**: each file in `Features/Recipes` holds a complete use case (request DTO, handler, response DTO). Entities **never** leave the API: we return DTOs.
+- **No premature abstraction**: no generic repository on top of EF Core (the `DbContext` already is a unit of work), no MediatR.
 
 ---
 
-## 5. Modèle de données & API
+## 5. Data model & API
 
-### Entités (première version)
+### Entities (first version)
 ```
 Recipe
 ├── Id              Guid
-├── Title           string (requis, ≤ 200)
-├── Description     string?          ← « l'histoire » de la recette
-├── Servings        int?             ← nombre de portions
+├── Title           string (required, ≤ 200)
+├── Description     string?          ← the recipe's "story"
+├── Servings        int?
 ├── PrepTimeMinutes int?
 ├── CookTimeMinutes int?
-├── Notes           string?          ← « j'ai mis un peu au pif… », variantes, idées
+├── Notes           string?          ← "I improvised a bit…", variants, ideas
 ├── CreatedAt       DateTimeOffset
 ├── UpdatedAt       DateTimeOffset
-├── Ingredients     List<Ingredient> (ordonnés)
+├── Ingredients     List<Ingredient> (ordered)
 │     ├── Id, Position
-│     ├── Name      string (requis)
-│     ├── Quantity  decimal?         ← optionnel : « une pincée », « au pif »
-│     └── Unit      string?          ← g, ml, c. à s., pièce…
-├── Steps           List<RecipeStep> (ordonnés)
+│     ├── Name      string (required)
+│     ├── Quantity  decimal?         ← optional: "a pinch", "to taste"
+│     └── Unit      string?          ← free text (g, ml, tbsp, piece…)
+├── Steps           List<RecipeStep> (ordered)
 │     ├── Id, Position
-│     └── Instruction string (requis)
-└── Tags            List<Tag> (many-to-many)  ← soupe, végé, hiver…
+│     └── Instruction string (required)
+└── Tags            List<Tag> (many-to-many)  ← soup, veggie, winter…
       └── Id, Name (unique)
 ```
 
-### Endpoints REST (préfixe `/api`)
-| Méthode | Route | Description |
+> Units and tags are **free text** entered by the user, so they're not translated. A list of predefined, translated units may come as a bonus.
+
+### REST endpoints (`/api` prefix)
+| Method | Route | Description |
 |---|---|---|
-| `GET` | `/api/recipes?search=&tag=` | Liste (résumé : id, titre, tags, temps total) |
-| `GET` | `/api/recipes/{id}` | Détail complet |
-| `POST` | `/api/recipes` | Création → `201 Created` + `Location` |
-| `PUT` | `/api/recipes/{id}` | Remplacement complet (ingrédients/étapes inclus) |
-| `DELETE` | `/api/recipes/{id}` | Suppression → `204 No Content` |
-| `GET` | `/api/tags` | Liste des tags existants (autocomplétion) |
+| `GET` | `/api/recipes?search=&tag=` | List (summary: id, title, tags, total time) |
+| `GET` | `/api/recipes/{id}` | Full details |
+| `POST` | `/api/recipes` | Create → `201 Created` + `Location` |
+| `PUT` | `/api/recipes/{id}` | Full replace (ingredients/steps included) |
+| `DELETE` | `/api/recipes/{id}` | Delete → `204 No Content` |
+| `GET` | `/api/tags` | Existing tags (autocomplete) |
 | `GET` | `/health` | Healthcheck |
 
-Erreurs : `400` (validation, ProblemDetails avec `errors`), `404` (ProblemDetails).
+Errors: `400` (validation, ProblemDetails with `errors`), `404` (ProblemDetails).
 
 ---
 
-## 6. Plan de route (phases)
+## 6. Roadmap (phases)
 
-Chaque phase = une branche `feat/phase-N-xxx`, des commits en [Conventional Commits](https://www.conventionalcommits.org/fr/), puis merge dans `main`.
-Une phase est **terminée** quand ses critères de validation sont vérifiés.
+Each phase = one `feat/phase-N-xxx` branch, [Conventional Commits](https://www.conventionalcommits.org/) **in English**, then merge into `main`.
+A phase is **done** when its validation criteria are met.
 
-### Phase 0 — Environnement
-- [ ] Mettre Node à jour : **Node 24 LTS** (actuellement 18.12, incompatible avec Angular récent). Conseil : installer [fnm](https://github.com/Schniz/fnm) ou nvm-windows pour gérer les versions.
-- [ ] Installer le **SDK .NET 10** (actuellement seul le SDK 6 est présent).
-- [ ] Installer l'Angular CLI globalement (`npm i -g @angular/cli`) ou utiliser `npx`.
-- [ ] Installer l'outil EF Core : `dotnet tool install --global dotnet-ef`.
-- [ ] VS Code : extensions *Angular Language Service*, *C# Dev Kit*, *ESLint*, *Prettier*, *SQLite Viewer*.
-- **Validation** : `node -v` ≥ 24, `dotnet --list-sdks` contient 10.x, `ng version` fonctionne.
+### Phase 0 — Environment
+- [ ] Upgrade Node: **Node 24 LTS** (currently 18.12, incompatible with recent Angular and Nx). Tip: use [fnm](https://github.com/Schniz/fnm) or nvm-windows to manage versions.
+- [ ] Install the **.NET 10 SDK** (only SDK 6 is currently present).
+- [ ] Install the EF Core tool: `dotnet tool install --global dotnet-ef`.
+- [ ] VS Code extensions: *Nx Console*, *Angular Language Service*, *C# Dev Kit*, *Tailwind CSS IntelliSense*, *ESLint*, *Prettier*, *SQLite Viewer*.
+- **Validation**: `node -v` ≥ 24, `dotnet --list-sdks` lists 10.x.
 
-### Phase 1 — Squelette du monorepo
-- [ ] Corriger le `.gitignore` : ne **pas** ignorer `package-lock.json` (il doit être commité), ajouter les entrées .NET (`bin/`, `obj/`, `*.user`, `.vs/`), SQLite (`*.db`, `*.db-shm`, `*.db-wal`), et adapter les chemins Angular au dossier `frontend/`.
-- [ ] Ajouter un `.editorconfig` (indentation, fins de ligne, règles C#).
-- [ ] Créer les dossiers `backend/` et `frontend/`.
-- **Validation** : arborescence en place, `git status` propre.
+### Phase 1 — Nx workspace
+- [ ] Initialize Nx in the existing repo (`npx nx@latest init`), then `nx add @nx/angular` and `nx add @nx/dotnet`. *Check the exact commands in the Nx docs when running them.*
+- [ ] Fix `.gitignore`: do **not** ignore `package-lock.json` (it must be committed), add Nx entries (`.nx/cache`, `.nx/workspace-data`), .NET (`bin/`, `obj/`, `*.user`, `.vs/`) and SQLite (`*.db`, `*.db-shm`, `*.db-wal`), remove root Angular paths that no longer apply.
+- [ ] Add `.editorconfig` (indentation, line endings, C# rules) and Prettier.
+- **Validation**: `nx graph` opens, `git status` clean after commit.
 
-### Phase 2 — Fondations backend
-- [ ] `dotnet new sln` (format `.slnx`) + `dotnet new web` → `RecipEBook.Api` + projet de tests xUnit.
-- [ ] `Program.cs` minimal : OpenAPI + Scalar (en dev), ProblemDetails, healthcheck `/health`.
-- [ ] Un `MapGroup("/api")` vide prêt à recevoir les features.
-- [ ] Premier test d'intégration avec `WebApplicationFactory` sur `/health`.
-- **Concepts** : hosting model, DI container (`builder.Services`), middleware pipeline, configuration (`appsettings`, `IOptions`).
-- **Validation** : `dotnet run` → `/health` répond 200, `/scalar` affiche la doc ; `dotnet test` passe.
+### Phase 2 — Backend foundations
+- [ ] `dotnet new web -o apps/api -n RecipEBook.Api`, `dotnet new xunit -o apps/api-tests -n RecipEBook.Api.Tests`, `RecipEBook.slnx` at the root.
+- [ ] Check that Nx detects both projects and their tasks: `nx show project RecipEBook.Api` (exact name depends on the plugin).
+- [ ] Minimal `Program.cs`: OpenAPI + Scalar (dev only), ProblemDetails, `/health` healthcheck.
+- [ ] An empty `MapGroup("/api")` ready for features.
+- [ ] First integration test with `WebApplicationFactory` on `/health`.
+- **Concepts**: hosting model, DI container (`builder.Services`), middleware pipeline, configuration (`appsettings`, `IOptions`), MSBuild ↔ Nx integration.
+- **Validation**: the API starts, `/health` returns 200, `/scalar` shows the docs, tests pass via Nx.
 
-### Phase 3 — Domaine & persistance
-- [ ] Entités du domaine (section 5).
-- [ ] `AppDbContext` + configurations `IEntityTypeConfiguration<T>` (longueurs, index, relations, ordre).
-- [ ] SQLite via chaîne de connexion dans `appsettings.Development.json`.
-- [ ] Première migration (`dotnet ef migrations add Initial`) + application au démarrage en dev.
-- [ ] Données de démo (2-3 recettes) via le seeding EF Core (`UseSeeding` / `UseAsyncSeeding`).
-- **Concepts** : migrations, relations 1-n et n-n, change tracking, `AsNoTracking`, projections.
-- **Validation** : la base est créée, les recettes de démo sont présentes.
+### Phase 3 — Domain & persistence
+- [ ] Domain entities (section 5).
+- [ ] `AppDbContext` + `IEntityTypeConfiguration<T>` configurations (lengths, indexes, relationships, ordering).
+- [ ] SQLite via a connection string in `appsettings.Development.json`.
+- [ ] First migration (`dotnet ef migrations add Initial`) + applied at startup in dev.
+- [ ] Demo data (2–3 recipes) via EF Core seeding (`UseSeeding` / `UseAsyncSeeding`).
+- **Concepts**: migrations, 1-n and n-n relationships, change tracking, `AsNoTracking`, projections.
+- **Validation**: the database is created, demo recipes are present.
 
-### Phase 4 — API CRUD recettes
-- [ ] Endpoints de la section 5 dans `Features/Recipes`, avec `TypedResults`.
-- [ ] DTOs request/response + mapping manuel (pas d'AutoMapper).
-- [ ] Validation des requêtes (titre requis, longueurs, quantités ≥ 0…).
-- [ ] Recherche par titre et filtre par tag sur la liste.
-- [ ] `GET /api/tags`.
-- [ ] Tests d'intégration pour chaque endpoint (cas nominal + 400 + 404), sur une base SQLite in-memory.
-- **Concepts** : model binding, `Results<Ok<T>, NotFound>`, projections LINQ → SQL, gestion des collections enfants en update.
-- **Validation** : tout le CRUD est utilisable depuis Scalar ; `dotnet test` passe.
+### Phase 4 — Recipe CRUD API
+- [ ] Section 5 endpoints in `Features/Recipes` and `Features/Tags`, with `TypedResults`.
+- [ ] Request/response DTOs + manual mapping (no AutoMapper).
+- [ ] Request validation (title required, lengths, quantities ≥ 0…).
+- [ ] Title search and tag filter on the list.
+- [ ] Integration tests for each endpoint (happy path + 400 + 404), on an in-memory SQLite database.
+- **Concepts**: model binding, `Results<Ok<T>, NotFound>`, LINQ → SQL projections, handling child collections on update.
+- **Validation**: the full CRUD is usable from Scalar, tests pass.
 
-### Phase 5 — Fondations frontend
-- [ ] `ng new frontend` (standalone, SCSS, zoneless, routing) dans le dossier `frontend/`.
-- [ ] ESLint (`ng add angular-eslint`) + Prettier.
-- [ ] Angular Material (`ng add @angular/material`) + thème.
-- [ ] `proxy.conf.json` : `/api` → URL de l'API .NET.
-- [ ] Layout global (`core/layout`) : header, zone de contenu, navigation.
-- [ ] Routing : `/recipes`, `/recipes/new`, `/recipes/:id`, `/recipes/:id/edit`, redirection `/` → `/recipes`, page 404. Feature en lazy loading.
-- [ ] `withComponentInputBinding()` pour recevoir `:id` directement en `input()`.
-- **Concepts** : `app.config.ts` (providers), bootstrap, router, standalone components, DI.
-- **Validation** : `ng serve` affiche le layout, la navigation entre pages vides fonctionne.
+### Phase 5 — Frontend foundations
+- [ ] Generate the app: `nx g @nx/angular:application apps/web` (standalone, routing, zoneless, Vitest if offered).
+- [ ] Install and configure **Tailwind v4** in `apps/web` (PostCSS `@tailwindcss/postcss`, `@import "tailwindcss"` in `styles.css`). Make sure Tailwind also scans the libs (`@source "../../../libs"`).
+- [ ] Generate the section 4 libs (`nx g @nx/angular:library ...`) with their tags. Enable `@nx/enforce-module-boundaries`.
+- [ ] **i18n**: install Transloco, create `en.json` / `fr.json`, default language = browser language (fallback `en`), persisted in `localStorage`, EN/FR switcher in the header, update `<html lang>`.
+- [ ] **TanStack Query**: `provideTanStackQuery(new QueryClient())` in `app.config.ts`, devtools in dev.
+- [ ] `provideHttpClient(withFetch(), withInterceptors([...]))` + `Accept-Language` interceptor.
+- [ ] `proxy.conf.json`: `/api` → .NET API URL.
+- [ ] Global layout: header (title, navigation, language switcher), content area. Responsive from the start.
+- [ ] Routing: `/recipes`, `/recipes/new`, `/recipes/:id`, `/recipes/:id/edit`, redirect `/` → `/recipes`, 404 page. Lazy-loaded feature. `withComponentInputBinding()` to receive `:id` as an `input()`.
+- [ ] Run frontend + backend together: `nx run-many -t serve` (or equivalent target).
+- **Concepts**: `app.config.ts` (providers), bootstrap, router, standalone components, DI, functional interceptors, Nx Angular libs.
+- **Validation**: `nx serve web` shows the Tailwind-styled layout, navigation works, switching EN ↔ FR updates the UI without a page reload.
 
-### Phase 6 — Consulter les recettes
-- [ ] Modèles TypeScript (`data-access/recipe.model.ts`).
-- [ ] Service `RecipeApi` (`providedIn: 'root'`, `inject(HttpClient)`).
-- [ ] Page liste : `httpResource()`, états chargement / erreur / vide, cartes `recipe-card`.
-- [ ] Recherche par titre (signal + debounce) et filtre par tag.
-- [ ] Page détail : ingrédients, étapes, temps, notes, tags.
-- [ ] Pipe `duration` (minutes → « 1 h 15 »).
-- **Concepts** : signals, `computed`, `httpResource`, `input()` / `output()`, `@if` / `@for` (avec `track`), pipes, smart vs dumb components.
-- **Validation** : la liste et le détail affichent les données de l'API.
+### Phase 6 — Browse recipes
+- [ ] TypeScript models (`data-access/recipe.model.ts`).
+- [ ] `RecipeApi` (`providedIn: 'root'`, `inject(HttpClient)`, converted to Promise with `lastValueFrom`).
+- [ ] TanStack query options + key factory (`recipeKeys.list(filters)`, `recipeKeys.detail(id)`).
+- [ ] List page: `injectQuery`, loading / error / empty states (translated), `recipe-card` component.
+- [ ] Title search (signal + debounce) and tag filter. Filters are signals read inside the query → automatic refetch.
+- [ ] Detail page: ingredients, steps, times, notes, tags. Dates formatted according to the active language.
+- [ ] Translated `duration` pipe (minutes → "1 hr 15 min" / "1 h 15").
+- **Concepts**: signals, `computed`, `input()` / `output()`, `@if` / `@for` (with `track`), pipes, smart vs dumb components, signal-based TanStack Query, `HttpClient` and Observables (the bare minimum).
+- **Validation**: list and detail show API data, in EN and FR.
 
-### Phase 7 — Créer & modifier une recette
-- [ ] Formulaire réactif typé : champs simples + `FormArray` pour ingrédients et étapes (ajouter, supprimer, réordonner via CDK drag & drop).
-- [ ] Le même composant sert à la création et à l'édition.
-- [ ] Saisie des tags avec autocomplétion (`GET /api/tags`).
-- [ ] Affichage des erreurs de validation (client + ProblemDetails serveur).
-- [ ] Suppression avec dialogue de confirmation.
-- [ ] Garde `canDeactivate` fonctionnelle : avertir si le formulaire a des modifications non sauvegardées.
-- [ ] Snackbar de confirmation après sauvegarde.
-- **Concepts** : Reactive Forms, validators, `FormArray`, guards fonctionnels, CDK, dialogs Material.
-- **Validation** : je peux écrire ma soupe « au pif » de A à Z, la modifier, la supprimer.
+### Phase 7 — Create & edit a recipe
+- [ ] Typed reactive form: simple fields + `FormArray` for ingredients and steps (add, remove, reorder via CDK drag & drop).
+- [ ] The same component handles creation and editing.
+- [ ] TanStack mutations (`injectMutation`) + `invalidateQueries` on list and detail on success.
+- [ ] Tag input with autocomplete (`GET /api/tags`, CDK overlay).
+- [ ] Translated validation errors (client) + display of server ProblemDetails.
+- [ ] Deletion with a confirmation dialog (Tailwind-styled CDK Dialog).
+- [ ] Functional `canDeactivate` guard: warn when the form has unsaved changes.
+- [ ] Confirmation toast after saving.
+- **Concepts**: Reactive Forms, validators, `FormArray`, functional guards, CDK (dialog, overlay, drag-drop), mutations and cache invalidation.
+- **Validation**: I can write my improvised soup from A to Z, edit it, delete it. The list updates without reloading.
 
-### Phase 8 — Finitions UX & état
-- [ ] Interceptor HTTP fonctionnel pour la gestion d'erreurs globale.
-- [ ] Responsive (mobile : consulter une recette en cuisinant !).
-- [ ] Mode « cuisine » : affichage étape par étape, gros texte.
-- [ ] Optionnel : NgRx SignalStore pour l'état de la feature recettes.
-- [ ] Optionnel : `@defer` pour des blocs non critiques.
-- **Validation** : l'app est agréable sur mobile et desktop.
+### Phase 8 — UX polish, backend i18n & state
+- [ ] HTTP interceptor for global error handling (translated toast).
+- [ ] API-side error message localization (`AddLocalization`, `UseRequestLocalization` with `en` / `fr`, `.resx` files).
+- [ ] "Cooking mode": step-by-step view, large text, screen kept awake (Wake Lock API).
+- [ ] Tailwind dark mode (optional).
+- [ ] `@defer` for non-critical blocks (optional).
+- [ ] Check no translation key is missing (Transloco `missingHandler`, or a key-checking tool).
+- **Validation**: the app is pleasant on mobile and desktop, fully translated, server errors included.
 
-### Phase 9 — Qualité & industrialisation
-- [ ] Tests unitaires frontend (Vitest) sur les composants et services clés.
-- [ ] Génération du client TS depuis l'OpenAPI.
-- [ ] GitHub Actions : build + lint + tests front et back sur chaque PR.
-- [ ] Scripts racine pour lancer front + back ensemble.
-- **Validation** : CI verte.
+### Phase 9 — Quality & tooling
+- [ ] Frontend unit tests (Vitest) on key components, pipes and services.
+- [ ] TS type generation from OpenAPI, as an Nx task depending on the API build.
+- [ ] GitHub Actions: `nx affected -t lint test build` (frontend and backend) on every PR, with .NET 10 SDK and Node 24.
+- [ ] Optional: Playwright e2e tests (`apps/web-e2e`), including language switching.
+- **Validation**: green CI.
 
-### Phase 10 — Bonus (au choix, dans n'importe quel ordre)
-- [ ] Authentification (ASP.NET Core Identity + cookies, ou fournisseur externe) → recettes par utilisateur.
-- [ ] Photos de recettes (upload, stockage local puis blob).
-- [ ] Favoris, note personnelle, « déjà cuisiné X fois ».
-- [ ] Mise à l'échelle des quantités selon le nombre de portions.
-- [ ] PWA (consultation hors-ligne).
-- [ ] .NET Aspire pour orchestrer front + back + base.
-- [ ] Passage à PostgreSQL (Docker) et déploiement (Azure, Fly.io…).
-- [ ] Migration vers Nx si l'envie se présente.
+### Phase 10 — Bonus (pick any, in any order)
+- [ ] Authentication (ASP.NET Core Identity + cookies, or an external provider) → per-user recipes.
+- [ ] Recipe photos (upload, local storage then blob).
+- [ ] Favorites, personal rating, "cooked X times".
+- [ ] Quantity scaling by number of servings.
+- [ ] Predefined, translated units.
+- [ ] PWA (offline browsing).
+- [ ] .NET Aspire to orchestrate frontend + backend + database.
+- [ ] Move to PostgreSQL (Docker) and deploy (Azure, Fly.io…).
 
 ---
 
-## 7. Avancement & journal
+## 7. Progress & log
 
-**Phase en cours : 0 — Environnement**
+**Current phase: 0 — Environment**
 
-| Phase | Statut |
+| Phase | Status |
 |---|---|
-| 0. Environnement | ⏳ À faire |
-| 1. Squelette monorepo | ⏳ À faire |
-| 2. Fondations backend | ⏳ À faire |
-| 3. Domaine & persistance | ⏳ À faire |
-| 4. API CRUD | ⏳ À faire |
-| 5. Fondations frontend | ⏳ À faire |
-| 6. Consulter | ⏳ À faire |
-| 7. Créer & modifier | ⏳ À faire |
-| 8. Finitions UX | ⏳ À faire |
-| 9. Qualité & CI | ⏳ À faire |
-| 10. Bonus | ⏳ À faire |
+| 0. Environment | ⏳ To do |
+| 1. Nx workspace | ⏳ To do |
+| 2. Backend foundations | ⏳ To do |
+| 3. Domain & persistence | ⏳ To do |
+| 4. CRUD API | ⏳ To do |
+| 5. Frontend foundations | ⏳ To do |
+| 6. Browse | ⏳ To do |
+| 7. Create & edit | ⏳ To do |
+| 8. UX polish & backend i18n | ⏳ To do |
+| 9. Quality & CI | ⏳ To do |
+| 10. Bonus | ⏳ To do |
 
-Légende : ⏳ À faire · 🚧 En cours · ✅ Terminé
+Legend: ⏳ To do · 🚧 In progress · ✅ Done
 
-### Décisions prises
-<!-- Ajouter ici toute décision qui s'écarte du plan, avec la date et la raison. -->
-- 2026-10-17 — Stack et plan initial définis (ce document).
+### Decisions
+<!-- Add any decision that departs from the plan here, with the date and the reason. -->
+- 2026-10-17 — Initial stack and plan defined (this document).
+- 2026-10-17 — **Nx** chosen (official `@nx/angular` + `@nx/dotnet` plugins) over the plain Angular CLI: already familiar tool.
+- 2026-10-17 — **Tailwind v4 + Angular CDK** over Angular Material: Tailwind already familiar, the CDK provides behavior without imposing styles.
+- 2026-10-17 — **EN/FR i18n with Transloco** (runtime) over `@angular/localize` (one build per language).
+- 2026-10-17 — **TanStack Query (Angular adapter)** over `httpResource()` alone: already familiar, handles caching and invalidation. Adapter still *experimental* → pinned version.
+- 2026-10-17 — **Documentation and commits in English**; conversation with the agent in French.
 
-### Journal des sessions
-<!-- Une entrée par session, la plus récente en haut. Format :
-#### AAAA-MM-JJ — Phase N
-- Fait : …
-- Appris : … (concepts Angular/.NET vus)
-- Prochaine étape : …
-- Points ouverts : …
+### Session log
+<!-- One entry per session, most recent first. Format:
+#### YYYY-MM-DD — Phase N
+- Done: …
+- Learned: … (Angular/.NET concepts covered)
+- Next step: …
+- Open questions: …
 -->
-#### 2026-10-17 — Planification
-- Fait : définition du pitch, de la stack, de l'architecture et du plan de route.
-- Constat : Node 18.12 et SDK .NET 6 installés → mise à jour nécessaire (phase 0). Docker absent → SQLite en dev.
-- Prochaine étape : phase 0, puis phase 1.
+#### 2026-10-17 — Planning
+- Done: defined pitch, stack, architecture and roadmap. Added Nx, Tailwind, EN/FR i18n and TanStack Query at the developer's request. Docs switched to English.
+- Finding: Node 18.12 and .NET SDK 6 installed → upgrade needed (phase 0). Docker missing → SQLite in dev. `gh` CLI not installed.
+- Next step: choose the kanban tool, then phase 0, then phase 1.
 
 ---
 
-## 8. Instructions pour l'agent
+## 8. Agent instructions
 
-Si tu es un agent Claude qui reprend ce projet :
+If you're a Claude agent picking up this project:
 
-1. **Lis ce README en entier**, en particulier [Avancement & journal](#7-avancement--journal), pour savoir où on en est.
-2. **Mode pédagogique** : l'objectif est autant d'apprendre que de livrer.
-   - Avance par **petites étapes**, explique chaque concept nouveau (Angular ou .NET) avant ou pendant sa mise en place.
-   - Pour Angular, fais le **parallèle avec React** quand c'est pertinent (voir section 9).
-   - Signale ce qui est « l'ancienne façon » d'Angular si la doc ou des exemples en ligne risquent de semer la confusion (NgModules, `*ngIf`, `@Input()` décorateur, constructeur pour la DI…).
-   - Propose régulièrement à la développeuse d'écrire elle-même une partie (un composant, un endpoint) puis relis son code.
-3. **Respecte la stack et l'architecture** décrites ici. Pour toute déviation, demande d'abord, puis consigne-la dans « Décisions prises ».
-4. **Versions** : vérifie les versions réellement installées et la doc officielle avant d'utiliser une API récente (ex. Signal Forms, `httpResource`) ; certaines API évoluent vite.
-5. **Git** : une branche par phase, Conventional Commits, ne commite/pousse que quand on te le demande.
-6. **En fin de session** : mets à jour les cases à cocher de la phase, le tableau de statut, la « Phase en cours » et ajoute une entrée au journal.
+1. **Read this whole README**, especially [Progress & log](#7-progress--log), to know where we are.
+2. **Languages**: talk with the developer **in French**. Write all documentation, code comments and **commit messages in English**.
+3. **Teaching mode**: the goal is as much learning as shipping.
+   - Move in **small steps**, explain every new concept (Angular or .NET) before or while introducing it.
+   - For Angular, draw **parallels with React** where relevant (see section 9).
+   - Flag "the old Angular way" when docs or online examples may cause confusion (NgModules, `*ngIf`, `@Input()` decorator, constructor-based DI…).
+   - Regularly offer the developer to write a part herself (a component, an endpoint), then review her code.
+4. **Respect the stack and architecture** described here. For any deviation, ask first, then record it under "Decisions".
+5. **Versions**: check the actually installed versions and the official docs before using a recent API (e.g. Signal Forms, TanStack Angular Query, Nx generators, `@nx/dotnet`). These tools move fast.
+6. **i18n**: every new UI string needs its key in both `en.json` **and** `fr.json`.
+7. **Nx**: generate apps and libs with Nx generators (not by hand), respect tags and module boundaries.
+8. **Git**: one branch per phase, Conventional Commits in English, only commit/push when asked.
+9. **End of session**: update the phase's checkboxes, the status table, the "Current phase" line, and add a log entry.
 
 ---
 
-## 9. Aide-mémoire React → Angular
+## 9. React → Angular cheat sheet
 
-| React | Angular moderne |
+| React | Modern Angular |
 |---|---|
-| Composant fonction | Classe `@Component({ ... })` standalone, template HTML séparé ou inline |
-| `useState` | `signal()` → lecture `count()`, écriture `count.set()` / `count.update()` |
+| Function component | Standalone `@Component({ ... })` class, separate or inline HTML template |
+| `useState` | `signal()` → read `count()`, write `count.set()` / `count.update()` |
 | `useMemo` | `computed()` |
-| `useEffect` | `effect()` (à utiliser avec parcimonie), `afterNextRender()` pour le DOM |
+| `useEffect` | `effect()` (use sparingly), `afterNextRender()` for DOM work |
 | Props | `input()` / `input.required()` |
-| Callback en prop (`onChange`) | `output()` + `(event)="..."` dans le template |
-| Prop + callback contrôlé (`value`/`onChange`) | `model()` + `[(value)]` (two-way binding) |
+| Callback prop (`onChange`) | `output()` + `(event)="..."` in the template |
+| Controlled prop + callback (`value`/`onChange`) | `model()` + `[(value)]` (two-way binding) |
 | `children` | `<ng-content />` (content projection) |
-| Context + Provider | Services + injection de dépendances (`inject()`) |
-| Custom hooks | Fonctions utilisant `inject()` / services |
+| Context + Provider | Services + dependency injection (`inject()`) |
+| Custom hooks | Functions using `inject()` (e.g. `injectQuery`) |
 | React Router | Angular Router (`provideRouter`, `routerLink`, `loadComponent`) |
-| React Query / SWR | `httpResource()` / `resource()` |
+| `useQuery` / `useMutation` (TanStack) | `injectQuery` / `injectMutation` (same lib, results exposed as signals: `query.data()`, `query.isPending()`) |
+| `fetch` / axios | `HttpClient` (returns Observables, converted to Promises for TanStack) |
 | react-hook-form | Reactive Forms (`FormGroup`, `FormArray`) / Signal Forms |
+| react-i18next `t('key')` | Transloco: `*transloco="let t"` then `t('key')`, or the `'key' \| transloco` pipe |
 | `{cond && <X/>}` | `@if (cond) { <x /> }` |
 | `list.map(i => <X key={i.id}/>)` | `@for (i of list(); track i.id) { <x /> }` |
-| `React.lazy` + `Suspense` | `loadComponent` dans les routes, `@defer` dans les templates |
-| `className={...}` | `[class.active]="isActive()"` ou `[class]="..."` |
-| Redux / Zustand | Services + signals, ou NgRx SignalStore |
+| `React.lazy` + `Suspense` | `loadComponent` in routes, `@defer` in templates |
+| `className={clsx(...)}` | `class="..."` + `[class.active]="isActive()"` (Tailwind works the same) |
+| Radix / Headless UI | Angular CDK (dialog, overlay, drag-drop, a11y) |
 
 ---
 
-## 10. Commandes utiles
+## 10. Useful commands
 
-*(À compléter au fil des phases.)*
+*(To be completed along the phases: check project names with `nx show projects`.)*
 
 ```bash
-# Backend (depuis backend/)
-dotnet run --project src/RecipEBook.Api
-dotnet test
-dotnet ef migrations add <Nom> --project src/RecipEBook.Api
-dotnet ef database update --project src/RecipEBook.Api
+# Nx
+nx graph                                # project graph
+nx show projects                        # detected projects
+nx show project <name>                  # inferred tasks of a project
+nx run-many -t serve                    # run frontend + backend
+nx affected -t lint test build          # what CI runs
 
-# Frontend (depuis frontend/)
-npm start                      # ng serve avec le proxy
-npm test
-ng generate component features/recipes/ui/recipe-card
+# Frontend
+nx serve web
+nx test web
+nx g @nx/angular:component libs/web/recipes/ui/src/lib/recipe-card/recipe-card
+nx g @nx/angular:library libs/web/recipes/ui --tags=type:ui,scope:recipes
+
+# Backend (EF Core, from the root)
+dotnet ef migrations add <Name> --project apps/api
+dotnet ef database update --project apps/api
 ```

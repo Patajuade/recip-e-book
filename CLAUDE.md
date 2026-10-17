@@ -5,6 +5,7 @@ progress (section 7) and working instructions for the agent (section 8).
 
 - Talk with the developer in French. Write docs, code comments and commit messages in English.
 - Tasks live on the GitHub project board (https://github.com/users/Patajuade/projects/2), managed with the `gh` CLI.
+- Official docs only: follow and cite the official docs of every tool before installing or configuring it; ask the developer when in doubt (README section 8).
 - At the end of each session, update the "Progress & log" section of the README.
 
 <!-- nx configuration start-->

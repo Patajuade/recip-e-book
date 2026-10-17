@@ -7,7 +7,6 @@ progress (section 7) and working instructions for the agent (section 8).
 - Tasks live on the GitHub project board (https://github.com/users/Patajuade/projects/2), managed with the `gh` CLI.
 - At the end of each session, update the "Progress & log" section of the README.
 
-
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 
@@ -29,6 +28,5 @@ progress (section 7) and working instructions for the agent (section 8).
 - USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
 - DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
-
 
 <!-- nx configuration end-->

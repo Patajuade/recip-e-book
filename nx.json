@@ -12,9 +12,7 @@
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*"
-    ],
+    "default": ["{projectRoot}/**/*"],
     "production": [
       "default",
       "!{projectRoot}/**/*.Tests/**/*",

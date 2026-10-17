@@ -1,0 +1,18 @@
+{
+  "name": "@recip-e-book/source",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@angular-devkit/core": "~22.1.0",
+    "@nx/angular": "^23.3.0",
+    "@nx/dotnet": "^23.3.0",
+    "nx": "23.3.0"
+  },
+  "allowScripts": {
+    "nx@23.3.0": true
+  }
+}

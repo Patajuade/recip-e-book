@@ -1,4 +1,14 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "analytics": false
+  "analytics": false,
+  "plugins": ["@nx/dotnet"],
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.Tests/**/*",
+      "!{projectRoot}/**/bin/**/*",
+      "!{projectRoot}/**/obj/**/*"
+    ]
+  }
 }

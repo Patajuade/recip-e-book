@@ -17,6 +17,7 @@
   "devDependencies": {
     "@angular-devkit/core": "~22.1.0",
     "@nx/angular": "^23.3.0",
+    "@nx/dotnet": "^23.3.0",
     "nx": "23.3.0",
     "prettier": "3.9.10"
   },

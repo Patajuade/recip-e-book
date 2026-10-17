@@ -544,3 +544,7 @@ $RECYCLE.BIN/
 *.db
 *.db-shm
 *.db-wal
+
+# Postman VS Code extension (local workspace files)
+/.postman/
+/postman/

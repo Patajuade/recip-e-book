@@ -1,8 +1,4 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[csharp]": {
-    "editor.defaultFormatter": "ms-dotnettools.csharp"
-  },
-  "files.eol": "\n"
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

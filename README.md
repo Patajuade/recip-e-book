@@ -280,6 +280,8 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-17 — **Documentation and commits in English**; conversation with the agent in French.
 - 2026-10-17 — **Kanban on GitHub Projects** (over Notion): issues link to commits/PRs and everything stays in the repo.
 - 2026-10-17 — **One branch + PR per issue**, merged manually by the developer (the agent never merges into `main`).
+- 2026-10-17 — **Node managed with fnm** (`.nvmrc` = 24). The system Node 18 stays fnm's default so other projects on the machine are unaffected.
+- 2026-10-17 — **dotnet-ef as a local tool** (`dotnet-tools.json` at the root, the .NET 10 default location) instead of a global install: version pinned in the repo, restored with `dotnet tool restore`.
 
 ### Session log
 <!-- One entry per session, most recent first. Format:
@@ -289,6 +291,12 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - Next step: …
 - Open questions: …
 -->
+#### 2026-10-17 — Phase 0
+- Done: #1 Node 24.22 via fnm + `.nvmrc` (PR #63), #2 .NET SDK 10.0.402 + `global.json` (PR #64), #3 dotnet-ef 10.0.13 as a local tool (PR #65), #4 VS Code extensions + `.vscode/extensions.json` (PR #66). PowerShell CurrentUser execution policy set to `RemoteSigned` (needed for the fnm profile hook and npm `.ps1` shims).
+- Learned: SDK pinning with `global.json` (`rollForward`), .NET local tools (≈ npm devDependencies), Node version switching with fnm.
+- Next step: once the PRs are merged, phase 1 (#5 Nx init, #6 .gitignore, #7 .editorconfig/.gitattributes/Prettier).
+- Open questions: git uses `core.autocrlf=true` locally → `.gitattributes` with LF planned in #7. Agent shells may not load the PowerShell profile: if `node -v` isn't 24, run `fnm use` first. `dotnet dev-certs https --trust` will be needed in phase 2.
+
 #### 2026-10-17 — Planning
 - Done: defined pitch, stack, architecture and roadmap. Added Nx, Tailwind, EN/FR i18n and TanStack Query at the developer's request. Docs switched to English. Created the GitHub project board: 6 labels, 11 milestones, 60 issues (#1–#60).
 - Finding: Node 18.12 and .NET SDK 6 installed → upgrade needed (phase 0). Docker missing → SQLite in dev. `gh` CLI installed and authenticated (with `project` scope).
@@ -355,6 +363,10 @@ If you're a Claude agent picking up this project:
 *(To be completed along the phases: check project names with `nx show projects`.)*
 
 ```bash
+# Toolchain (pinned in the repo: .nvmrc → Node 24, global.json → .NET SDK 10, dotnet-tools.json → dotnet-ef)
+fnm use                                 # switch to the Node version from .nvmrc (automatic on cd in a profile-enabled shell)
+dotnet tool restore                     # restore local .NET tools (dotnet-ef)
+
 # Nx
 nx graph                                # project graph
 nx show projects                        # detected projects

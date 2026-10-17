@@ -209,7 +209,7 @@ Errors: `400` (validation, ProblemDetails with `errors`), `404` (ProblemDetails)
 
 Tasks are tracked on the **[GitHub project board](https://github.com/users/Patajuade/projects/2)**: one milestone per phase, one issue per task (labels `area:frontend`, `area:backend`, `area:infra`, `area:i18n`, `type:test`, `bonus`). This section only keeps the big picture: what each phase teaches and how we know it's done.
 
-Each phase = one `feat/phase-N-xxx` branch, [Conventional Commits](https://www.conventionalcommits.org/) **in English** referencing their issue (`Closes #12`), then merge into `main`.
+Each task (issue) = one `<type>/<issue>-<short-slug>` branch (e.g. `feat/15-list-recipes`), [Conventional Commits](https://www.conventionalcommits.org/) **in English** referencing their issue (`Closes #15`), then a pull request into `main`. **PRs are reviewed and merged manually by the developer.**
 A phase is **done** when all its milestone issues are closed and its validation criteria are met.
 
 ### Phase 0 — Environment
@@ -279,6 +279,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-17 — **TanStack Query (Angular adapter)** over `httpResource()` alone: already familiar, handles caching and invalidation. Adapter still *experimental* → pinned version.
 - 2026-10-17 — **Documentation and commits in English**; conversation with the agent in French.
 - 2026-10-17 — **Kanban on GitHub Projects** (over Notion): issues link to commits/PRs and everything stays in the repo.
+- 2026-10-17 — **One branch + PR per issue**, merged manually by the developer (the agent never merges into `main`).
 
 ### Session log
 <!-- One entry per session, most recent first. Format:
@@ -310,7 +311,10 @@ If you're a Claude agent picking up this project:
 5. **Versions**: check the actually installed versions and the official docs before using a recent API (e.g. Signal Forms, TanStack Angular Query, Nx generators, `@nx/dotnet`). These tools move fast.
 6. **i18n**: every new UI string needs its key in both `en.json` **and** `fr.json`.
 7. **Nx**: generate apps and libs with Nx generators (not by hand), respect tags and module boundaries.
-8. **Git**: one branch per phase, Conventional Commits in English, only commit/push when asked.
+8. **Git**:
+   - Always start from an up-to-date `main`. One branch per issue: `<type>/<issue>-<short-slug>` (`feat`, `fix`, `chore`, `docs`, `test`, `refactor`).
+   - Conventional Commits in English, with `Closes #N` in the commit or PR body.
+   - Push the branch and open a PR (`gh pr create`), then stop. **Never merge into `main`** (no `git merge` into main, no `gh pr merge`, no push to main): the developer reviews and merges PRs herself.
 9. **Board (GitHub Projects, via `gh`)**:
    - At the start of a session, check the board and the current milestone's open issues.
    - When starting an issue, move it to *In Progress* (`gh project item-edit`). Reference it in commits/PRs (`Closes #N`) so it closes and moves to *Done* once merged into `main`. Issues closed outside a merge must be closed manually.

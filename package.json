@@ -1,23 +1,28 @@
 {
   "name": "@recip-e-book/source",
-  "version": "0.0.0",
-  "private": true,
-  "license": "MIT",
-  "engines": {
-    "node": ">=24"
+  "version": "1.0.0",
+  "description": "A little project for me to remember my prodigious cooking experiments, and recipes I liked.",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Patajuade/recip-e-book.git"
   },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Patajuade/recip-e-book/issues"
+  },
+  "homepage": "https://github.com/Patajuade/recip-e-book#readme",
   "devDependencies": {
     "@angular-devkit/core": "~22.1.0",
     "@nx/angular": "^23.3.0",
-    "@nx/dotnet": "^23.3.0",
     "nx": "23.3.0",
     "prettier": "3.9.10"
   },
+  "nx": {},
   "allowScripts": {
-    "nx@23.3.0": true
+    "nx": false
   },
-  "scripts": {
-    "format": "nx format:write",
-    "format:check": "nx format:check"
-  }
+  "private": true
 }

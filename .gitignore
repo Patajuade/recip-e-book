@@ -13,12 +13,6 @@ test-output/
 test-results/
 playwright-report/
 
-# Nx
-.nx/cache
-.nx/workspace-data
-.nx/migrate-runs
-.nx/polygraph
-
 # Angular
 .angular
 
@@ -46,13 +40,18 @@ playwright-report/
 !.vscode/settings.json
 .idea/
 
-# Claude Code (local only)
-.claude/worktrees
-.claude/settings.local.json
-
 # Logs
 *.log
 
 # OS
 .DS_Store
 Thumbs.db
+
+
+
+.nx/cache
+.nx/workspace-data
+.nx/migrate-runs
+.nx/polygraph
+.claude/worktrees
+.claude/settings.local.json

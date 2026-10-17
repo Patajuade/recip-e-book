@@ -1,23 +1,4 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "targetDefaults": {
-    "build": {
-      "cache": true
-    },
-    "test": {
-      "cache": true
-    },
-    "lint": {
-      "cache": true
-    }
-  },
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*"],
-    "production": [
-      "default",
-      "!{projectRoot}/**/*.Tests/**/*",
-      "!{projectRoot}/**/bin/**/*",
-      "!{projectRoot}/**/obj/**/*"
-    ]
-  }
+  "analytics": false
 }

@@ -426,7 +426,7 @@ If you're a Claude agent picking up this project:
    - The plan in this README and the planning issues were written from memory: treat API names and commands there as hints to verify, not as instructions.
    - When the docs are missing, ambiguous or contradict the actual tool behavior, or a workaround seems needed: **stop and ask the developer**. Never guess a flag or an option.
    - Check the actually installed versions: these tools move fast.
-6. **i18n**: every new UI string is marked with `i18n` / `$localize` and a custom ID; run `nx extract-i18n web`, then add its French `<target>` to `apps/web/src/locale/messages.fr.xlf`.
+6. **i18n**: every new UI string is marked with `i18n` / `$localize` and a custom ID; run `nx extract-i18n web`, then copy only the **new** `<trans-unit>` elements into `apps/web/src/locale/messages.fr.xlf` and add their French `<target>` (never edit `messages.xlf`, it is regenerated). Route titles are translated too (`` title: $localize`:@@id:Text` ``). A lib that uses `$localize` in TypeScript needs `"types": ["@angular/localize"]` in its `tsconfig.lib.json`.
 7. **Nx**: generate apps and libs with Nx generators (not by hand), respect tags and module boundaries.
 8. **Git**:
    - Always start from an up-to-date `main`. One branch per issue: `<type>/<issue>-<short-slug>` (`feat`, `fix`, `chore`, `docs`, `test`, `refactor`).

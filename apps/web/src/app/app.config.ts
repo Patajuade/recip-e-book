@@ -3,14 +3,14 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { acceptLanguageInterceptor } from '@recip-e-book/web-shared-i18n';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(appRoutes),
+    provideRouter(appRoutes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([acceptLanguageInterceptor])),
   ],
 };

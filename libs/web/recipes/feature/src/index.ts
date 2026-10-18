@@ -1,1 +1,1 @@
-export * from './lib/web-recipes-feature/web-recipes-feature';
+export * from './lib/recipes.routes';

@@ -38,6 +38,12 @@ A web app to **write down and browse my recipes**, like a personal cookbook.
 
 **Out of MVP (bonus, see phase 10)**: multi-user authentication, photos, favorites, serving scaling, import from URL, offline PWA, deployment.
 
+**Long-term vision** (not planned yet, we stick to recipes for now):
+
+- **Multiple users**: each user has their own recipes and tags. Draft data model in [#53](https://github.com/Patajuade/recip-e-book/issues/53).
+- **A more suitable database** than SQLite once the needs are known (PostgreSQL, MongoDB…), compared then migrated with the existing data: [#91](https://github.com/Patajuade/recip-e-book/issues/91).
+- **A personal companion app**: recip-e-book becomes one module of a bigger app grouping several areas of life (budget, home improvement ideas…), with shared accounts: [#92](https://github.com/Patajuade/recip-e-book/issues/92).
+
 ---
 
 ## 2. Learning goals

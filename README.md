@@ -474,7 +474,9 @@ dotnet watch run --project apps/api/RecipEBook.Api.csproj --launch-profile https
 npm exec nx -- run RecipEBook.Api:run --launch-profile=https                   # same, through Nx
 npm exec nx -- test RecipEBook.Api.IntegrationTests                           # integration tests (or `dotnet test`)
 
-# Backend (EF Core, from the root)
-dotnet ef migrations add <Name> --project apps/api
-dotnet ef database update --project apps/api
+# Backend (EF Core, from the root; database file: apps/api/recipebook.db, git-ignored)
+dotnet ef migrations add <Name> --project apps/api --output-dir Infrastructure/Persistence/Migrations  # after a model change
+dotnet ef database update --project apps/api           # create/upgrade the local database (also after pulling new migrations)
+dotnet ef migrations has-pending-model-changes --project apps/api  # model changed without a migration?
+dotnet ef migrations remove --project apps/api          # undo the last, not yet applied, migration
 ```

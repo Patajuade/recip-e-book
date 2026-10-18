@@ -4,3 +4,18 @@ GET {{RecipEBook.Api_HostAddress}}/health/
 Accept: application/json
 
 ###
+
+# All recipes, most recently updated first
+GET {{RecipEBook.Api_HostAddress}}/api/recipes
+
+###
+
+# Case- and accent-insensitive title search
+GET {{RecipEBook.Api_HostAddress}}/api/recipes?search=LEGUMES
+
+###
+
+# Filter by tag
+GET {{RecipEBook.Api_HostAddress}}/api/recipes?tag=dessert
+
+###

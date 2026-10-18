@@ -8,7 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("RecipEBook")
     ?? throw new InvalidOperationException("Connection string 'RecipEBook' not found.");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlite(connectionString);
+
+    if (builder.Environment.IsDevelopment())
+    {
+        // Demo recipes, inserted by `dotnet ef database update` (sync) or MigrateAsync (async).
+        options
+            .UseSeeding((context, _) => DemoData.Seed(context))
+            .UseAsyncSeeding((context, _, cancellationToken) => DemoData.SeedAsync(context, cancellationToken));
+    }
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();

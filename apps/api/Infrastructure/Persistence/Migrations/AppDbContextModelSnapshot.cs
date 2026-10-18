@@ -39,6 +39,10 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                     b.Property<int?>("PrepTimeMinutes")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("SearchTitle")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("Servings")
                         .HasColumnType("INTEGER");
 

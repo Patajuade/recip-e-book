@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using RecipEBook.Api.Features.Recipes;
 using RecipEBook.Api.Infrastructure.Persistence;
 
 using Scalar.AspNetCore;
@@ -38,5 +39,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapHealthChecks("/health");
+
+RouteGroupBuilder api = app.MapGroup("/api");
+api.MapRecipeEndpoints();
 
 app.Run();

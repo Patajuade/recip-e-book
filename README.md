@@ -297,7 +297,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 
 ## 7. Progress & log
 
-**Current phase: 1 — Nx workspace** (official-docs audit follow-ups #71–#74 in review)
+**Current phase: 3 — Domain & persistence** (phases 0–2 done)
 
 - Task-level progress: [project board](https://github.com/users/Patajuade/projects/2) (Todo / In Progress / Done).
 - Phase-level progress: [milestones](https://github.com/Patajuade/recip-e-book/milestones) (open/closed issue ratio).
@@ -323,6 +323,12 @@ A phase is **done** when all its milestone issues are closed and its validation 
   - nx install script **denied** (`npm install-scripts deny nx`): it only checks the platform and updates the Nx Cloud client, which isn't used (#71).
   - `.editorconfig` and `.gitignore` rebuilt from the official templates (Nx Angular template + `dotnet new editorconfig` / `dotnet new gitignore`); VS Code settings limited to what the Prettier extension documents (#73).
   - The plan's API names (sections 3–6) and the planning issues were written from memory: verify them against the official docs when starting each task. Known gap: the Nx 23 Angular application generator has no Tailwind option, so Tailwind is set up from Tailwind's own Angular guide (#23).
+- 2026-10-18 — **Teaching mode in practice**: the developer runs the commands and writes the code herself when she wants to; the agent prepares the steps from the official docs, then reviews and verifies before committing. She can also ask the agent to do a task (e.g. #10).
+- 2026-10-18 — **Backend project layout**: `RecipEBook.slnx` at the root, `apps/api` (`RecipEBook.Api`, `dotnet new webapi`) and `apps/api-tests` (`RecipEBook.Api.IntegrationTests`, xUnit 2.9.3), following the Nx example (`apps/`) and the Microsoft advice to keep integration tests in their own project.
+- 2026-10-18 — **HTTPS kept in development** (template default); the dev certificate is trusted locally with `dotnet dev-certs https --trust`.
+- 2026-10-18 — **Scalar** as the OpenAPI UI (documented by Microsoft next to Swagger UI and ReDoc); the OpenAPI document itself comes from the built-in `Microsoft.AspNetCore.OpenApi` (Swashbuckle left the templates in .NET 9, see dotnet/aspnetcore#54599).
+- 2026-10-18 — **Health check on `/health`** (the docs' example uses `/healthz`; `/health` matches section 5). The `/api` route group is created with the first real endpoint (#15) instead of an empty group in #9.
+- 2026-10-18 — **Postman local files ignored** (`/.postman/`, `/postman/`): they're created by the Postman VS Code extension and not shared (#82).
 
 ### Session log
 
@@ -333,6 +339,13 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - Next step: …
 - Open questions: …
 -->
+
+#### 2026-10-18 — Phase 2
+
+- Done: #79 whole repo formatted with Prettier (PR #80). #8 `nx add @nx/dotnet`, `RecipEBook.slnx`, API and integration test projects (PR #81). #9 Scalar, ProblemDetails (`AddProblemDetails` + `UseExceptionHandler` + `UseStatusCodePages`), `/health`, weather sample removed (PR #84, `Program.cs` written by the developer). #82 Postman files ignored (PR #83). #10 first integration test with `WebApplicationFactory<Program>` (PR #85).
+- Learned: .NET vs ASP.NET Core (platform vs web framework, `Microsoft.NET.Sdk` vs `Microsoft.NET.Sdk.Web`); OpenAPI vs Swagger (spec vs tools) and Scalar; the ASP.NET Core pipeline (services before `Build()`, middlewares after); launch profiles (`dotnet run --launch-profile https`, first profile = `http` by default); `dotnet watch` hot reload; .NET 10 noun-first CLI (`dotnet package add`, `dotnet reference add`); xUnit `IClassFixture` and primary constructors; .NET 10 generates `public partial class Program` for tests.
+- Next step: phase 3 (#11 domain entities, then EF Core + SQLite).
+- Open questions: `nx format:check` without `--all` only checks changed files → use `--all` in CI (#51). C# formatter in VS Code still to decide (Prettier can't format C#; `.cs` files are saved with CRLF, normalized to LF by `.gitattributes`). `dotnet tool install/update` rewrites `.config/dotnet-tools.json` in its own style: run `nx format:write` afterwards.
 
 #### 2026-10-18 — Official-docs audit
 
@@ -443,6 +456,12 @@ nx serve web
 nx test web
 nx g @nx/angular:component libs/web/recipes/ui/src/lib/recipe-card/recipe-card
 nx g @nx/angular:library libs/web/recipes/ui --tags=type:ui,scope:recipes
+
+# Backend (from the root)
+dotnet run --project apps/api --launch-profile https                          # API on https://localhost:7288 (/health, /scalar)
+dotnet watch run --project apps/api/RecipEBook.Api.csproj --launch-profile https  # same, with hot reload
+npm exec nx -- run RecipEBook.Api:run --launch-profile=https                   # same, through Nx
+npm exec nx -- test RecipEBook.Api.IntegrationTests                           # integration tests (or `dotnet test`)
 
 # Backend (EF Core, from the root)
 dotnet ef migrations add <Name> --project apps/api

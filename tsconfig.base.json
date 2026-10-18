@@ -14,7 +14,18 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": false,
-    "paths": {}
+    "paths": {
+      "@recip-e-book/web-recipes-feature": [
+        "./libs/web/recipes/feature/src/index.ts"
+      ],
+      "@recip-e-book/web-recipes-data-access": [
+        "./libs/web/recipes/data-access/src/index.ts"
+      ],
+      "@recip-e-book/web-recipes-ui": ["./libs/web/recipes/ui/src/index.ts"],
+      "@recip-e-book/web-shared-ui": ["./libs/web/shared/ui/src/index.ts"],
+      "@recip-e-book/web-shared-i18n": ["./libs/web/shared/i18n/src/index.ts"],
+      "@recip-e-book/web-shared-util": ["./libs/web/shared/util/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

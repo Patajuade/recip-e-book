@@ -548,3 +548,5 @@ $RECYCLE.BIN/
 # Postman VS Code extension (local workspace files)
 /.postman/
 /postman/
+
+__screenshots__/

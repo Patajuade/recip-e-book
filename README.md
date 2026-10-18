@@ -34,7 +34,7 @@ A web app to **write down and browse my recipes**, like a personal cookbook.
 - List my recipes, search by title or tag.
 - View a recipe's details.
 - Edit / delete a recipe.
-- **Multilingual English / French** UI, with on-the-fly language switching.
+- **Multilingual English / French** UI (one build per language, a language switcher links to the other one).
 
 **Out of MVP (bonus, see phase 10)**: multi-user authentication, photos, favorites, serving scaling, import from URL, offline PWA, deployment.
 
@@ -72,24 +72,24 @@ Therefore:
 
 ### Frontend
 
-| Topic                  | Choice                                                                                                                                      | Why                                                                                                                                                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Framework              | **Angular** (latest stable, ≥ 21)                                                                                                           |                                                                                                                                                                                                             |
-| Components             | **Standalone** only (no NgModule)                                                                                                           | Current standard                                                                                                                                                                                            |
-| Reactivity             | **Signals** (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`)                                                              | Angular's future, close to the hooks mental model                                                                                                                                                           |
-| Change detection       | **Zoneless**                                                                                                                                | Default for new recent Angular apps                                                                                                                                                                         |
-| Templates              | **Control flow** `@if` / `@for` / `@switch`, `@defer`                                                                                       | Replaces `*ngIf` / `*ngFor`                                                                                                                                                                                 |
-| Injection              | **`inject()`** function                                                                                                                     | No more bloated constructors                                                                                                                                                                                |
-| Server data            | **TanStack Query** for Angular (`@tanstack/angular-query-experimental`): `injectQuery`, `injectMutation`. Query functions call `HttpClient` | Already familiar. Provides caching and post-mutation invalidation, which `httpResource()` (native) does not. ⚠️ Adapter flagged _experimental_ (breaking changes possible even in patches): pin the version |
-| Forms                  | **Typed Reactive Forms** (`FormBuilder`, `FormArray`). _Signal Forms_ to evaluate if stable in the version used                             | FormArrays are perfect for ingredient/step lists                                                                                                                                                            |
-| Global state           | Services + signals. The TanStack cache covers server state                                                                                  | No need for Redux in a CRUD app                                                                                                                                                                             |
-| Styling                | **Tailwind CSS v4**                                                                                                                         | Already familiar                                                                                                                                                                                            |
-| Headless components    | **Angular CDK** (dialog, overlay, drag & drop, a11y). Angular Aria to evaluate if available                                                 | Behavior and accessibility provided, 100% Tailwind styling                                                                                                                                                  |
-| i18n                   | **Transloco** (`@jsverse/transloco`): `en.json` / `fr.json` files, runtime language switching                                               | Angular's native i18n (`@angular/localize`) translates at build time: one build per language and a page reload to switch                                                                                    |
-| Date/number formatting | Angular locale data (`registerLocaleData`) + `date` / `number` pipes bound to the active language (or `@jsverse/transloco-locale`)          | "17 oct. 2026" vs "Oct 17, 2026"                                                                                                                                                                            |
-| Tests                  | **Vitest** + optionally Angular Testing Library                                                                                             | Familiar coming from React                                                                                                                                                                                  |
-| Quality                | ESLint (Nx config + `angular-eslint`) + Prettier                                                                                            |                                                                                                                                                                                                             |
-| Style guide            | Recent naming conventions (`recipe-list.ts` instead of `recipe-list.component.ts`)                                                          | Current official style guide                                                                                                                                                                                |
+| Topic                  | Choice                                                                                                                                                                                                                                                         | Why                                                                                                                                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework              | **Angular** (latest stable, ≥ 21)                                                                                                                                                                                                                              |                                                                                                                                                                                                             |
+| Components             | **Standalone** only (no NgModule)                                                                                                                                                                                                                              | Current standard                                                                                                                                                                                            |
+| Reactivity             | **Signals** (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`)                                                                                                                                                                                 | Angular's future, close to the hooks mental model                                                                                                                                                           |
+| Change detection       | **Zoneless**                                                                                                                                                                                                                                                   | Default for new recent Angular apps                                                                                                                                                                         |
+| Templates              | **Control flow** `@if` / `@for` / `@switch`, `@defer`                                                                                                                                                                                                          | Replaces `*ngIf` / `*ngFor`                                                                                                                                                                                 |
+| Injection              | **`inject()`** function                                                                                                                                                                                                                                        | No more bloated constructors                                                                                                                                                                                |
+| Server data            | **TanStack Query** for Angular (`@tanstack/angular-query-experimental`): `injectQuery`, `injectMutation`. Query functions call `HttpClient`                                                                                                                    | Already familiar. Provides caching and post-mutation invalidation, which `httpResource()` (native) does not. ⚠️ Adapter flagged _experimental_ (breaking changes possible even in patches): pin the version |
+| Forms                  | **Typed Reactive Forms** (`FormBuilder`, `FormArray`). _Signal Forms_ to evaluate if stable in the version used                                                                                                                                                | FormArrays are perfect for ingredient/step lists                                                                                                                                                            |
+| Global state           | Services + signals. The TanStack cache covers server state                                                                                                                                                                                                     | No need for Redux in a CRUD app                                                                                                                                                                             |
+| Styling                | **Tailwind CSS v4**                                                                                                                                                                                                                                            | Already familiar                                                                                                                                                                                            |
+| Headless components    | **Angular CDK** (dialog, overlay, drag & drop, a11y). Angular Aria to evaluate if available                                                                                                                                                                    | Behavior and accessibility provided, 100% Tailwind styling                                                                                                                                                  |
+| i18n                   | **Angular i18n** (`@angular/localize`): `i18n` attributes / `$localize`, XLIFF 1.2 files, source `en-US`, translated `fr`. Translated at build time: one copy of the app per locale (`/en-US/`, `/fr/`), switching = navigating to the other one (page reload) | Official Angular tool, nothing to load at runtime ([guide](https://angular.dev/guide/i18n)). Developer's choice over Transloco (runtime switching, third-party)                                             |
+| Date/number formatting | `date` / `number` pipes use `LOCALE_ID`; each localized build includes its locale data                                                                                                                                                                         | "17 oct. 2026" vs "Oct 17, 2026"                                                                                                                                                                            |
+| Tests                  | **Vitest** + optionally Angular Testing Library                                                                                                                                                                                                                | Familiar coming from React                                                                                                                                                                                  |
+| Quality                | ESLint (Nx config + `angular-eslint`) + Prettier                                                                                                                                                                                                               |                                                                                                                                                                                                             |
+| Style guide            | Recent naming conventions (`recipe-list.ts` instead of `recipe-list.component.ts`)                                                                                                                                                                             | Current official style guide                                                                                                                                                                                |
 
 ### Backend
 
@@ -109,7 +109,7 @@ Therefore:
 ### Frontend ↔ backend glue
 
 - In dev, the **Angular dev server proxy** forwards `/api/*` to the .NET API → no CORS issues.
-- An HTTP interceptor adds the `Accept-Language` header based on the active language.
+- An HTTP interceptor adds the `Accept-Language` header based on the locale of the current build.
 - Phase 9: **TypeScript type generation** from the OpenAPI document (e.g. `openapi-typescript`), exposed as an Nx task, so types aren't written twice.
 
 ---
@@ -132,7 +132,7 @@ recip-e-book/
 ├── apps/
 │   ├── web/                        ← Angular app (shell): app.config.ts, app.routes.ts, layout
 │   │   ├── proxy.conf.json
-│   │   ├── public/i18n/            ← en.json, fr.json
+│   │   ├── src/locale/             ← messages.xlf (extracted, en-US), messages.fr.xlf (French translations)
 │   │   └── src/
 │   ├── api/                        ← RecipEBook.Api.csproj
 │   │   ├── Program.cs
@@ -151,7 +151,7 @@ recip-e-book/
         │   └── ui/                 ← presentational components: recipe-card, ingredient-list…
         └── shared/
             ├── ui/                 ← generic Tailwind components: button, input, dialog, tag-chip…
-            ├── i18n/               ← Transloco config, language switcher, Accept-Language interceptor
+            ├── i18n/               ← language switcher, Accept-Language interceptor
             └── util/               ← pipes (duration), helpers
 ```
 
@@ -173,7 +173,7 @@ Enforced by `@nx/enforce-module-boundaries` in the root `eslint.config.mjs` ([do
 
 - **Frontend**: split between _feature_ (pages, data-connected, routed) and _ui_ (presentational, only `input()` / `output()`). Feature routes are **lazy loaded** (`loadChildren`).
 - **Data**: each `data-access` lib exposes TanStack _query options_ and _mutations_ (centralized query keys, e.g. `['recipes', 'list', filters]`). Components never make direct HTTP calls.
-- **i18n**: no hardcoded UI text in templates, everything goes through Transloco keys (`recipes.list.title`).
+- **i18n**: every UI text is marked for translation (`i18n` attribute in templates, `$localize` in code) with a custom ID (`@@recipes.list.title`), so IDs stay stable when the English text changes ([prepare for translation](https://angular.dev/guide/i18n/prepare)).
 - **Backend**: each file in `Features/Recipes` holds a complete use case (request DTO, handler, response DTO). Entities **never** leave the API: we return DTOs.
 - **CQRS (basic level: separate models, single data store)**, as described in the [CQRS pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs) ("Separate models in a single data store"):
   - each use case file is **either a query or a command**, named after it (`ListRecipes`, `GetRecipe` = queries; `CreateRecipe`, `UpdateRecipe`, `DeleteRecipe` = commands);
@@ -286,7 +286,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 **Tasks:** [Phase 5 milestone](https://github.com/Patajuade/recip-e-book/milestone/6)
 
 - **Concepts**: `app.config.ts` (providers), bootstrap, router, standalone components, DI, functional interceptors, Nx Angular libs.
-- **Validation**: `nx serve web` shows the Tailwind-styled layout, navigation works, switching EN ↔ FR updates the UI without a page reload.
+- **Validation**: `nx serve web` shows the Tailwind-styled layout, navigation works, the French build (`nx serve web --configuration=fr`) shows the UI in French.
 
 ### Phase 6 — Browse recipes
 
@@ -334,7 +334,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-17 — Initial stack and plan defined (this document).
 - 2026-10-17 — **Nx** chosen (official `@nx/angular` + `@nx/dotnet` plugins) over the plain Angular CLI: already familiar tool.
 - 2026-10-17 — **Tailwind v4 + Angular CDK** over Angular Material: Tailwind already familiar, the CDK provides behavior without imposing styles.
-- 2026-10-17 — **EN/FR i18n with Transloco** (runtime) over `@angular/localize` (one build per language).
+- 2026-10-17 — **EN/FR i18n with Transloco** (runtime) over `@angular/localize` (one build per language). _Replaced on 2026-10-18, see below._
 - 2026-10-17 — **TanStack Query (Angular adapter)** over `httpResource()` alone: already familiar, handles caching and invalidation. Adapter still _experimental_ → pinned version.
 - 2026-10-17 — **Documentation and commits in English**; conversation with the agent in French.
 - 2026-10-17 — **Kanban on GitHub Projects** (over Notion): issues link to commits/PRs and everything stays in the repo.
@@ -358,6 +358,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-18 — **Search on a normalized `SearchTitle`** (#15): SQLite only folds the case of ASCII letters, so titles are also stored lowercase and accent-free for searching.
 - 2026-10-18 — **UTC `DateTime` converter** (#16): SQLite doesn't keep `DateTime.Kind`; a value converter marks dates read from the database as UTC, so the API returns them with a `Z` ([value conversions](https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions#specify-the-datetimekind-when-reading-dates)).
 - 2026-10-18 — **Frontend libs** (#24): the six section-4 libs are generated with `@nx/angular:library`. Project names include the folder path (`web-recipes-ui`, `web-shared-ui`…) because two libs are called `ui`; import paths follow (`@recip-e-book/web-recipes-ui`). Default selector prefix `lib`. `shared/i18n` is tagged `type:util` so every layer can use it. No unit test runner in libs for now (`--unitTestRunner=none`): the frontend test setup is chosen in phase 9. Lint targets converted to the inferred plugin (`convert-to-inferred`), as for the app. The feature / ui / data-access / util split is an **Nx convention** ([Tag in Multiple Dimensions](https://nx.dev/docs/guides/enforce-module-boundaries/tag-multiple-dimensions)), not an Angular one: the [Angular style guide](https://angular.dev/style-guide) only asks to organize code by feature area. Kept on purpose (developer's choice) so that ESLint enforces the layers instead of relying on folder conventions.
+- 2026-10-18 — **Angular i18n (`@angular/localize`) instead of Transloco** (#25, developer's choice: prefer the official tool). Source locale `en-US`, translated locale `fr`, XLIFF 1.2 (default format). Translated at build time: switching language reloads the page on the other locale's subdirectory; the dev server serves one locale at a time (`nx serve web` = English, `--configuration=fr` = French). Set up by running Angular's own `ng-add` schematic through Nx (`nx g @angular/localize:ng-add --project=web`), then the `i18n` / `localize` options from [Merge translations](https://angular.dev/guide/i18n/merge) (`localize: true` only in the `production` configuration) and an `extract-i18n` target using `@angular/build:extract-i18n`.
 
 ### Session log
 
@@ -423,7 +424,7 @@ If you're a Claude agent picking up this project:
    - The plan in this README and the planning issues were written from memory: treat API names and commands there as hints to verify, not as instructions.
    - When the docs are missing, ambiguous or contradict the actual tool behavior, or a workaround seems needed: **stop and ask the developer**. Never guess a flag or an option.
    - Check the actually installed versions: these tools move fast.
-6. **i18n**: every new UI string needs its key in both `en.json` **and** `fr.json`.
+6. **i18n**: every new UI string is marked with `i18n` / `$localize` and a custom ID; run `nx extract-i18n web`, then add its French `<target>` to `apps/web/src/locale/messages.fr.xlf`.
 7. **Nx**: generate apps and libs with Nx generators (not by hand), respect tags and module boundaries.
 8. **Git**:
    - Always start from an up-to-date `main`. One branch per issue: `<type>/<issue>-<short-slug>` (`feat`, `fix`, `chore`, `docs`, `test`, `refactor`).
@@ -455,7 +456,7 @@ If you're a Claude agent picking up this project:
 | `useQuery` / `useMutation` (TanStack)           | `injectQuery` / `injectMutation` (same lib, results exposed as signals: `query.data()`, `query.isPending()`) |
 | `fetch` / axios                                 | `HttpClient` (returns Observables, converted to Promises for TanStack)                                       |
 | react-hook-form                                 | Reactive Forms (`FormGroup`, `FormArray`) / Signal Forms                                                     |
-| react-i18next `t('key')`                        | Transloco: `*transloco="let t"` then `t('key')`, or the `'key' \| transloco` pipe                            |
+| react-i18next `t('key')`                        | `<h1 i18n="@@key">Text</h1>` in templates, `` $localize`:@@key:Text` `` in code (translated at build time)   |
 | `{cond && <X/>}`                                | `@if (cond) { <x /> }`                                                                                       |
 | `list.map(i => <X key={i.id}/>)`                | `@for (i of list(); track i.id) { <x /> }`                                                                   |
 | `React.lazy` + `Suspense`                       | `loadComponent` in routes, `@defer` in templates                                                             |
@@ -481,7 +482,10 @@ nx run-many -t serve                    # run frontend + backend
 nx affected -t lint test build          # what CI runs
 
 # Frontend
-nx serve web
+nx serve web                            # English (source locale)
+nx serve web --configuration=fr         # French (the dev server serves one locale at a time)
+nx build web                            # production: one copy per locale in dist/apps/web/browser/{en-US,fr}
+nx extract-i18n web                     # update apps/web/src/locale/messages.xlf after marking texts with i18n
 nx test web
 nx g @nx/angular:component libs/web/recipes/ui/src/lib/recipe-card/recipe-card
 nx g @nx/angular:library libs/web/recipes/ui --tags=type:ui,scope:recipes

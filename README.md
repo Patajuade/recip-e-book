@@ -108,7 +108,7 @@ Therefore:
 
 ### Frontend ↔ backend glue
 
-- In dev, the **Angular dev server proxy** forwards `/api/*` to the .NET API → no CORS issues.
+- In dev, the **Angular dev server proxy** forwards `/api/**` to the .NET API (`apps/web/src/proxy.conf.json`, [docs](https://angular.dev/tools/cli/serve#proxying-to-a-backend-server)) → the browser only talks to the dev server, no CORS issues. The API must run with the `https` launch profile.
 - An HTTP interceptor adds the `Accept-Language` header based on the locale of the current build.
 - Phase 9: **TypeScript type generation** from the OpenAPI document (e.g. `openapi-typescript`), exposed as an Nx task, so types aren't written twice.
 
@@ -131,9 +131,9 @@ recip-e-book/
 ├── docs/decisions/                 ← short decision records (ADRs) if needed
 ├── apps/
 │   ├── web/                        ← Angular app (shell): app.config.ts, app.routes.ts, layout
-│   │   ├── proxy.conf.json
-│   │   ├── src/locale/             ← messages.xlf (extracted, en-US), messages.fr.xlf (French translations)
 │   │   └── src/
+│   │       ├── proxy.conf.json     ← dev server proxy: /api/** → https://localhost:7288
+│   │       └── locale/             ← messages.xlf (extracted, en-US), messages.fr.xlf (French translations)
 │   ├── api/                        ← RecipEBook.Api.csproj
 │   │   ├── Program.cs
 │   │   ├── Domain/                 ← entities: Recipe, Ingredient, RecipeStep, Tag
@@ -360,6 +360,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-18 — **Frontend libs** (#24): the six section-4 libs are generated with `@nx/angular:library`. Project names include the folder path (`web-recipes-ui`, `web-shared-ui`…) because two libs are called `ui`; import paths follow (`@recip-e-book/web-recipes-ui`). Default selector prefix `lib`. `shared/i18n` is tagged `type:util` so every layer can use it. No unit test runner in libs for now (`--unitTestRunner=none`): the frontend test setup is chosen in phase 9. Lint targets converted to the inferred plugin (`convert-to-inferred`), as for the app. The feature / ui / data-access / util split is an **Nx convention** ([Tag in Multiple Dimensions](https://nx.dev/docs/guides/enforce-module-boundaries/tag-multiple-dimensions)), not an Angular one: the [Angular style guide](https://angular.dev/style-guide) only asks to organize code by feature area. Kept on purpose (developer's choice) so that ESLint enforces the layers instead of relying on folder conventions.
 - 2026-10-18 — **Angular i18n (`@angular/localize`) instead of Transloco** (#25, developer's choice: prefer the official tool). Source locale `en-US`, translated locale `fr`, XLIFF 1.2 (default format). Translated at build time: switching language reloads the page on the other locale's subdirectory; the dev server serves one locale at a time (`nx serve web` = English, `--configuration=fr` = French). Set up by running Angular's own `ng-add` schematic through Nx (`nx g @angular/localize:ng-add --project=web`), then the `i18n` / `localize` options from [Merge translations](https://angular.dev/guide/i18n/merge) (`localize: true` only in the `production` configuration) and an `extract-i18n` target using `@angular/build:extract-i18n`.
 - 2026-10-18 — **Angular resources instead of TanStack Query** (#26, developer's choice: prefer the official tool). `httpResource()`, `resource()` and `rxResource()` are stable since Angular 22, while `@tanstack/angular-query-experimental` is still experimental ("breaking changes will happen in minor AND patch releases"). Reads use `httpResource()`; writes use `HttpClient`, as the docs advise ("Avoid using httpResource for mutations like POST or PUT"). `HttpClient` needs no setup: it "is available for injection by default in Angular v21 and later" and uses `fetch` by default ([setup](https://angular.dev/guide/http/setup)); `provideHttpClient(withInterceptors(...))` is only added with the first interceptor (#27). Trade-off: no shared cache, writes reload the affected resources. **Revisit when the app grows** (multi-user, companion app #92): the fetching strategy is contained in `data-access` libs.
+- 2026-10-18 — **Dev proxy targets the HTTPS endpoint** (#28): `/api/**` → `https://localhost:7288` with `"secure": false` (as in the [Angular example](https://angular.dev/tools/cli/serve#proxying-to-a-backend-server); the dev certificate is trusted by Windows, not by Node). Targeting `http://localhost:5047` would break with the `https` profile: `UseHttpsRedirection` answers `307` to the HTTPS port and the browser would leave the dev server. Frontend and backend run in two terminals: the inferred `RecipEBook.Api:watch` target uses the default (`http`) profile, and the planned `nx run-many -t serve` doesn't apply (the API has no `serve` target).
 
 ### Session log
 
@@ -482,6 +483,10 @@ nx show projects                        # detected projects
 nx show project <name>                  # inferred tasks of a project
 nx run-many -t serve                    # run frontend + backend
 nx affected -t lint test build          # what CI runs
+
+# Frontend + backend in dev: two terminals
+dotnet watch run --project apps/api/RecipEBook.Api.csproj --launch-profile https   # 1. API on https://localhost:7288
+nx serve web                                                                       # 2. app on http://localhost:4200, /api/** proxied to the API
 
 # Frontend
 nx serve web                            # English (source locale)

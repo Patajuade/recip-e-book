@@ -7,7 +7,7 @@ using RecipEBook.Api.Infrastructure.Persistence;
 namespace RecipEBook.Api.Features.Recipes;
 
 /// <summary>
-/// GET /api/recipes?search=&amp;tag= : recipe summaries, most recently updated first.
+/// Query — GET /api/recipes?search=&amp;tag=: recipe summaries, most recently updated first.
 /// </summary>
 public static class ListRecipes
 {

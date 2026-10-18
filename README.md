@@ -173,7 +173,13 @@ Plus `scope:recipes` / `scope:shared`: a `scope:recipes` lib can import `scope:s
 - **Data**: each `data-access` lib exposes TanStack _query options_ and _mutations_ (centralized query keys, e.g. `['recipes', 'list', filters]`). Components never make direct HTTP calls.
 - **i18n**: no hardcoded UI text in templates, everything goes through Transloco keys (`recipes.list.title`).
 - **Backend**: each file in `Features/Recipes` holds a complete use case (request DTO, handler, response DTO). Entities **never** leave the API: we return DTOs.
-- **No premature abstraction**: no generic repository on top of EF Core (the `DbContext` already is a unit of work), no MediatR.
+- **CQRS (basic level: separate models, single data store)**, as described in the [CQRS pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs) ("Separate models in a single data store"):
+  - each use case file is **either a query or a command**, named after it (`ListRecipes`, `GetRecipe` = queries; `CreateRecipe`, `UpdateRecipe`, `DeleteRecipe` = commands);
+  - **queries** "never alter data": they return read DTOs built by projection (`Select`), no domain logic, no tracked entity;
+  - **commands** express a business intent, take their own request model (never a read DTO), validate it, change entities and save; they return only what the client needs (e.g. `201 Created` + `Location`, `204 No Content`);
+  - read and write models live in separate types, even when they look alike.
+- **No premature abstraction**: no generic repository on top of EF Core (the `DbContext` already is a unit of work), no MediatR (handlers are plain static methods mapped by Minimal APIs).
+- **Dates are UTC everywhere** (stored and returned with a `Z`); conversion to local time only happens in the UI.
 
 ---
 
@@ -346,6 +352,9 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-18 — **Scalar** as the OpenAPI UI (documented by Microsoft next to Swagger UI and ReDoc); the OpenAPI document itself comes from the built-in `Microsoft.AspNetCore.OpenApi` (Swashbuckle left the templates in .NET 9, see dotnet/aspnetcore#54599).
 - 2026-10-18 — **Health check on `/health`** (the docs' example uses `/healthz`; `/health` matches section 5). The `/api` route group is created with the first real endpoint (#15) instead of an empty group in #9.
 - 2026-10-18 — **Postman local files ignored** (`/.postman/`, `/postman/`): they're created by the Postman VS Code extension and not shared (#82).
+- 2026-10-18 — **CQRS at the basic level, without MediatR** (developer's request): queries and commands are separate use cases with separate read/write models, in a single SQLite database (see section 4). MediatR isn't used: Minimal API handlers already give one file per use case, and MediatR moved to a dual open-source/commercial license in July 2025.
+- 2026-10-18 — **Search on a normalized `SearchTitle`** (#15): SQLite only folds the case of ASCII letters, so titles are also stored lowercase and accent-free for searching.
+- 2026-10-18 — **UTC `DateTime` converter** (#16): SQLite doesn't keep `DateTime.Kind`; a value converter marks dates read from the database as UTC, so the API returns them with a `Z` ([value conversions](https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions#specify-the-datetimekind-when-reading-dates)).
 
 ### Session log
 

@@ -19,3 +19,8 @@ GET {{RecipEBook.Api_HostAddress}}/api/recipes?search=LEGUMES
 GET {{RecipEBook.Api_HostAddress}}/api/recipes?tag=dessert
 
 ###
+
+# One recipe (replace the id with one returned by the list); unknown id → 404
+GET {{RecipEBook.Api_HostAddress}}/api/recipes/00000000-0000-0000-0000-000000000000
+
+###

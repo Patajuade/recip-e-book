@@ -476,7 +476,8 @@ npm exec nx -- test RecipEBook.Api.IntegrationTests                           # 
 
 # Backend (EF Core, from the root; database file: apps/api/recipebook.db, git-ignored)
 dotnet ef migrations add <Name> --project apps/api --output-dir Infrastructure/Persistence/Migrations  # after a model change
-dotnet ef database update --project apps/api           # create/upgrade the local database (also after pulling new migrations)
+dotnet ef database update --project apps/api           # create/upgrade the local database (also after pulling new migrations); in Development it also inserts the demo recipes if the database has none
+# If `database update` hangs, a previous run was killed and left an abandoned lock: run `DELETE FROM "__EFMigrationsLock";` on apps/api/recipebook.db (https://learn.microsoft.com/en-us/ef/core/providers/sqlite/limitations#concurrent-migrations-protection)
 dotnet ef migrations has-pending-model-changes --project apps/api  # model changed without a migration?
 dotnet ef migrations remove --project apps/api          # undo the last, not yet applied, migration
 ```

@@ -5,6 +5,14 @@
   "prefix": "app",
   "sourceRoot": "apps/web/src",
   "tags": ["type:app"],
+  "i18n": {
+    "sourceLocale": "en-US",
+    "locales": {
+      "fr": {
+        "translation": "apps/web/src/locale/messages.fr.xlf"
+      }
+    }
+  },
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -20,7 +28,8 @@
             "input": "apps/web/public"
           }
         ],
-        "styles": ["apps/web/src/styles.css"]
+        "styles": ["apps/web/src/styles.css"],
+        "polyfills": ["@angular/localize/init"]
       },
       "configurations": {
         "production": {
@@ -36,12 +45,16 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "localize": true
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "fr": {
+          "localize": ["fr"]
         }
       }
     },
@@ -55,7 +68,17 @@
         },
         "development": {
           "buildTarget": "web:build:development"
+        },
+        "fr": {
+          "buildTarget": "web:build:development,fr"
         }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "web:build",
+        "outputPath": "apps/web/src/locale"
       }
     },
     "lint": {

@@ -1,1 +1,1 @@
-export * from './lib/web-recipes-data-access/web-recipes-data-access';
+export * from './lib/recipe-models';

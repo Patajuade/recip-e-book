@@ -374,6 +374,48 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - Open questions: …
 -->
 
+#### 2026-10-18 / 19 — Phase 5
+
+- Done:
+  - #22 Angular app `apps/web`, generated with explicit flags (Vitest via `@angular/build:unit-test`, no SSR, no e2e), lint target converted to the inferred plugin (PR #96).
+  - #23 Tailwind v4 (PR #97).
+  - #24 six libs with `type:`/`scope:` tags and `@nx/enforce-module-boundaries` rules (PR #98).
+  - #26 data fetching with Angular resources (`httpResource()`) + `HttpClient` instead of TanStack Query (PR #100, docs only).
+  - #27 `Accept-Language` interceptor (PR #101).
+  - #28 dev proxy `/api/**` → `https://localhost:7288` (PR #102).
+  - #30 routing with lazy-loaded recipes feature, 404 page, `withComponentInputBinding()` (PR #103).
+  - #29 layout with header, navigation and language switcher; `nx-welcome` removed (PR #104).
+  - i18n: #25 Angular i18n with one build per locale (PR #99), then replaced by **Transloco v8** in #105 (PR #106), because build-time i18n was too constraining.
+- Learned:
+  - Nx lib types and module boundaries (Nx convention, not Angular's);
+  - standalone components: `imports`, `input()` / `input.required()`, signals, `@if` / `@for` with `track`;
+  - template bindings: `[prop]`, `[attr.x]`, `[class.x]`, `(event)`;
+  - router: `loadChildren`, route order, `redirectTo` + `pathMatch: 'full'`, `**`, `title`, `routerLink` / `routerLinkActive`, `<router-outlet>`;
+  - functional interceptors and `inject()`;
+  - Angular build-time i18n vs runtime i18n (Transloco: `*transloco="let t"`, `setActiveLang`, signals API, persist-lang);
+  - custom `TitleStrategy`, `provideEnvironmentInitializer`;
+  - the Vite-based dev server proxy;
+  - `UseHttpsRedirection` and launch profiles.
+- Next step: phase 6, starting with #31 (TS models + `RecipeApi`) and #32 (read resources with `httpResource()`).
+- Open questions:
+  - date formatting for the active language (#35: Transloco Locale l10n plugin or Angular locale data);
+  - libs have no unit test runner yet (decide in phase 9, #49; the interceptor test is noted there);
+  - in the agent's shell only, remove `NX_WORKSPACE_ROOT_PATH` before Nx commands (lowercase drive letter breaks Vitest).
+
+#### 2026-10-18 — Phase 4 (reads)
+
+- Done: #15 `GET /api/recipes` with accent-insensitive title search (normalized `SearchTitle` column) and tag filter (PR #94). #16 `GET /api/recipes/{id}` with `Results<Ok<T>, NotFound>` (PR #95). Long-term vision added to the README (PR #93: multi-user, database migration, companion app; issues #53, #91, #92).
+- Learned: Minimal API route groups and extension methods, `TypedResults`, route constraints (`{id:guid}`); CQRS at the basic level (queries project to read DTOs, no MediatR); C# `record`, `static`, primary constructors; SQLite limits (case folding for ASCII only, no APPLY for projections of JSON collections → load the columns, then map in memory).
+- Next step: the write endpoints (#17–#21) are postponed until after the frontend foundations, at the developer's request (the read endpoints are enough for phase 6).
+- Open questions: tag name normalization when creating recipes (#17/#20); demo seeding vs integration tests (#21).
+
+#### 2026-10-18 — Phase 3
+
+- Done: #11 domain entities `Recipe`, `Tag`, `Ingredient`, `RecipeStep` (PR #87). #12 `AppDbContext` and entity configurations (PR #88). #13 SQLite connection and initial migration (PR #89). #14 idempotent demo recipes in development with `UseSeeding` / `UseAsyncSeeding` (PR #90).
+- Learned: code-first EF Core; complex types stored as JSON (`ComplexCollection(...).ToJson()`); skip-navigation many-to-many; `IEntityTypeConfiguration` + `ApplyConfigurationsFromAssembly`; migrations with the local `dotnet ef` tool; value converters (UTC dates); connection strings and secrets (no secret in config files: user-secrets in dev, environment variables in prod, step added to #60).
+- Next step: phase 4 (#15, #16).
+- Open questions: killing `dotnet ef` mid-run leaves an abandoned `__EFMigrationsLock` row (fix in section 10).
+
 #### 2026-10-18 — Phase 2
 
 - Done: #79 whole repo formatted with Prettier (PR #80). #8 `nx add @nx/dotnet`, `RecipEBook.slnx`, API and integration test projects (PR #81). #9 Scalar, ProblemDetails (`AddProblemDetails` + `UseExceptionHandler` + `UseStatusCodePages`), `/health`, weather sample removed (PR #84, `Program.cs` written by the developer). #82 Postman files ignored (PR #83). #10 first integration test with `WebApplicationFactory<Program>` (PR #85).

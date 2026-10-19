@@ -7,21 +7,21 @@ export const recipesRoutes: Routes = [
   {
     path: '',
     component: RecipeList,
-    title: $localize`:@@recipes.list.pageTitle:Recipes`,
+    title: 'recipes.list.pageTitle',
   },
   {
     path: 'new',
     component: RecipeEdit,
-    title: $localize`:@@recipes.new.pageTitle:New recipe`,
+    title: 'recipes.new.pageTitle',
   },
   {
     path: ':id',
     component: RecipeDetail,
-    title: $localize`:@@recipes.detail.pageTitle:Recipe`,
+    title: 'recipes.detail.pageTitle',
   },
   {
     path: ':id/edit',
     component: RecipeEdit,
-    title: $localize`:@@recipes.edit.pageTitle:Edit recipe`,
+    title: 'recipes.edit.pageTitle',
   },
 ];

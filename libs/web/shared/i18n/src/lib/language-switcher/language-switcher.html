@@ -1,16 +1,17 @@
-<nav aria-label="Language" i18n-aria-label="@@languageSwitcher.label">
+<nav *transloco="let t" [attr.aria-label]="t('languageSwitcher.label')">
   <ul class="flex gap-1">
-    @for (locale of locales; track locale.id) {
+    @for (language of languages; track language.id) {
     <li>
-      <a
+      <button
+        type="button"
         class="rounded px-2 py-1 text-sm hover:bg-stone-100"
-        [class.font-semibold]="locale.id === currentLocale"
-        [attr.aria-current]="locale.id === currentLocale ? 'true' : null"
-        [href]="locale.href"
-        [attr.hreflang]="locale.id"
-        [attr.lang]="locale.id"
-        >{{ locale.label }}</a
+        [class.font-semibold]="language.id === activeLang()"
+        [attr.aria-pressed]="language.id === activeLang()"
+        [attr.lang]="language.id"
+        (click)="select(language.id)"
       >
+        {{ language.label }}
+      </button>
     </li>
     }
   </ul>

@@ -1,5 +1,33 @@
 <section *transloco="let t">
   <h1 class="mb-4 text-2xl font-bold">{{ t('recipes.list.heading') }}</h1>
+  <div class="mb-4 flex flex-wrap items-end gap-4">
+    <label class="flex flex-col gap-1 text-sm">
+      {{ t('recipes.list.searchLabel') }}
+      <input
+        #searchBox
+        type="search"
+        class="rounded border border-stone-300 px-3 py-1.5"
+        [placeholder]="t('recipes.list.searchPlaceholder')"
+        [value]="search() ?? ''"
+        (input)="onSearch(searchBox.value)"
+      />
+    </label>
+
+    @if (tag(); as activeTag) {
+      <p class="flex items-center gap-2 text-sm">
+        <span class="rounded-full bg-stone-200 px-2 py-0.5">
+          {{ t('recipes.list.tagFilter', { tag: activeTag }) }}
+        </span>
+        <a
+          [routerLink]="['/recipes']"
+          [queryParams]="{ tag: null }"
+          queryParamsHandling="merge"
+          class="underline"
+          >{{ t('recipes.list.clearTag') }}</a
+        >
+      </p>
+    }
+  </div>
 
   @if (recipes.isLoading()) {
     <p class="text-stone-600">{{ t('recipes.list.loading') }}</p>
@@ -16,7 +44,11 @@
     </div>
   } @else if (recipes.hasValue()) {
     @if (recipes.value().length === 0) {
-      <p class="text-stone-600">{{ t('recipes.list.empty') }}</p>
+      <p class="text-stone-600">
+        {{
+          t(search() || tag() ? 'recipes.list.noResults' : 'recipes.list.empty')
+        }}
+      </p>
     } @else {
       <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @for (recipe of recipes.value(); track recipe.id) {

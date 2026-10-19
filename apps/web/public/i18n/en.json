@@ -22,7 +22,12 @@
       "loading": "Loading recipes…",
       "error": "Couldn't load the recipes.",
       "retry": "Retry",
-      "empty": "No recipes yet."
+      "empty": "No recipes yet.",
+      "searchLabel": "Search by title",
+      "searchPlaceholder": "e.g. soup",
+      "tagFilter": "Tag: {{tag}}",
+      "clearTag": "Show all",
+      "noResults": "No recipe matches your search."
     },
     "new": {
       "pageTitle": "New recipe",

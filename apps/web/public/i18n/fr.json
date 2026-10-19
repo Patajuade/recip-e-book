@@ -1,20 +1,43 @@
 {
   "layout": {
-    "mainNav": { "label": "Principale" },
-    "nav": { "recipes": "Recettes", "newRecipe": "Nouvelle recette" }
+    "mainNav": {
+      "label": "Principale"
+    },
+    "nav": {
+      "recipes": "Recettes",
+      "newRecipe": "Nouvelle recette"
+    }
   },
-  "languageSwitcher": { "label": "Langue" },
+  "languageSwitcher": {
+    "label": "Langue"
+  },
   "notFound": {
     "pageTitle": "Page introuvable",
     "heading": "Page introuvable"
   },
   "recipes": {
-    "list": { "pageTitle": "Recettes", "heading": "Recettes" },
-    "new": { "pageTitle": "Nouvelle recette", "heading": "Nouvelle recette" },
-    "detail": { "pageTitle": "Recette", "heading": "Recette {{id}}" },
+    "list": {
+      "pageTitle": "Recettes",
+      "heading": "Recettes",
+      "loading": "Chargement des recettes…",
+      "error": "Impossible de charger les recettes.",
+      "retry": "Réessayer",
+      "empty": "Aucune recette pour l'instant."
+    },
+    "new": {
+      "pageTitle": "Nouvelle recette",
+      "heading": "Nouvelle recette"
+    },
+    "detail": {
+      "pageTitle": "Recette",
+      "heading": "Recette {{id}}"
+    },
     "edit": {
       "pageTitle": "Modifier la recette",
       "heading": "Modifier la recette {{id}}"
+    },
+    "card": {
+      "totalTime": "{{minutes}} min"
     }
   }
 }

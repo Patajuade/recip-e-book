@@ -1,0 +1,17 @@
+<nav aria-label="Language" i18n-aria-label="@@languageSwitcher.label">
+  <ul class="flex gap-1">
+    @for (locale of locales; track locale.id) {
+    <li>
+      <a
+        class="rounded px-2 py-1 text-sm hover:bg-stone-100"
+        [class.font-semibold]="locale.id === currentLocale"
+        [attr.aria-current]="locale.id === currentLocale ? 'true' : null"
+        [href]="locale.href"
+        [attr.hreflang]="locale.id"
+        [attr.lang]="locale.id"
+        >{{ locale.label }}</a
+      >
+    </li>
+    }
+  </ul>
+</nav>

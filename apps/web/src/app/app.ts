@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { LanguageSwitcher } from '@recip-e-book/web-shared-i18n';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, LanguageSwitcher],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  protected title = 'web';
-}
+export class App {}

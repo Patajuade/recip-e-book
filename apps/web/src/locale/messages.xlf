@@ -2,6 +2,27 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="layout.mainNav.label" datatype="html">
+        <source>Main</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">apps/web/src/app/app.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.nav.recipes" datatype="html">
+        <source>Recipes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">apps/web/src/app/app.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.nav.newRecipe" datatype="html">
+        <source>New recipe</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">apps/web/src/app/app.html</context>
+          <context context-type="linenumber">32,35</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="notFound.pageTitle" datatype="html">
         <source>Page not found</source>
         <context-group purpose="location">
@@ -14,13 +35,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">apps/web/src/app/not-found/not-found.html</context>
           <context context-type="linenumber">1,2</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.greeting" datatype="html">
-        <source> Hello there, </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">apps/web/src/app/nx-welcome.ts</context>
-          <context context-type="linenumber">515,516</context>
         </context-group>
       </trans-unit>
       <trans-unit id="recipes.detail.heading" datatype="html">
@@ -77,6 +91,13 @@
         <context-group purpose="location">
           <context context-type="sourcefile">libs/web/recipes/feature/src/lib/recipes.routes.ts</context>
           <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="languageSwitcher.label" datatype="html">
+        <source>Language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">libs/web/shared/i18n/src/lib/language-switcher/language-switcher.html</context>
+          <context context-type="linenumber">1</context>
         </context-group>
       </trans-unit>
     </body>

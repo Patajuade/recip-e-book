@@ -1,2 +1,45 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div class="min-h-screen bg-stone-50 text-stone-900">
+  <header class="border-b border-stone-200 bg-white">
+    <div
+      class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3"
+    >
+      <a routerLink="/" class="text-lg font-bold">Recip-e-book</a>
+
+      <nav
+        aria-label="Main"
+        i18n-aria-label="@@layout.mainNav.label"
+        class="flex-1"
+      >
+        <ul class="flex gap-1">
+          <li>
+            <a
+              routerLink="/recipes"
+              routerLinkActive="bg-stone-100 font-semibold"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              class="rounded px-3 py-2 text-sm hover:bg-stone-100"
+              i18n="@@layout.nav.recipes"
+              >Recipes</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/recipes/new"
+              routerLinkActive="bg-stone-100 font-semibold"
+              ariaCurrentWhenActive="page"
+              class="rounded px-3 py-2 text-sm hover:bg-stone-100"
+              i18n="@@layout.nav.newRecipe"
+              >New recipe</a
+            >
+          </li>
+        </ul>
+      </nav>
+
+      <lib-language-switcher />
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-4 py-6">
+    <router-outlet />
+  </main>
+</div>

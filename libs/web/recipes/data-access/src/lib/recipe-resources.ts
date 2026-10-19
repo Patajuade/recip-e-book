@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { RecipeDetails, RecipeSummary } from './recipe-models';
+import { RecipeDetails, RecipeSummary } from '@recip-e-book/web-recipes-models';
 
 export interface RecipeListFilters {
   search?: string;

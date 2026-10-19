@@ -1,18 +1,18 @@
 <nav *transloco="let t" [attr.aria-label]="t('languageSwitcher.label')">
   <ul class="flex gap-1">
     @for (language of languages; track language.id) {
-    <li>
-      <button
-        type="button"
-        class="rounded px-2 py-1 text-sm hover:bg-stone-100"
-        [class.font-semibold]="language.id === activeLang()"
-        [attr.aria-pressed]="language.id === activeLang()"
-        [attr.lang]="language.id"
-        (click)="select(language.id)"
-      >
-        {{ language.label }}
-      </button>
-    </li>
+      <li>
+        <button
+          type="button"
+          class="rounded px-2 py-1 text-sm hover:bg-stone-100"
+          [class.font-semibold]="language.id === activeLang()"
+          [attr.aria-pressed]="language.id === activeLang()"
+          [attr.lang]="language.id"
+          (click)="select(language.id)"
+        >
+          {{ language.label }}
+        </button>
+      </li>
     }
   </ul>
 </nav>

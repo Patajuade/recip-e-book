@@ -22,7 +22,12 @@
       "loading": "Chargement des recettes…",
       "error": "Impossible de charger les recettes.",
       "retry": "Réessayer",
-      "empty": "Aucune recette pour l'instant."
+      "empty": "Aucune recette pour l'instant.",
+      "searchLabel": "Rechercher par titre",
+      "searchPlaceholder": "ex. soupe",
+      "tagFilter": "Tag : {{tag}}",
+      "clearTag": "Tout afficher",
+      "noResults": "Aucune recette ne correspond à votre recherche."
     },
     "new": {
       "pageTitle": "Nouvelle recette",

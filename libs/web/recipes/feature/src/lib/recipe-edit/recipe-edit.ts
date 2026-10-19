@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'lib-recipe-edit',
-  imports: [],
+  imports: [TranslocoDirective],
   templateUrl: './recipe-edit.html',
   styleUrl: './recipe-edit.css',
 })

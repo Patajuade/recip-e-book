@@ -1,0 +1,14 @@
+{
+  "layout": {
+    "mainNav": { "label": "Main" },
+    "nav": { "recipes": "Recipes", "newRecipe": "New recipe" }
+  },
+  "languageSwitcher": { "label": "Language" },
+  "notFound": { "pageTitle": "Page not found", "heading": "Page not found" },
+  "recipes": {
+    "list": { "pageTitle": "Recipes", "heading": "Recipes" },
+    "new": { "pageTitle": "New recipe", "heading": "New recipe" },
+    "detail": { "pageTitle": "Recipe", "heading": "Recipe {{id}}" },
+    "edit": { "pageTitle": "Edit recipe", "heading": "Edit recipe {{id}}" }
+  }
+}

@@ -11,6 +11,6 @@ export const appRoutes: Route[] = [
   {
     path: '**',
     component: NotFound,
-    title: $localize`:@@notFound.pageTitle:Page not found`,
+    title: 'notFound.pageTitle',
   },
 ];

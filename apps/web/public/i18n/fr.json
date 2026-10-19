@@ -1,4 +1,7 @@
 {
+  "common": {
+    "retry": "Réessayer"
+  },
   "layout": {
     "mainNav": {
       "label": "Principale"
@@ -21,7 +24,6 @@
       "heading": "Recettes",
       "loading": "Chargement des recettes…",
       "error": "Impossible de charger les recettes.",
-      "retry": "Réessayer",
       "empty": "Aucune recette pour l'instant.",
       "searchLabel": "Rechercher par titre",
       "searchPlaceholder": "ex. soupe",
@@ -35,7 +37,17 @@
     },
     "detail": {
       "pageTitle": "Recette",
-      "heading": "Recette {{id}}"
+      "loading": "Chargement de la recette…",
+      "error": "Impossible de charger la recette.",
+      "notFound": "Cette recette n'existe pas.",
+      "backToList": "Retour aux recettes",
+      "servings": "Portions : {{count}}",
+      "prepTime": "Préparation : {{minutes}} min",
+      "cookTime": "Cuisson : {{minutes}} min",
+      "ingredients": "Ingrédients",
+      "steps": "Étapes",
+      "notes": "Notes",
+      "updatedAt": "Mis à jour le {{date}}"
     },
     "edit": {
       "pageTitle": "Modifier la recette",

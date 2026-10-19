@@ -10,6 +10,7 @@ import {
   withComponentInputBinding,
 } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
+import { provideTranslocoLocale } from '@jsverse/transloco-locale';
 import { provideTranslocoPersistLang } from '@jsverse/transloco-persist-lang';
 import {
   acceptLanguageInterceptor,
@@ -36,6 +37,9 @@ export const appConfig: ApplicationConfig = {
         prodMode: !isDevMode(),
       },
       loader: TranslocoHttpLoader,
+    }),
+    provideTranslocoLocale({
+      langToLocaleMapping: { en: 'en-US', fr: 'fr-FR' },
     }),
     provideTranslocoPersistLang({
       getLangFn: pickInitialLang,

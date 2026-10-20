@@ -42,8 +42,8 @@
       "notFound": "This recipe doesn't exist.",
       "backToList": "Back to recipes",
       "servings": "Servings: {{count}}",
-      "prepTime": "Prep: {{minutes}} min",
-      "cookTime": "Cooking: {{minutes}} min",
+      "prepTime": "Prep: {{duration}}",
+      "cookTime": "Cooking: {{duration}}",
       "ingredients": "Ingredients",
       "steps": "Steps",
       "notes": "Notes",
@@ -52,9 +52,6 @@
     "edit": {
       "pageTitle": "Edit recipe",
       "heading": "Edit recipe {{id}}"
-    },
-    "card": {
-      "totalTime": "{{minutes}} min"
     }
   }
 }

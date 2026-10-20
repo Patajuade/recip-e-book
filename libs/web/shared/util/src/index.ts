@@ -1,1 +1,1 @@
-export * from './lib/web-shared-util/web-shared-util';
+export * from './lib/duration-pipe';

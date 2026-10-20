@@ -24,3 +24,46 @@ GET {{RecipEBook.Api_HostAddress}}/api/recipes?tag=dessert
 GET {{RecipEBook.Api_HostAddress}}/api/recipes/00000000-0000-0000-0000-000000000000
 
 ###
+
+# Create a recipe → 201 Created, Location header and { "id": … }
+POST {{RecipEBook.Api_HostAddress}}/api/recipes
+Content-Type: application/json
+
+{
+  "title": "Omelette aux herbes",
+  "servings": 2,
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 5,
+  "ingredients": [
+    { "name": "œufs", "quantity": 3 },
+    { "name": "ciboulette", "quantity": 0.5, "unit": "botte" }
+  ],
+  "steps": ["Battre les œufs.", "Cuire à feu doux."],
+  "tags": ["quick", "vegetarian", "eggs"]
+}
+
+###
+
+# Invalid recipe → 400 with the validation errors
+POST {{RecipEBook.Api_HostAddress}}/api/recipes
+Content-Type: application/json
+
+{
+  "title": " ",
+  "servings": 0,
+  "ingredients": [{ "name": "", "quantity": -1 }],
+  "steps": [""]
+}
+
+###
+
+# Tag outside the catalog → 400 "Unknown tag"
+POST {{RecipEBook.Api_HostAddress}}/api/recipes
+Content-Type: application/json
+
+{
+  "title": "Test",
+  "tags": ["vegetarian", "not-a-tag"]
+}
+
+###

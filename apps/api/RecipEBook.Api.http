@@ -57,6 +57,20 @@ Content-Type: application/json
 
 ###
 
+# Replace a whole recipe (replace the id) → 204; fields left out become empty; unknown id → 404
+PUT {{RecipEBook.Api_HostAddress}}/api/recipes/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "title": "Omelette aux fines herbes",
+  "servings": 1,
+  "ingredients": [{ "name": "œufs", "quantity": 2 }],
+  "steps": ["Battre les œufs avec les herbes.", "Cuire 4 minutes à feu doux."],
+  "tags": ["quick", "eggs", "breakfast"]
+}
+
+###
+
 # Tag outside the catalog → 400 "Unknown tag"
 POST {{RecipEBook.Api_HostAddress}}/api/recipes
 Content-Type: application/json

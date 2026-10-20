@@ -10,6 +10,7 @@ public static class RecipeEndpoints
         recipes.MapGet("/{id:guid}", GetRecipe.Handle).WithName("GetRecipe");
         recipes.MapPost("/", CreateRecipe.Handle).WithName("CreateRecipe").ProducesValidationProblem();
         recipes.MapPut("/{id:guid}", UpdateRecipe.Handle).WithName("UpdateRecipe").ProducesValidationProblem();
+        recipes.MapDelete("/{id:guid}", DeleteRecipe.Handle).WithName("DeleteRecipe");
 
         return api;
     }

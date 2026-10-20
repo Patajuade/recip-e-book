@@ -71,6 +71,11 @@ Content-Type: application/json
 
 ###
 
+# Delete a recipe (replace the id) → 204; already deleted or unknown id → 404
+DELETE {{RecipEBook.Api_HostAddress}}/api/recipes/00000000-0000-0000-0000-000000000000
+
+###
+
 # Tag outside the catalog → 400 "Unknown tag"
 POST {{RecipEBook.Api_HostAddress}}/api/recipes
 Content-Type: application/json

@@ -31,10 +31,22 @@
           <li>{{ t('recipes.detail.servings', { count }) }}</li>
         }
         @if (details.prepTimeMinutes; as minutes) {
-          <li>{{ t('recipes.detail.prepTime', { minutes }) }}</li>
+          <li>
+            {{
+              t('recipes.detail.prepTime', {
+                duration: minutes | duration: lang(),
+              })
+            }}
+          </li>
         }
         @if (details.cookTimeMinutes; as minutes) {
-          <li>{{ t('recipes.detail.cookTime', { minutes }) }}</li>
+          <li>
+            {{
+              t('recipes.detail.cookTime', {
+                duration: minutes | duration: lang(),
+              })
+            }}
+          </li>
         }
       </ul>
       @if (details.tags.length) {

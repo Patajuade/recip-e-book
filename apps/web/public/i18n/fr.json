@@ -42,8 +42,8 @@
       "notFound": "Cette recette n'existe pas.",
       "backToList": "Retour aux recettes",
       "servings": "Portions : {{count}}",
-      "prepTime": "Préparation : {{minutes}} min",
-      "cookTime": "Cuisson : {{minutes}} min",
+      "prepTime": "Préparation : {{duration}}",
+      "cookTime": "Cuisson : {{duration}}",
       "ingredients": "Ingrédients",
       "steps": "Étapes",
       "notes": "Notes",
@@ -52,9 +52,6 @@
     "edit": {
       "pageTitle": "Modifier la recette",
       "heading": "Modifier la recette {{id}}"
-    },
-    "card": {
-      "totalTime": "{{minutes}} min"
     }
   }
 }

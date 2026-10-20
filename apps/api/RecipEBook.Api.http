@@ -25,6 +25,11 @@ GET {{RecipEBook.Api_HostAddress}}/api/recipes/00000000-0000-0000-0000-000000000
 
 ###
 
+# Tag catalog (key + camelCase category), in catalog order
+GET {{RecipEBook.Api_HostAddress}}/api/tags
+
+###
+
 # Create a recipe → 201 Created, Location header and { "id": … }
 POST {{RecipEBook.Api_HostAddress}}/api/recipes
 Content-Type: application/json

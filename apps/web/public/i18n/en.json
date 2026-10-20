@@ -1,4 +1,7 @@
 {
+  "common": {
+    "retry": "Retry"
+  },
   "layout": {
     "mainNav": {
       "label": "Main"
@@ -21,7 +24,6 @@
       "heading": "Recipes",
       "loading": "Loading recipes…",
       "error": "Couldn't load the recipes.",
-      "retry": "Retry",
       "empty": "No recipes yet.",
       "searchLabel": "Search by title",
       "searchPlaceholder": "e.g. soup",
@@ -35,7 +37,17 @@
     },
     "detail": {
       "pageTitle": "Recipe",
-      "heading": "Recipe {{id}}"
+      "loading": "Loading the recipe…",
+      "error": "Couldn't load the recipe.",
+      "notFound": "This recipe doesn't exist.",
+      "backToList": "Back to recipes",
+      "servings": "Servings: {{count}}",
+      "prepTime": "Prep: {{minutes}} min",
+      "cookTime": "Cooking: {{minutes}} min",
+      "ingredients": "Ingredients",
+      "steps": "Steps",
+      "notes": "Notes",
+      "updatedAt": "Updated on {{date}}"
     },
     "edit": {
       "pageTitle": "Edit recipe",

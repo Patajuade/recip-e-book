@@ -1,1 +1,103 @@
-<h1 *transloco="let t">{{ t('recipes.detail.heading', { id: id() }) }}</h1>
+<article *transloco="let t" class="flex flex-col gap-6">
+  <a routerLink="/recipes" class="text-sm text-stone-600 hover:underline"
+    >← {{ t('recipes.detail.backToList') }}</a
+  >
+
+  @if (recipe.isLoading()) {
+    <p class="text-stone-600">{{ t('recipes.detail.loading') }}</p>
+  } @else if (notFound()) {
+    <p class="text-stone-600">{{ t('recipes.detail.notFound') }}</p>
+  } @else if (recipe.error()) {
+    <div class="rounded border border-red-200 bg-red-50 p-4 text-red-800">
+      <p>{{ t('recipes.detail.error') }}</p>
+      <button
+        type="button"
+        class="mt-2 rounded bg-red-700 px-3 py-1 text-sm text-white hover:bg-red-800"
+        (click)="recipe.reload()"
+      >
+        {{ t('common.retry') }}
+      </button>
+    </div>
+  } @else if (recipe.hasValue()) {
+    @let details = recipe.value();
+
+    <header class="flex flex-col gap-2">
+      <h1 class="text-3xl font-bold">{{ details.title }}</h1>
+      @if (details.description) {
+        <p class="text-stone-700">{{ details.description }}</p>
+      }
+      <ul class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-stone-600">
+        @if (details.servings; as count) {
+          <li>{{ t('recipes.detail.servings', { count }) }}</li>
+        }
+        @if (details.prepTimeMinutes; as minutes) {
+          <li>{{ t('recipes.detail.prepTime', { minutes }) }}</li>
+        }
+        @if (details.cookTimeMinutes; as minutes) {
+          <li>{{ t('recipes.detail.cookTime', { minutes }) }}</li>
+        }
+      </ul>
+      @if (details.tags.length) {
+        <ul class="flex flex-wrap gap-1">
+          @for (tag of details.tags; track tag) {
+            <li>
+              <a
+                [routerLink]="['/recipes']"
+                [queryParams]="{ tag }"
+                class="block rounded-full bg-stone-100 px-2 py-0.5 text-xs hover:bg-stone-200"
+                >{{ tag }}</a
+              >
+            </li>
+          }
+        </ul>
+      }
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-[1fr_2fr]">
+      <section>
+        <h2 class="mb-2 text-xl font-semibold">
+          {{ t('recipes.detail.ingredients') }}
+        </h2>
+        <ul class="flex flex-col gap-1">
+          @for (ingredient of details.ingredients; track $index) {
+            <li>
+              @if (ingredient.quantity !== null) {
+                <span class="font-medium"
+                  >{{ ingredient.quantity | translocoDecimal }}
+                  {{ ingredient.unit }}</span
+                >
+              }
+              {{ ingredient.name }}
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-xl font-semibold">
+          {{ t('recipes.detail.steps') }}
+        </h2>
+        <ol class="flex list-decimal flex-col gap-2 pl-5">
+          @for (step of details.steps; track $index) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+      </section>
+    </div>
+
+    @if (details.notes) {
+      <section class="rounded border border-amber-200 bg-amber-50 p-4">
+        <h2 class="mb-1 font-semibold">{{ t('recipes.detail.notes') }}</h2>
+        <p class="whitespace-pre-line">{{ details.notes }}</p>
+      </section>
+    }
+
+    <p class="text-xs text-stone-500">
+      {{
+        t('recipes.detail.updatedAt', {
+          date: details.updatedAt | translocoDate: { dateStyle: 'long' },
+        })
+      }}
+    </p>
+  }
+</article>

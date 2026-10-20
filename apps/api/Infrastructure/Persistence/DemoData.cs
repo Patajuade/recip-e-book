@@ -18,7 +18,8 @@ internal static class DemoData
             return;
         }
 
-        context.Set<Recipe>().AddRange(CreateRecipes());
+        Dictionary<string, Tag> tags = context.Set<Tag>().ToDictionary(t => t.Key);
+        context.Set<Recipe>().AddRange(CreateRecipes(tags));
         context.SaveChanges();
     }
 
@@ -29,19 +30,16 @@ internal static class DemoData
             return;
         }
 
-        context.Set<Recipe>().AddRange(CreateRecipes());
+        Dictionary<string, Tag> tags = await context.Set<Tag>().ToDictionaryAsync(t => t.Key, cancellationToken);
+        context.Set<Recipe>().AddRange(CreateRecipes(tags));
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    private static List<Recipe> CreateRecipes()
+    // Tags come from the catalog, inserted by migrations before seeding runs.
+    private static List<Recipe> CreateRecipes(Dictionary<string, Tag> tags)
     {
         DateTime now = DateTime.UtcNow;
 
-        Tag soup = new() { Name = "soupe" };
-        Tag vegetarian = new() { Name = "végétarien" };
-        Tag winter = new() { Name = "hiver" };
-        Tag quick = new() { Name = "rapide" };
-        Tag dessert = new() { Name = "dessert" };
 
         return
         [
@@ -70,7 +68,7 @@ internal static class DemoData
                     new RecipeStep { Instruction = "Ajouter le bouillon et laisser cuire 25 minutes à feu doux." },
                     new RecipeStep { Instruction = "Mixer, puis saler et poivrer." },
                 ],
-                Tags = { soup, vegetarian, winter },
+                Tags = { tags["soup"], tags["vegetarian"], tags["winter"], tags["vegetables"], tags["stovetop"] },
             },
             new Recipe
             {
@@ -93,7 +91,7 @@ internal static class DemoData
                     new RecipeStep { Instruction = "Faire dorer l'ail émincé dans l'huile d'olive." },
                     new RecipeStep { Instruction = "Mélanger les pâtes égouttées avec l'ail et le parmesan." },
                 ],
-                Tags = { vegetarian, quick },
+                Tags = { tags["main-course"], tags["vegetarian"], tags["pasta"], tags["quick"], tags["italian"] },
             },
             new Recipe
             {
@@ -119,7 +117,7 @@ internal static class DemoData
                     new RecipeStep { Instruction = "Sabler la farine, le beurre et le sucre du bout des doigts, puis recouvrir les pommes." },
                     new RecipeStep { Instruction = "Enfourner pour 35 minutes." },
                 ],
-                Tags = { dessert, vegetarian },
+                Tags = { tags["dessert"], tags["vegetarian"], tags["fruit"], tags["oven"], tags["autumn"] },
             },
         ];
     }

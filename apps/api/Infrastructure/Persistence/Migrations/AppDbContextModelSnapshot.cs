@@ -88,20 +88,523 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("RecipEBook.Api.Domain.Tag", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Key")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasKey("Key");
 
                     b.ToTable("Tags");
+
+                    b.HasData(
+                        new
+                        {
+                            Key = "breakfast",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "brunch",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "appetizer",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "starter",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "main-course",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "side-dish",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "soup",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "salad",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "dessert",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "snack",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "drink",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "sauce",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "bread",
+                            Category = "Course"
+                        },
+                        new
+                        {
+                            Key = "vegetarian",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "vegan",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "pescatarian",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "gluten-free",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "dairy-free",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "lactose-free",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "egg-free",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "nut-free",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "low-carb",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "low-fat",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "low-salt",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "low-calorie",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "high-protein",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "sugar-free",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "halal",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "kosher",
+                            Category = "Diet"
+                        },
+                        new
+                        {
+                            Key = "beef",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "veal",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "pork",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "lamb",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "poultry",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "fish",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "seafood",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "eggs",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "cheese",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "pasta",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "rice",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "potatoes",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "legumes",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "vegetables",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "mushrooms",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "fruit",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "chocolate",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "grains",
+                            Category = "MainIngredient"
+                        },
+                        new
+                        {
+                            Key = "oven",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "stovetop",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "fried",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "grilled",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "barbecue",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "steamed",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "slow-cooked",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "pressure-cooker",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "air-fryer",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "microwave",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "no-cook",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "one-pot",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "raw",
+                            Category = "CookingMethod"
+                        },
+                        new
+                        {
+                            Key = "spring",
+                            Category = "Season"
+                        },
+                        new
+                        {
+                            Key = "summer",
+                            Category = "Season"
+                        },
+                        new
+                        {
+                            Key = "autumn",
+                            Category = "Season"
+                        },
+                        new
+                        {
+                            Key = "winter",
+                            Category = "Season"
+                        },
+                        new
+                        {
+                            Key = "everyday",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "party",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "christmas",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "easter",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "new-year",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "birthday",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "picnic",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "lunchbox",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "batch-cooking",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "kids",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "date-night",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "brunch-party",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "comfort-food",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "buffet",
+                            Category = "Occasion"
+                        },
+                        new
+                        {
+                            Key = "french",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "italian",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "spanish",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "portuguese",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "greek",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "mediterranean",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "middle-eastern",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "north-african",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "african",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "indian",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "chinese",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "japanese",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "korean",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "thai",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "vietnamese",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "mexican",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "american",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "caribbean",
+                            Category = "Cuisine"
+                        },
+                        new
+                        {
+                            Key = "quick",
+                            Category = "Practical"
+                        },
+                        new
+                        {
+                            Key = "easy",
+                            Category = "Practical"
+                        },
+                        new
+                        {
+                            Key = "budget",
+                            Category = "Practical"
+                        },
+                        new
+                        {
+                            Key = "make-ahead",
+                            Category = "Practical"
+                        },
+                        new
+                        {
+                            Key = "freezer-friendly",
+                            Category = "Practical"
+                        });
                 });
 
             modelBuilder.Entity("RecipeTag", b =>
@@ -109,12 +612,12 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("RecipesId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("TagsId")
+                    b.Property<string>("TagsKey")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("RecipesId", "TagsId");
+                    b.HasKey("RecipesId", "TagsKey");
 
-                    b.HasIndex("TagsId");
+                    b.HasIndex("TagsKey");
 
                     b.ToTable("RecipeTag");
                 });
@@ -129,7 +632,7 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
 
                     b.HasOne("RecipEBook.Api.Domain.Tag", null)
                         .WithMany()
-                        .HasForeignKey("TagsId")
+                        .HasForeignKey("TagsKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

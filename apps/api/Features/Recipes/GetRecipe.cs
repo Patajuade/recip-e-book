@@ -49,7 +49,7 @@ public static class GetRecipe
                 r.UpdatedAt,
                 r.Ingredients,
                 r.Steps,
-                Tags = r.Tags.OrderBy(t => t.Name).Select(t => t.Name).ToList(),
+                Tags = r.Tags.OrderBy(t => t.Key).Select(t => t.Key).ToList(),
             })
             .SingleOrDefaultAsync(cancellationToken);
 

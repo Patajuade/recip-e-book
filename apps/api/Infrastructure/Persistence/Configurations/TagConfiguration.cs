@@ -8,6 +8,8 @@ public sealed class TagConfiguration : IEntityTypeConfiguration<Tag>
 {
     public void Configure(EntityTypeBuilder<Tag> builder)
     {
-        builder.HasIndex(t => t.Name).IsUnique();
+        builder.HasKey(t => t.Key);
+        builder.Property(t => t.Category).HasConversion<string>();
+        builder.HasData(TagCatalog.Tags.Select(t => new Tag { Key = t.Key, Category = t.Category }));
     }
 }

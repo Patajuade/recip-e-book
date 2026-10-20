@@ -8,6 +8,7 @@ public static class RecipeEndpoints
 
         recipes.MapGet("/", ListRecipes.Handle).WithName("ListRecipes");
         recipes.MapGet("/{id:guid}", GetRecipe.Handle).WithName("GetRecipe");
+        recipes.MapPost("/", CreateRecipe.Handle).WithName("CreateRecipe").ProducesValidationProblem();
 
         return api;
     }

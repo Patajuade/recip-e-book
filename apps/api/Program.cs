@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using RecipEBook.Api.Features.Recipes;
+using RecipEBook.Api.Features.Tags;
 using RecipEBook.Api.Infrastructure.Persistence;
 
 using Scalar.AspNetCore;
@@ -43,5 +44,6 @@ app.MapHealthChecks("/health");
 
 RouteGroupBuilder api = app.MapGroup("/api");
 api.MapRecipeEndpoints();
+api.MapTagEndpoints();
 
 app.Run();

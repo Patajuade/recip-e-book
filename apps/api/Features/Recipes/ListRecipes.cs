@@ -29,7 +29,7 @@ public static class ListRecipes
 
         if (!string.IsNullOrWhiteSpace(tag))
         {
-            query = query.Where(r => r.Tags.Any(t => t.Name == tag));
+            query = query.Where(r => r.Tags.Any(t => t.Key == tag));
         }
 
         List<RecipeSummary> recipes = await query
@@ -40,7 +40,7 @@ public static class ListRecipes
                 r.PrepTimeMinutes == null && r.CookTimeMinutes == null
                     ? (int?)null
                     : (r.PrepTimeMinutes ?? 0) + (r.CookTimeMinutes ?? 0),
-                r.Tags.OrderBy(t => t.Name).Select(t => t.Name).ToList()))
+                r.Tags.OrderBy(t => t.Key).Select(t => t.Key).ToList()))
             .ToListAsync(cancellationToken);
 
         return TypedResults.Ok(recipes);

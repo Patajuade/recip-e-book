@@ -16,7 +16,7 @@
     @if (tag(); as activeTag) {
       <p class="flex items-center gap-2 text-sm">
         <span class="rounded-full bg-stone-200 px-2 py-0.5">
-          {{ t('recipes.list.tagFilter', { tag: activeTag }) }}
+          {{ t('recipes.list.tagFilter', { tag: t('tags.' + activeTag) }) }}
         </span>
         <a
           [routerLink]="['/recipes']"

@@ -1,9 +1,18 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, input, linkedSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+} from '@angular/core';
 import { form, FormField, FormRoot } from '@angular/forms/signals';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
+import {
+  RecipeApi,
+  recipeDetailResource,
+} from '@recip-e-book/web-recipes-data-access';
 import { LabeledField } from '@recip-e-book/web-shared-ui';
 import {
   emptyIngredient,
@@ -12,6 +21,7 @@ import {
   recipeFormSchema,
   RecipeFormValue,
   toFormValue,
+  toRecipeInput,
 } from './recipe-form';
 
 @Component({
@@ -36,10 +46,26 @@ export class RecipeEdit {
     this.recipe.hasValue() ? toFormValue(this.recipe.value()) : emptyRecipe(),
   );
 
+  private readonly api = inject(RecipeApi);
+  private readonly router = inject(Router);
+
   protected readonly recipeForm = form(this.model, recipeFormSchema, {
     submission: {
-      // Saving to the API comes with the RecipeApi service (#38).
-      action: async () => undefined,
+      // Runs only when the form is valid; a returned error is set on the root field.
+      action: async () => {
+        const input = toRecipeInput(this.model());
+        const id = this.id();
+        try {
+          const savedId = id ?? (await this.api.create(input));
+          if (id) {
+            await this.api.update(id, input);
+          }
+          await this.router.navigate(['/recipes', savedId]);
+          return undefined;
+        } catch {
+          return { kind: 'saveFailed' };
+        }
+      },
     },
   });
 

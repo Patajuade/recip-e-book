@@ -2,6 +2,14 @@
   "common": {
     "retry": "Réessayer"
   },
+  "forms": {
+    "errors": {
+      "required": "Ce champ est requis.",
+      "maxLength": "{{maxLength}} caractères maximum.",
+      "min": "Valeur minimale : {{min}}.",
+      "max": "Valeur maximale : {{max}}."
+    }
+  },
   "layout": {
     "mainNav": {
       "label": "Principale"
@@ -29,7 +37,8 @@
       "searchPlaceholder": "ex. soupe",
       "tagFilter": "Tag : {{tag}}",
       "clearTag": "Tout afficher",
-      "noResults": "Aucune recette ne correspond à votre recherche."
+      "noResults": "Aucune recette ne correspond à votre recherche.",
+      "create": "Nouvelle recette"
     },
     "new": {
       "pageTitle": "Nouvelle recette",
@@ -47,11 +56,31 @@
       "ingredients": "Ingrédients",
       "steps": "Étapes",
       "notes": "Notes",
-      "updatedAt": "Mis à jour le {{date}}"
+      "updatedAt": "Mis à jour le {{date}}",
+      "edit": "Modifier"
     },
     "edit": {
       "pageTitle": "Modifier la recette",
-      "heading": "Modifier la recette {{id}}"
+      "heading": "Modifier la recette"
+    },
+    "form": {
+      "title": "Titre",
+      "description": "Description",
+      "servings": "Portions",
+      "prepTime": "Préparation (min)",
+      "cookTime": "Cuisson (min)",
+      "notes": "Notes",
+      "ingredients": "Ingrédients",
+      "quantity": "Qté",
+      "unit": "Unité",
+      "ingredientName": "Ingrédient",
+      "addIngredient": "Ajouter un ingrédient",
+      "steps": "Étapes",
+      "stepLabel": "Étape {{number}}",
+      "addStep": "Ajouter une étape",
+      "remove": "Retirer",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
     }
   },
   "tags": {

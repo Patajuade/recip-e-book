@@ -1,5 +1,12 @@
 <section *transloco="let t">
-  <h1 class="mb-4 text-2xl font-bold">{{ t('recipes.list.heading') }}</h1>
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+    <h1 class="text-2xl font-bold">{{ t('recipes.list.heading') }}</h1>
+    <a
+      routerLink="/recipes/new"
+      class="rounded bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700"
+      >+ {{ t('recipes.list.create') }}</a
+    >
+  </div>
   <div class="mb-4 flex flex-wrap items-end gap-4">
     <label class="flex flex-col gap-1 text-sm">
       {{ t('recipes.list.searchLabel') }}

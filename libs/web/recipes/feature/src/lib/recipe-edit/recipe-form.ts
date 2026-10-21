@@ -6,6 +6,7 @@ import {
   required,
   schema,
 } from '@angular/forms/signals';
+import { RecipeDetails } from '@recip-e-book/web-recipes-models';
 
 export interface IngredientFormValue {
   name: string;
@@ -47,6 +48,26 @@ export const emptyRecipe = (): RecipeFormValue => ({
   ingredients: [emptyIngredient()],
   steps: [emptyStep()],
   tags: [],
+});
+
+export const toFormValue = (recipe: RecipeDetails): RecipeFormValue => ({
+  title: recipe.title,
+  description: recipe.description ?? '',
+  servings: recipe.servings,
+  prepTimeMinutes: recipe.prepTimeMinutes,
+  cookTimeMinutes: recipe.cookTimeMinutes,
+  notes: recipe.notes ?? '',
+  ingredients: recipe.ingredients.length
+    ? recipe.ingredients.map((ingredient) => ({
+        name: ingredient.name,
+        quantity: ingredient.quantity,
+        unit: ingredient.unit ?? '',
+      }))
+    : [emptyIngredient()],
+  steps: recipe.steps.length
+    ? recipe.steps.map((text) => ({ text }))
+    : [emptyStep()],
+  tags: [...recipe.tags],
 });
 
 export const recipeFormSchema = schema<RecipeFormValue>((recipe) => {

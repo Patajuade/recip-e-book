@@ -37,7 +37,8 @@
       "searchPlaceholder": "e.g. soup",
       "tagFilter": "Tag: {{tag}}",
       "clearTag": "Show all",
-      "noResults": "No recipe matches your search."
+      "noResults": "No recipe matches your search.",
+      "create": "New recipe"
     },
     "new": {
       "pageTitle": "New recipe",
@@ -55,11 +56,12 @@
       "ingredients": "Ingredients",
       "steps": "Steps",
       "notes": "Notes",
-      "updatedAt": "Updated on {{date}}"
+      "updatedAt": "Updated on {{date}}",
+      "edit": "Edit"
     },
     "edit": {
       "pageTitle": "Edit recipe",
-      "heading": "Edit recipe {{id}}"
+      "heading": "Edit recipe"
     },
     "form": {
       "title": "Title",
@@ -76,7 +78,9 @@
       "steps": "Steps",
       "stepLabel": "Step {{number}}",
       "addStep": "Add a step",
-      "remove": "Remove"
+      "remove": "Remove",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "tags": {

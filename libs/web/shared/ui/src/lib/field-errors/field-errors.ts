@@ -10,4 +10,6 @@ import { TranslocoDirective } from '@jsverse/transloco';
 })
 export class FieldErrors {
   readonly field = input.required<FieldTree<unknown>>();
+  /** Referenced by the control's `aria-describedby`. */
+  readonly id = input<string>();
 }

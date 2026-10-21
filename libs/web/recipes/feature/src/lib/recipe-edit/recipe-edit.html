@@ -20,61 +20,55 @@
     </div>
   } @else {
     <form class="mt-6 flex max-w-2xl flex-col gap-4" [formRoot]="recipeForm">
-      <label class="flex flex-col gap-1">
-        <span class="text-sm font-medium">{{ t('recipes.form.title') }}</span>
-        <input
-          class="rounded border border-stone-300 px-3 py-2"
-          [formField]="recipeForm.title"
-        />
-        <lib-field-errors [field]="recipeForm.title" />
-      </label>
+      <lib-labeled-field
+        [label]="t('recipes.form.title')"
+        [field]="recipeForm.title"
+      >
+        <input class="form-control" [formField]="recipeForm.title" />
+      </lib-labeled-field>
 
-      <label class="flex flex-col gap-1">
-        <span class="text-sm font-medium">{{
-          t('recipes.form.description')
-        }}</span>
+      <lib-labeled-field
+        [label]="t('recipes.form.description')"
+        [field]="recipeForm.description"
+      >
         <textarea
           rows="3"
-          class="rounded border border-stone-300 px-3 py-2"
+          class="form-control"
           [formField]="recipeForm.description"
         ></textarea>
-        <lib-field-errors [field]="recipeForm.description" />
-      </label>
+      </lib-labeled-field>
 
       <div class="grid gap-4 sm:grid-cols-3">
-        <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">{{
-            t('recipes.form.servings')
-          }}</span>
+        <lib-labeled-field
+          [label]="t('recipes.form.servings')"
+          [field]="recipeForm.servings"
+        >
           <input
             type="number"
-            class="rounded border border-stone-300 px-3 py-2"
+            class="form-control"
             [formField]="recipeForm.servings"
           />
-          <lib-field-errors [field]="recipeForm.servings" />
-        </label>
-        <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">{{
-            t('recipes.form.prepTime')
-          }}</span>
+        </lib-labeled-field>
+        <lib-labeled-field
+          [label]="t('recipes.form.prepTime')"
+          [field]="recipeForm.prepTimeMinutes"
+        >
           <input
             type="number"
-            class="rounded border border-stone-300 px-3 py-2"
+            class="form-control"
             [formField]="recipeForm.prepTimeMinutes"
           />
-          <lib-field-errors [field]="recipeForm.prepTimeMinutes" />
-        </label>
-        <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">{{
-            t('recipes.form.cookTime')
-          }}</span>
+        </lib-labeled-field>
+        <lib-labeled-field
+          [label]="t('recipes.form.cookTime')"
+          [field]="recipeForm.cookTimeMinutes"
+        >
           <input
             type="number"
-            class="rounded border border-stone-300 px-3 py-2"
+            class="form-control"
             [formField]="recipeForm.cookTimeMinutes"
           />
-          <lib-field-errors [field]="recipeForm.cookTimeMinutes" />
-        </label>
+        </lib-labeled-field>
       </div>
 
       <fieldset class="flex flex-col gap-2">
@@ -86,26 +80,44 @@
           track ingredient;
           let i = $index
         ) {
-          <div class="flex flex-wrap gap-2">
-            <input
-              type="number"
-              class="w-24 rounded border border-stone-300 px-3 py-2"
-              [placeholder]="t('recipes.form.quantity')"
-              [attr.aria-label]="t('recipes.form.quantity')"
-              [formField]="ingredient.quantity"
-            />
-            <input
-              class="w-28 rounded border border-stone-300 px-3 py-2"
-              [placeholder]="t('recipes.form.unit')"
-              [attr.aria-label]="t('recipes.form.unit')"
-              [formField]="ingredient.unit"
-            />
-            <input
-              class="min-w-40 flex-1 rounded border border-stone-300 px-3 py-2"
-              [placeholder]="t('recipes.form.ingredientName')"
-              [attr.aria-label]="t('recipes.form.ingredientName')"
-              [formField]="ingredient.name"
-            />
+          <div class="flex flex-wrap items-start gap-2">
+            <lib-labeled-field
+              class="w-24"
+              labelHidden
+              [label]="t('recipes.form.quantity')"
+              [field]="ingredient.quantity"
+            >
+              <input
+                type="number"
+                class="form-control"
+                [placeholder]="t('recipes.form.quantity')"
+                [formField]="ingredient.quantity"
+              />
+            </lib-labeled-field>
+            <lib-labeled-field
+              class="w-28"
+              labelHidden
+              [label]="t('recipes.form.unit')"
+              [field]="ingredient.unit"
+            >
+              <input
+                class="form-control"
+                [placeholder]="t('recipes.form.unit')"
+                [formField]="ingredient.unit"
+              />
+            </lib-labeled-field>
+            <lib-labeled-field
+              class="min-w-40 flex-1"
+              labelHidden
+              [label]="t('recipes.form.ingredientName')"
+              [field]="ingredient.name"
+            >
+              <input
+                class="form-control"
+                [placeholder]="t('recipes.form.ingredientName')"
+                [formField]="ingredient.name"
+              />
+            </lib-labeled-field>
             <button
               type="button"
               class="rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
@@ -114,9 +126,6 @@
               {{ t('recipes.form.remove') }}
             </button>
           </div>
-          <lib-field-errors [field]="ingredient.quantity" />
-          <lib-field-errors [field]="ingredient.unit" />
-          <lib-field-errors [field]="ingredient.name" />
         }
         <button
           type="button"
@@ -132,21 +141,21 @@
           {{ t('recipes.form.steps') }}
         </legend>
         @for (step of recipeForm.steps; track step; let i = $index) {
-          <div class="flex gap-2">
-            <label class="flex flex-1 flex-col gap-1">
-              <span class="text-xs text-stone-600">{{
-                t('recipes.form.stepLabel', { number: i + 1 })
-              }}</span>
+          <div class="flex items-end gap-2">
+            <lib-labeled-field
+              class="flex-1"
+              [label]="t('recipes.form.stepLabel', { number: i + 1 })"
+              [field]="step.text"
+            >
               <textarea
                 rows="2"
-                class="rounded border border-stone-300 px-3 py-2"
+                class="form-control"
                 [formField]="step.text"
               ></textarea>
-              <lib-field-errors [field]="step.text" />
-            </label>
+            </lib-labeled-field>
             <button
               type="button"
-              class="self-end rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
+              class="rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
               (click)="removeStep(i)"
             >
               {{ t('recipes.form.remove') }}
@@ -162,15 +171,16 @@
         </button>
       </fieldset>
 
-      <label class="flex flex-col gap-1">
-        <span class="text-sm font-medium">{{ t('recipes.form.notes') }}</span>
+      <lib-labeled-field
+        [label]="t('recipes.form.notes')"
+        [field]="recipeForm.notes"
+      >
         <textarea
           rows="3"
-          class="rounded border border-stone-300 px-3 py-2"
+          class="form-control"
           [formField]="recipeForm.notes"
         ></textarea>
-        <lib-field-errors [field]="recipeForm.notes" />
-      </label>
+      </lib-labeled-field>
 
       <div class="flex gap-2">
         <button

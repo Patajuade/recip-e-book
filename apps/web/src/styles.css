@@ -1,3 +1,13 @@
 @import 'tailwindcss' source(none);
 @source '../';
 @source '../../../libs';
+
+@layer components {
+  .form-control {
+    @apply rounded border border-stone-300 px-3 py-2;
+
+    &[aria-invalid='true'] {
+      @apply border-red-600;
+    }
+  }
+}

@@ -1,0 +1,55 @@
+<div *transloco="let t" class="flex flex-col gap-3">
+  @if (value().length) {
+    <ul
+      class="flex flex-wrap gap-1"
+      [attr.aria-label]="t('recipes.form.selectedTags')"
+    >
+      @for (key of value(); track key) {
+        <li>
+          <button
+            type="button"
+            class="rounded-full bg-stone-900 px-3 py-1 text-sm text-white hover:bg-stone-700"
+            [attr.aria-label]="
+              t('recipes.form.removeTag', { tag: t('tags.' + key) })
+            "
+            (click)="toggle(key)"
+          >
+            {{ t('tags.' + key) }} ×
+          </button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="text-sm text-stone-500">{{ t('recipes.form.noTags') }}</p>
+  }
+
+  @for (group of groups(); track group.category) {
+    <details class="rounded border border-stone-200 bg-white">
+      <summary class="cursor-pointer px-3 py-2 text-sm font-medium">
+        {{ t('tagCategories.' + group.category) }}
+        @if (group.selectedCount) {
+          <span class="text-stone-500">({{ group.selectedCount }})</span>
+        }
+      </summary>
+      <ul class="flex flex-wrap gap-1 px-3 pb-3">
+        @for (key of group.keys; track key) {
+          <li>
+            <button
+              type="button"
+              class="rounded-full border px-3 py-1 text-sm"
+              [class]="
+                selected().has(key)
+                  ? 'border-stone-900 bg-stone-900 text-white'
+                  : 'border-stone-300 bg-white hover:bg-stone-100'
+              "
+              [attr.aria-pressed]="selected().has(key)"
+              (click)="toggle(key)"
+            >
+              {{ t('tags.' + key) }}
+            </button>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+</div>

@@ -171,6 +171,29 @@
         </button>
       </fieldset>
 
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-1 text-sm font-medium">
+          {{ t('recipes.form.tags') }}
+        </legend>
+        @if (tagCatalog.hasValue()) {
+          <lib-tag-picker
+            [formField]="recipeForm.tags"
+            [catalog]="tagCatalog.value()"
+          />
+        } @else if (tagCatalog.error()) {
+          <p class="text-sm text-red-800">
+            {{ t('recipes.form.tagsError') }}
+            <button
+              type="button"
+              class="underline"
+              (click)="tagCatalog.reload()"
+            >
+              {{ t('common.retry') }}
+            </button>
+          </p>
+        }
+      </fieldset>
+
       <lib-labeled-field
         [label]="t('recipes.form.notes')"
         [field]="recipeForm.notes"

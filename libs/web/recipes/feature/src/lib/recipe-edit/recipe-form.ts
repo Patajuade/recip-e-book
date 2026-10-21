@@ -6,7 +6,7 @@ import {
   required,
   schema,
 } from '@angular/forms/signals';
-import { RecipeDetails } from '@recip-e-book/web-recipes-models';
+import { RecipeDetails, RecipeInput } from '@recip-e-book/web-recipes-models';
 
 export interface IngredientFormValue {
   name: string;
@@ -107,3 +107,24 @@ export const isBlankIngredient = (ingredient: IngredientFormValue): boolean =>
 
 export const isBlankStep = (step: StepFormValue): boolean =>
   step.text.trim() === '';
+
+/** The API body: blank lines left out, empty texts sent as null. */
+export const toRecipeInput = (recipe: RecipeFormValue): RecipeInput => ({
+  title: recipe.title,
+  description: recipe.description.trim() || null,
+  servings: recipe.servings,
+  prepTimeMinutes: recipe.prepTimeMinutes,
+  cookTimeMinutes: recipe.cookTimeMinutes,
+  notes: recipe.notes.trim() || null,
+  ingredients: recipe.ingredients
+    .filter((ingredient) => !isBlankIngredient(ingredient))
+    .map((ingredient) => ({
+      name: ingredient.name,
+      quantity: ingredient.quantity,
+      unit: ingredient.unit.trim() || null,
+    })),
+  steps: recipe.steps
+    .filter((step) => !isBlankStep(step))
+    .map((step) => step.text),
+  tags: [...recipe.tags],
+});

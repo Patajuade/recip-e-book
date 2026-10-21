@@ -80,7 +80,8 @@
       "addStep": "Ajouter une étape",
       "remove": "Retirer",
       "save": "Enregistrer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "saveFailed": "Impossible d'enregistrer la recette. Réessaie dans un instant."
     }
   },
   "tags": {

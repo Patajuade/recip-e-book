@@ -80,7 +80,8 @@
       "addStep": "Add a step",
       "remove": "Remove",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "saveFailed": "Couldn't save the recipe. Please try again."
     }
   },
   "tags": {

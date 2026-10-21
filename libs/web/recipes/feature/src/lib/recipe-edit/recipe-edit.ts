@@ -4,7 +4,7 @@ import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
-import { FieldErrors } from '@recip-e-book/web-shared-ui';
+import { LabeledField } from '@recip-e-book/web-shared-ui';
 import {
   emptyIngredient,
   emptyRecipe,
@@ -16,7 +16,7 @@ import {
 
 @Component({
   selector: 'lib-recipe-edit',
-  imports: [TranslocoDirective, FormField, FormRoot, RouterLink, FieldErrors],
+  imports: [TranslocoDirective, FormField, FormRoot, RouterLink, LabeledField],
   templateUrl: './recipe-edit.html',
   styleUrl: './recipe-edit.css',
 })

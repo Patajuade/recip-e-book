@@ -2,6 +2,14 @@
   "common": {
     "retry": "Retry"
   },
+  "forms": {
+    "errors": {
+      "required": "This field is required.",
+      "maxLength": "{{maxLength}} characters maximum.",
+      "min": "Minimum value: {{min}}.",
+      "max": "Maximum value: {{max}}."
+    }
+  },
   "layout": {
     "mainNav": {
       "label": "Main"
@@ -52,6 +60,23 @@
     "edit": {
       "pageTitle": "Edit recipe",
       "heading": "Edit recipe {{id}}"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "servings": "Servings",
+      "prepTime": "Prep time (min)",
+      "cookTime": "Cooking time (min)",
+      "notes": "Notes",
+      "ingredients": "Ingredients",
+      "quantity": "Qty",
+      "unit": "Unit",
+      "ingredientName": "Ingredient",
+      "addIngredient": "Add an ingredient",
+      "steps": "Steps",
+      "stepLabel": "Step {{number}}",
+      "addStep": "Add a step",
+      "remove": "Remove"
     }
   },
   "tags": {

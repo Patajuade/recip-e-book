@@ -4,4 +4,163 @@
   } @else {
     <h1>{{ t('recipes.new.heading') }}</h1>
   }
+
+  <form
+    class="mt-6 flex max-w-2xl flex-col gap-4"
+    (submit)="$event.preventDefault()"
+  >
+    <label class="flex flex-col gap-1">
+      <span class="text-sm font-medium">{{ t('recipes.form.title') }}</span>
+      <input
+        class="rounded border border-stone-300 px-3 py-2"
+        [formField]="recipeForm.title"
+      />
+      <lib-field-errors [field]="recipeForm.title" />
+    </label>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-sm font-medium">{{
+        t('recipes.form.description')
+      }}</span>
+      <textarea
+        rows="3"
+        class="rounded border border-stone-300 px-3 py-2"
+        [formField]="recipeForm.description"
+      ></textarea>
+      <lib-field-errors [field]="recipeForm.description" />
+    </label>
+
+    <div class="grid gap-4 sm:grid-cols-3">
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium">{{
+          t('recipes.form.servings')
+        }}</span>
+        <input
+          type="number"
+          class="rounded border border-stone-300 px-3 py-2"
+          [formField]="recipeForm.servings"
+        />
+        <lib-field-errors [field]="recipeForm.servings" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium">{{
+          t('recipes.form.prepTime')
+        }}</span>
+        <input
+          type="number"
+          class="rounded border border-stone-300 px-3 py-2"
+          [formField]="recipeForm.prepTimeMinutes"
+        />
+        <lib-field-errors [field]="recipeForm.prepTimeMinutes" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium">{{
+          t('recipes.form.cookTime')
+        }}</span>
+        <input
+          type="number"
+          class="rounded border border-stone-300 px-3 py-2"
+          [formField]="recipeForm.cookTimeMinutes"
+        />
+        <lib-field-errors [field]="recipeForm.cookTimeMinutes" />
+      </label>
+    </div>
+
+    <fieldset class="flex flex-col gap-2">
+      <legend class="mb-1 text-sm font-medium">
+        {{ t('recipes.form.ingredients') }}
+      </legend>
+      @for (
+        ingredient of recipeForm.ingredients;
+        track ingredient;
+        let i = $index
+      ) {
+        <div class="flex flex-wrap gap-2">
+          <input
+            type="number"
+            class="w-24 rounded border border-stone-300 px-3 py-2"
+            [placeholder]="t('recipes.form.quantity')"
+            [attr.aria-label]="t('recipes.form.quantity')"
+            [formField]="ingredient.quantity"
+          />
+          <input
+            class="w-28 rounded border border-stone-300 px-3 py-2"
+            [placeholder]="t('recipes.form.unit')"
+            [attr.aria-label]="t('recipes.form.unit')"
+            [formField]="ingredient.unit"
+          />
+          <input
+            class="min-w-40 flex-1 rounded border border-stone-300 px-3 py-2"
+            [placeholder]="t('recipes.form.ingredientName')"
+            [attr.aria-label]="t('recipes.form.ingredientName')"
+            [formField]="ingredient.name"
+          />
+          <button
+            type="button"
+            class="rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
+            (click)="removeIngredient(i)"
+          >
+            {{ t('recipes.form.remove') }}
+          </button>
+        </div>
+        <lib-field-errors [field]="ingredient.quantity" />
+        <lib-field-errors [field]="ingredient.unit" />
+        <lib-field-errors [field]="ingredient.name" />
+      }
+      <button
+        type="button"
+        class="self-start rounded border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100"
+        (click)="addIngredient()"
+      >
+        {{ t('recipes.form.addIngredient') }}
+      </button>
+    </fieldset>
+
+    <fieldset class="flex flex-col gap-2">
+      <legend class="mb-1 text-sm font-medium">
+        {{ t('recipes.form.steps') }}
+      </legend>
+      @for (step of recipeForm.steps; track step; let i = $index) {
+        <div class="flex gap-2">
+          <label class="flex flex-1 flex-col gap-1">
+            <span class="text-xs text-stone-600">{{
+              t('recipes.form.stepLabel', { number: i + 1 })
+            }}</span>
+            <textarea
+              rows="2"
+              class="rounded border border-stone-300 px-3 py-2"
+              [formField]="step.text"
+            ></textarea>
+            <lib-field-errors [field]="step.text" />
+          </label>
+          <button
+            type="button"
+            class="self-end rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
+            (click)="removeStep(i)"
+          >
+            {{ t('recipes.form.remove') }}
+          </button>
+        </div>
+      }
+      <button
+        type="button"
+        class="self-start rounded border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100"
+        (click)="addStep()"
+      >
+        {{ t('recipes.form.addStep') }}
+      </button>
+    </fieldset>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-sm font-medium">{{ t('recipes.form.notes') }}</span>
+      <textarea
+        rows="3"
+        class="rounded border border-stone-300 px-3 py-2"
+        [formField]="recipeForm.notes"
+      ></textarea>
+      <lib-field-errors [field]="recipeForm.notes" />
+    </label>
+  </form>
+
+  <pre class="mt-6 rounded bg-stone-100 p-3 text-xs">{{ model() | json }}</pre>
 </ng-container>

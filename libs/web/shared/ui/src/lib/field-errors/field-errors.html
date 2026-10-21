@@ -1,0 +1,8 @@
+@let state = field()();
+@if (state.touched() && state.invalid()) {
+  <ul *transloco="let t" class="mt-1 text-sm text-red-700">
+    @for (error of state.errors(); track error.kind) {
+      <li>{{ t('forms.errors.' + error.kind, error) }}</li>
+    }
+  </ul>
+}

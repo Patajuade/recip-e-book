@@ -12,7 +12,9 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import {
   RecipeApi,
   recipeDetailResource,
+  tagCatalogResource,
 } from '@recip-e-book/web-recipes-data-access';
+import { TagPicker } from '@recip-e-book/web-recipes-ui';
 import { LabeledField } from '@recip-e-book/web-shared-ui';
 import {
   emptyIngredient,
@@ -26,7 +28,14 @@ import {
 
 @Component({
   selector: 'lib-recipe-edit',
-  imports: [TranslocoDirective, FormField, FormRoot, RouterLink, LabeledField],
+  imports: [
+    TranslocoDirective,
+    FormField,
+    FormRoot,
+    RouterLink,
+    LabeledField,
+    TagPicker,
+  ],
   templateUrl: './recipe-edit.html',
   styleUrl: './recipe-edit.css',
 })
@@ -35,6 +44,8 @@ export class RecipeEdit {
 
   // Idle (no request) on /recipes/new, since there is no id.
   protected readonly recipe = recipeDetailResource(this.id);
+
+  protected readonly tagCatalog = tagCatalogResource();
 
   protected readonly notFound = computed(() => {
     const error = this.recipe.error();

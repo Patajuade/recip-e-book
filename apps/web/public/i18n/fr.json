@@ -81,7 +81,12 @@
       "remove": "Retirer",
       "save": "Enregistrer",
       "cancel": "Annuler",
-      "saveFailed": "Impossible d'enregistrer la recette. Réessaie dans un instant."
+      "saveFailed": "Impossible d'enregistrer la recette. Réessaie dans un instant.",
+      "tags": "Tags",
+      "selectedTags": "Tags sélectionnés",
+      "noTags": "Aucun tag sélectionné.",
+      "removeTag": "Retirer {{tag}}",
+      "tagsError": "Impossible de charger les tags."
     }
   },
   "tags": {

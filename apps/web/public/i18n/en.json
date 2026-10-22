@@ -81,7 +81,12 @@
       "remove": "Remove",
       "save": "Save",
       "cancel": "Cancel",
-      "saveFailed": "Couldn't save the recipe. Please try again."
+      "saveFailed": "Couldn't save the recipe. Please try again.",
+      "tags": "Tags",
+      "selectedTags": "Selected tags",
+      "noTags": "No tags selected.",
+      "removeTag": "Remove {{tag}}",
+      "tagsError": "Couldn't load the tags."
     }
   },
   "tags": {

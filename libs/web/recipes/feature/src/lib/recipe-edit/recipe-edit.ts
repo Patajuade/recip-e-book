@@ -15,7 +15,7 @@ import {
   tagCatalogResource,
 } from '@recip-e-book/web-recipes-data-access';
 import { TagPicker } from '@recip-e-book/web-recipes-ui';
-import { LabeledField } from '@recip-e-book/web-shared-ui';
+import { FieldErrors, LabeledField } from '@recip-e-book/web-shared-ui';
 import {
   emptyIngredient,
   emptyRecipe,
@@ -24,6 +24,7 @@ import {
   RecipeFormValue,
   toFormValue,
   toRecipeInput,
+  toServerErrors,
 } from './recipe-form';
 
 @Component({
@@ -34,6 +35,7 @@ import {
     FormRoot,
     RouterLink,
     LabeledField,
+    FieldErrors,
     TagPicker,
   ],
   templateUrl: './recipe-edit.html',
@@ -62,18 +64,27 @@ export class RecipeEdit {
 
   protected readonly recipeForm = form(this.model, recipeFormSchema, {
     submission: {
-      // Runs only when the form is valid; a returned error is set on the root field.
-      action: async () => {
-        const input = toRecipeInput(this.model());
+      // Runs only when the form is valid. Returned errors go to their fieldTree,
+      // or to the root field (shown as a banner) when they have none.
+      action: async (recipeForm) => {
+        const recipe = this.model();
         const id = this.id();
         try {
+          const input = toRecipeInput(recipe);
           const savedId = id ?? (await this.api.create(input));
           if (id) {
             await this.api.update(id, input);
           }
           await this.router.navigate(['/recipes', savedId]);
           return undefined;
-        } catch {
+        } catch (error) {
+          if (
+            error instanceof HttpErrorResponse &&
+            error.status === 400 &&
+            error.error?.errors
+          ) {
+            return toServerErrors(error.error.errors, recipeForm, recipe);
+          }
           return { kind: 'saveFailed' };
         }
       },

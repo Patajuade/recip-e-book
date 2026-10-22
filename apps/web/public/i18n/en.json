@@ -7,7 +7,8 @@
       "required": "This field is required.",
       "maxLength": "{{maxLength}} characters maximum.",
       "min": "Minimum value: {{min}}.",
-      "max": "Maximum value: {{max}}."
+      "max": "Maximum value: {{max}}.",
+      "server": "{{message}}"
     }
   },
   "layout": {

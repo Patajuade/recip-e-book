@@ -192,6 +192,7 @@
             </button>
           </p>
         }
+        <lib-field-errors [field]="recipeForm.tags" />
       </fieldset>
 
       <lib-labeled-field
@@ -205,12 +206,16 @@
         ></textarea>
       </lib-labeled-field>
 
-      @if (recipeForm().errors().length) {
+      @for (error of recipeForm().errors(); track $index) {
         <p
           role="alert"
           class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800"
         >
-          {{ t('recipes.form.saveFailed') }}
+          {{
+            error.kind === 'server'
+              ? error.message
+              : t('recipes.form.saveFailed')
+          }}
         </p>
       }
 

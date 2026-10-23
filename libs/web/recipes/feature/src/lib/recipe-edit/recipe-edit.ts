@@ -10,14 +10,18 @@ import {
 } from '@angular/core';
 import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import {
   RecipeApi,
   recipeDetailResource,
   tagCatalogResource,
 } from '@recip-e-book/web-recipes-data-access';
 import { TagPicker } from '@recip-e-book/web-recipes-ui';
-import { FieldErrors, LabeledField } from '@recip-e-book/web-shared-ui';
+import {
+  FieldErrors,
+  LabeledField,
+  Toaster,
+} from '@recip-e-book/web-shared-ui';
 import {
   emptyIngredient,
   emptyRecipe,
@@ -74,6 +78,8 @@ export class RecipeEdit {
 
   private readonly api = inject(RecipeApi);
   private readonly router = inject(Router);
+  private readonly toaster = inject(Toaster);
+  private readonly transloco = inject(TranslocoService);
 
   constructor() {
     // Closing the tab or reloading: only the browser's own prompt is possible here.
@@ -101,6 +107,7 @@ export class RecipeEdit {
             await this.api.update(id, input);
           }
           this.saved.set(true);
+          this.toaster.show(this.transloco.translate('recipes.form.saved'));
           await this.router.navigate(['/recipes', savedId]);
           return undefined;
         } catch (error) {

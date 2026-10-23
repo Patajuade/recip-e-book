@@ -324,7 +324,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 
 ## 7. Progress & log
 
-**Current phase: 3 — Domain & persistence** (phases 0–2 done)
+**Current phase: 8 — UX polish, backend i18n & state** (phases 0–7 done)
 
 - Task-level progress: [project board](https://github.com/users/Patajuade/projects/2) (Todo / In Progress / Done).
 - Phase-level progress: [milestones](https://github.com/Patajuade/recip-e-book/milestones) (open/closed issue ratio).
@@ -380,6 +380,7 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - 2026-10-22 — **API validation errors shown on their fields** (#40). On a 400 with ProblemDetails `errors`, the submission `action` returns one `{ kind: 'server', message, fieldTree }` per message: `submit()` "applies any submission errors resulting from the action to the field … on the sub-field indicated by the `fieldTree` property" (`submit` API docs, [form submission guide](https://angular.dev/guide/forms/signals/form-submission)). `toServerErrors` (`recipe-form.ts`) maps the C# paths (`Title`, `Ingredients[0].Name`, `Steps[1]`, `Tags[0]`) to fields; indexes are shifted back because the request has no blank lines. Unknown paths stay on the root field and are shown in the banner with their message. A server error stays until its field changes, and the form can't be submitted while it is there. Messages are the API's English ones until backend localization (#45). The client rules stay as the first line; the API remains the source of truth (e.g. a whitespace-only title passes `required` but not `[Required]`).
 - 2026-10-23 — **Delete with a CDK Dialog confirmation** (#41). `@angular/cdk` installed at `~22.1.0`, aligned with Angular (its `ng add` schematic only adds the dependency, with a tilde). The CDK [dialog docs](https://github.com/angular/components/blob/main/src/cdk/dialog/dialog.md) require its structural styles without Material: `@import '@angular/cdk/overlay-prebuilt.css'` in `styles.css`. `Confirmation.ask()` (`shared/ui`, reusable for #42) opens `ConfirmDialog` (Tailwind-styled through its host classes) and resolves to `true` only on confirm; Escape and backdrop click cancel. Accessibility from the docs: `role: 'alertdialog'`, `ariaLabelledBy`/`ariaDescribedBy` on the title and message, focus goes to the first tabbable element (Cancel is first, so Enter doesn't delete) and returns to the Delete button on close; `aria-modal` stays off, as the CDK marks outside content `aria-hidden` instead. `RecipeApi.delete` → `DELETE /api/recipes/{id}`; on success, or on a 404 (already deleted, the outcome the user wanted), the app navigates to the list; other errors show a banner. Angular Material was considered again and declined: the developer doesn't want the Material Design look, and the CDK already gives the hard parts (a11y, focus, overlay).
 - 2026-10-23 — **Unsaved changes guard** (#42). Functional `CanDeactivateFn` generated with `@schematics/angular:guard` (Nx has no guard generator), as in the [route guards guide](https://angular.dev/guide/routing/route-guards#candeactivate), on the new and edit routes. It returns the `Confirmation.ask()` promise ("Router uses the first emitted value"). `RecipeEdit.hasUnsavedChanges` compares the model with its starting value as API bodies (`toRecipeInput`), so blank lines don't count; a `saved` flag lets the post-save navigation through. The guard only covers navigation inside the app: closing or reloading the tab uses `beforeunload`, added only while there are unsaved changes and removed after, as [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) recommends (bfcache); the browser shows its own generic message there.
+- 2026-10-23 — **Home-made toasts** (#43, developer's choice over a library). Checked on npm: `ngx-toastr` only declares Angular `^21`, `ngx-sonner` hasn't been published since March 2025, `@ngxpert/hot-toast` supports Angular 22 but adds `@ngneat/overview` and its own look. The need is small (a confirmation after save and delete), so `Toaster` (`shared/ui`, a signal of messages removed after 5 s) + `ToastList`, placed once in the app layout. `ToastList` is the live region, always rendered: [`role="status"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role) (polite, never takes focus), with `aria-atomic="false"` instead of the role's implicit `true` so only the new toast is read. Callers pass translated text, like `Confirmation`. `@ngxpert/hot-toast` is the library to reconsider if richer toasts are needed (actions, promises).
 
 ### Session log
 
@@ -390,6 +391,26 @@ A phase is **done** when all its milestone issues are closed and its validation 
 - Next step: …
 - Open questions: …
 -->
+
+#### 2026-10-19 → 23 — Phases 6 and 7 (+ phase 4 writes)
+
+- Done:
+  - Phase 6 (browse): #31 read models (PR #108), #32 read resources with `httpResource()` (PR #109), #33 list page with recipe cards and a `models` lib (PR #110), #34 title search and tag filter in the URL (PR #111), #35 detail page with Transloco Locale (PR #113), #36 `Intl.DurationFormat` pipe (PR #114).
+  - Phase 4 writes: #17 `POST` with built-in validation (PR #115), #116 fixed translated tag catalog (PR #117), #18 `PUT` (PR #118), #19 `DELETE` (PR #119), #20 `GET /api/tags` (PR #120), #21 integration tests on in-memory SQLite (PR #121).
+  - Phase 7 (create & edit): #37 Signal Forms recipe form (PR #122), #123 `LabeledField` (PR #124), #38 save (PR #125), #39 tag picker (PR #126), #40 API validation errors on fields (PR #127), #41 delete with a CDK Dialog confirmation (PR #128), #42 unsaved changes guard (PR #129), #43 toasts.
+- Learned:
+  - `httpResource()` (status signals, reload), route params and query params as `input()`s, RxJS debounce with `takeUntilDestroyed`;
+  - Minimal API commands: `TypedResults` / `Results<…>`, `AddValidation()` + DataAnnotations, `CreatedAtRoute`, `ExecuteDeleteAsync`, `HasData` for reference data;
+  - API safety: server-side validation as the source of truth, no mass assignment (id from the route only), idempotent DELETE, unknown tags refused even though the UI can't send them;
+  - `WebApplicationFactory` integration tests;
+  - Signal Forms: `form()`, schema rules, `applyEach`, `when`, `submit()` with server errors through `fieldTree`, custom controls (`FormValueControl`);
+  - `linkedSignal`, `contentChild`, `afterRenderEffect`, `effect` with `onCleanup`, `@Service()`;
+  - CDK Dialog, functional `canDeactivate` guard, `beforeunload`, live regions (`aria-live`, `role="status"`).
+- Next step: phase 8, e.g. #44 global HTTP error interceptor, #45 backend localization (will translate the API's validation messages), #112 app theme, #47 dark mode, #46 cooking mode.
+- Open questions:
+  - whitespace-only titles/names are only caught by the API (client `required` accepts them);
+  - no shared cache between pages (the edit page fetches the recipe again), accepted for now;
+  - frontend unit tests still to set up (#49).
 
 #### 2026-10-18 / 19 — Phase 5
 

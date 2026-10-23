@@ -63,7 +63,8 @@
       "delete": "Supprimer",
       "deleteTitle": "Supprimer cette recette ?",
       "deleteMessage": "« {{title}} » sera définitivement supprimée.",
-      "deleteFailed": "Impossible de supprimer la recette. Réessaie dans un instant."
+      "deleteFailed": "Impossible de supprimer la recette. Réessaie dans un instant.",
+      "deleted": "Recette supprimée."
     },
     "edit": {
       "pageTitle": "Modifier la recette",
@@ -95,7 +96,8 @@
       "tagsError": "Impossible de charger les tags.",
       "leaveTitle": "Quitter sans enregistrer ?",
       "leaveMessage": "Tes modifications de cette recette seront perdues.",
-      "leave": "Quitter"
+      "leave": "Quitter",
+      "saved": "Recette enregistrée."
     }
   },
   "tags": {

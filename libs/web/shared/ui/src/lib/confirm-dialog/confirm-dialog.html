@@ -1,0 +1,23 @@
+<ng-container *transloco="let t">
+  <h2 id="confirm-dialog-title" class="text-lg font-semibold">
+    {{ data.title }}
+  </h2>
+  <p id="confirm-dialog-message" class="text-stone-700">{{ data.message }}</p>
+  <!-- Cancel comes first: it gets the initial focus (autoFocus: 'first-tabbable'). -->
+  <div class="flex justify-end gap-2">
+    <button
+      type="button"
+      class="rounded px-4 py-2 text-sm text-stone-700 hover:bg-stone-100"
+      (click)="dialogRef.close(false)"
+    >
+      {{ t('common.cancel') }}
+    </button>
+    <button
+      type="button"
+      class="rounded bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800"
+      (click)="dialogRef.close(true)"
+    >
+      {{ data.confirmLabel }}
+    </button>
+  </div>
+</ng-container>

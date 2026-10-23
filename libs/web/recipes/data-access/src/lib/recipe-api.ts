@@ -20,4 +20,10 @@ export class RecipeApi {
       this.http.put(`/api/recipes/${encodeURIComponent(id)}`, recipe),
     );
   }
+
+  async delete(id: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`/api/recipes/${encodeURIComponent(id)}`),
+    );
+  }
 }

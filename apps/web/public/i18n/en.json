@@ -1,6 +1,7 @@
 {
   "common": {
-    "retry": "Retry"
+    "retry": "Retry",
+    "cancel": "Cancel"
   },
   "forms": {
     "errors": {
@@ -58,7 +59,11 @@
       "steps": "Steps",
       "notes": "Notes",
       "updatedAt": "Updated on {{date}}",
-      "edit": "Edit"
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete this recipe?",
+      "deleteMessage": "“{{title}}” will be permanently deleted.",
+      "deleteFailed": "Couldn't delete the recipe. Try again in a moment."
     },
     "edit": {
       "pageTitle": "Edit recipe",

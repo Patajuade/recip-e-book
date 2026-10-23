@@ -28,8 +28,19 @@ builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
 builder.Services.AddHealthChecks();
 
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    string[] supportedCultures = ["en", "fr"];
+    options.SetDefaultCulture(supportedCultures[0])
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+});
+
 var app = builder.Build();
 
+// First, so every later middleware and endpoint sees the request culture (Accept-Language).
+app.UseRequestLocalization();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 

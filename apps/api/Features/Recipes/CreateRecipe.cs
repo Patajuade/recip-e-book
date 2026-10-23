@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Localization;
 
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
@@ -15,9 +16,11 @@ public static class CreateRecipe
     public static async Task<Results<CreatedAtRoute<Response>, ValidationProblem>> Handle(
         RecipeInput input,
         AppDbContext db,
+        IStringLocalizer<RecipeInput> localizer,
         CancellationToken cancellationToken)
     {
-        (List<Tag> tags, Dictionary<string, string[]> errors) = await input.LoadTagsAsync(db, cancellationToken);
+        (List<Tag> tags, Dictionary<string, string[]> errors) =
+            await input.LoadTagsAsync(db, localizer, cancellationToken);
         if (errors.Count > 0)
         {
             return TypedResults.ValidationProblem(errors);

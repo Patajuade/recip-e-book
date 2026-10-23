@@ -96,6 +96,34 @@ public class CreateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Rec
     }
 
     [Fact]
+    public async Task Post_WithFrenchAcceptLanguage_ReturnsFrenchMessages()
+    {
+        // fr-FR isn't a supported culture: the request falls back to its parent, fr.
+        HttpValidationProblemDetails stepProblem =
+            await PostInFrenchAsync(TestRecipes.Valid() with { Steps = ["  "] });
+        Assert.Equal(["L'étape est requise."], stepProblem.Errors["Steps[0]"]);
+
+        HttpValidationProblemDetails tagProblem =
+            await PostInFrenchAsync(TestRecipes.Valid("French", "not-a-tag"));
+        Assert.Equal(["Tag inconnu : « not-a-tag »."], tagProblem.Errors["Tags[0]"]);
+    }
+
+    private async Task<HttpValidationProblemDetails> PostInFrenchAsync(RecipeInput input)
+    {
+        using HttpRequestMessage request = new(HttpMethod.Post, "/api/recipes")
+        {
+            Content = JsonContent.Create(input),
+        };
+        request.Headers.AcceptLanguage.ParseAdd("fr-FR");
+
+        HttpResponseMessage response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        HttpValidationProblemDetails? problem = await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>();
+        return problem!;
+    }
+
+    [Fact]
     public async Task Post_DuplicateTags_AreStoredOnce()
     {
         Guid id = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Duplicates", "quick", "eggs", "quick"));

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
@@ -26,17 +27,19 @@ public record RecipeInput(
     // Tags are checked against the catalog by LoadTagsAsync, which needs the database.
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
+        IStringLocalizer<RecipeInput> localizer =
+            validationContext.GetRequiredService<IStringLocalizer<RecipeInput>>();
         for (int i = 0; i < (Steps?.Count ?? 0); i++)
         {
             string step = Steps![i];
             if (string.IsNullOrWhiteSpace(step))
             {
-                yield return new ValidationResult("The step is required.", [$"Steps[{i}]"]);
+                yield return new ValidationResult(localizer["The step is required."], [$"Steps[{i}]"]);
             }
             else if (step.Trim().Length > 2000)
             {
                 yield return new ValidationResult(
-                    "The step must be a string with a maximum length of 2000.", [$"Steps[{i}]"]);
+                    localizer["The step must be a string with a maximum length of {0}.", 2000], [$"Steps[{i}]"]);
             }
         }
     }
@@ -46,14 +49,16 @@ public record RecipeInput(
     /// validation errors, so a client can't silently lose a tag.
     /// </summary>
     internal async Task<(List<Tag> Tags, Dictionary<string, string[]> Errors)> LoadTagsAsync(
-        AppDbContext db, CancellationToken cancellationToken)
+        AppDbContext db, IStringLocalizer<RecipeInput> localizer, CancellationToken cancellationToken)
     {
         List<string> keys = Tags ?? [];
         List<Tag> tags = await db.Tags.Where(t => keys.Contains(t.Key)).ToListAsync(cancellationToken);
         Dictionary<string, string[]> errors = keys
             .Select((key, index) => (key, index))
             .Where(tag => tags.All(t => t.Key != tag.key))
-            .ToDictionary(tag => $"Tags[{tag.index}]", tag => new[] { $"Unknown tag '{tag.key}'." });
+            .ToDictionary(
+                tag => $"Tags[{tag.index}]",
+                tag => new string[] { localizer["Unknown tag '{0}'.", tag.key] });
         return (tags, errors);
     }
 

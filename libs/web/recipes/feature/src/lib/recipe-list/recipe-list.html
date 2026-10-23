@@ -1,9 +1,7 @@
 <section *transloco="let t">
   <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-    <h1 class="text-2xl font-bold">{{ t('recipes.list.heading') }}</h1>
-    <a
-      routerLink="/recipes/new"
-      class="rounded bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700"
+    <h1 class="text-3xl">{{ t('recipes.list.heading') }}</h1>
+    <a routerLink="/recipes/new" class="btn-accent"
       >+ {{ t('recipes.list.create') }}</a
     >
   </div>
@@ -13,7 +11,7 @@
       <input
         #searchBox
         type="search"
-        class="rounded border border-stone-300 px-3 py-1.5"
+        class="form-control py-1.5"
         [placeholder]="t('recipes.list.searchPlaceholder')"
         [value]="search() ?? ''"
         (input)="onSearch(searchBox.value)"
@@ -22,14 +20,14 @@
 
     @if (tag(); as activeTag) {
       <p class="flex items-center gap-2 text-sm">
-        <span class="rounded-full bg-stone-200 px-2 py-0.5">
+        <span class="rounded-full bg-surface-raised px-2 py-0.5">
           {{ t('recipes.list.tagFilter', { tag: t('tags.' + activeTag) }) }}
         </span>
         <a
           [routerLink]="['/recipes']"
           [queryParams]="{ tag: null }"
           queryParamsHandling="merge"
-          class="underline"
+          class="text-primary-ink underline"
           >{{ t('recipes.list.clearTag') }}</a
         >
       </p>
@@ -37,21 +35,17 @@
   </div>
 
   @if (recipes.isLoading()) {
-    <p class="text-stone-600">{{ t('recipes.list.loading') }}</p>
+    <p class="text-fg-muted">{{ t('recipes.list.loading') }}</p>
   } @else if (recipes.error()) {
-    <div class="rounded border border-red-200 bg-red-50 p-4 text-red-800">
+    <div class="alert-error">
       <p>{{ t('recipes.list.error') }}</p>
-      <button
-        type="button"
-        class="mt-2 rounded bg-red-700 px-3 py-1 text-sm text-white hover:bg-red-800"
-        (click)="recipes.reload()"
-      >
+      <button type="button" class="btn-ghost mt-2" (click)="recipes.reload()">
         {{ t('common.retry') }}
       </button>
     </div>
   } @else if (recipes.hasValue()) {
     @if (recipes.value().length === 0) {
-      <p class="text-stone-600">
+      <p class="text-fg-muted">
         {{
           t(search() || tag() ? 'recipes.list.noResults' : 'recipes.list.empty')
         }}

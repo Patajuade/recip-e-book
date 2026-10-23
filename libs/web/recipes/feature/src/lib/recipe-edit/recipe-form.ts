@@ -1,10 +1,13 @@
 import {
   applyEach,
+  FieldTree,
   max,
   maxLength,
   min,
   required,
   schema,
+  ValidationError,
+  WithOptionalFieldTree,
 } from '@angular/forms/signals';
 import { RecipeDetails, RecipeInput } from '@recip-e-book/web-recipes-models';
 
@@ -128,3 +131,58 @@ export const toRecipeInput = (recipe: RecipeFormValue): RecipeInput => ({
     .map((step) => step.text),
   tags: [...recipe.tags],
 });
+
+/**
+ * Maps the API's 400 errors (ProblemDetails `errors`, keyed by C# property path such as
+ * `Title` or `Ingredients[0].Name`) onto the form fields. Paths it doesn't know stay on the
+ * root field. Indexes refer to the request, which has no blank lines.
+ */
+export function toServerErrors(
+  errors: Record<string, string[]>,
+  recipeForm: FieldTree<RecipeFormValue>,
+  recipe: RecipeFormValue,
+): WithOptionalFieldTree<ValidationError>[] {
+  const ingredientIndexes = indexesWhere(
+    recipe.ingredients,
+    (ingredient) => !isBlankIngredient(ingredient),
+  );
+  const stepIndexes = indexesWhere(recipe.steps, (step) => !isBlankStep(step));
+  const fields: Record<string, FieldTree<unknown>> = {
+    Title: recipeForm.title,
+    Description: recipeForm.description,
+    Servings: recipeForm.servings,
+    PrepTimeMinutes: recipeForm.prepTimeMinutes,
+    CookTimeMinutes: recipeForm.cookTimeMinutes,
+    Notes: recipeForm.notes,
+  };
+
+  const fieldFor = (path: string): FieldTree<unknown> | undefined => {
+    const ingredient = /^Ingredients\[(\d+)\]\.(Name|Quantity|Unit)$/.exec(
+      path,
+    );
+    if (ingredient) {
+      const field = recipeForm.ingredients[ingredientIndexes[+ingredient[1]]];
+      const property = ingredient[2].toLowerCase() as keyof IngredientFormValue;
+      return field?.[property];
+    }
+    const step = /^Steps\[(\d+)\]$/.exec(path);
+    if (step) {
+      return recipeForm.steps[stepIndexes[+step[1]]]?.text;
+    }
+    if (/^Tags\[\d+\]$/.test(path)) {
+      return recipeForm.tags;
+    }
+    return fields[path];
+  };
+
+  return Object.entries(errors).flatMap(([path, messages]) =>
+    messages.map((message) => ({
+      kind: 'server',
+      message,
+      fieldTree: fieldFor(path),
+    })),
+  );
+}
+
+const indexesWhere = <T>(items: T[], keep: (item: T) => boolean): number[] =>
+  items.flatMap((item, index) => (keep(item) ? [index] : []));

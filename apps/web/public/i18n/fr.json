@@ -1,6 +1,7 @@
 {
   "common": {
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "cancel": "Annuler"
   },
   "forms": {
     "errors": {
@@ -58,7 +59,11 @@
       "steps": "Étapes",
       "notes": "Notes",
       "updatedAt": "Mis à jour le {{date}}",
-      "edit": "Modifier"
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer cette recette ?",
+      "deleteMessage": "« {{title}} » sera définitivement supprimée.",
+      "deleteFailed": "Impossible de supprimer la recette. Réessaie dans un instant."
     },
     "edit": {
       "pageTitle": "Modifier la recette",

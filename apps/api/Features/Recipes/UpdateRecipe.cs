@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
@@ -16,6 +17,7 @@ public static class UpdateRecipe
         Guid id,
         RecipeInput input,
         AppDbContext db,
+        IStringLocalizer<RecipeInput> localizer,
         CancellationToken cancellationToken)
     {
         Recipe? recipe = await db.Recipes
@@ -26,7 +28,8 @@ public static class UpdateRecipe
             return TypedResults.NotFound();
         }
 
-        (List<Tag> tags, Dictionary<string, string[]> errors) = await input.LoadTagsAsync(db, cancellationToken);
+        (List<Tag> tags, Dictionary<string, string[]> errors) =
+            await input.LoadTagsAsync(db, localizer, cancellationToken);
         if (errors.Count > 0)
         {
             return TypedResults.ValidationProblem(errors);

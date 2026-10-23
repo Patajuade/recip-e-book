@@ -91,3 +91,15 @@ Content-Type: application/json
 }
 
 ###
+
+# Same in French (Accept-Language) → 400 "Tag inconnu"
+POST {{RecipEBook.Api_HostAddress}}/api/recipes
+Content-Type: application/json
+Accept-Language: fr
+
+{
+  "title": "Test",
+  "tags": ["vegetarian", "not-a-tag"]
+}
+
+###

@@ -11,7 +11,7 @@ import {
   recipeDetailResource,
 } from '@recip-e-book/web-recipes-data-access';
 import { RecipeDetails } from '@recip-e-book/web-recipes-models';
-import { Confirmation } from '@recip-e-book/web-shared-ui';
+import { Confirmation, Toaster } from '@recip-e-book/web-shared-ui';
 import { DurationPipe } from '@recip-e-book/web-shared-util';
 
 @Component({
@@ -44,6 +44,7 @@ export class RecipeDetail {
   private readonly api = inject(RecipeApi);
   private readonly confirmation = inject(Confirmation);
   private readonly router = inject(Router);
+  private readonly toaster = inject(Toaster);
 
   protected async delete(recipe: RecipeDetails): Promise<void> {
     const confirmed = await this.confirmation.ask({
@@ -69,6 +70,7 @@ export class RecipeDetail {
         return;
       }
     }
+    this.toaster.show(this.transloco.translate('recipes.detail.deleted'));
     await this.router.navigate(['/recipes']);
   }
 }

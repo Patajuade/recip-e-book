@@ -63,7 +63,8 @@
       "delete": "Delete",
       "deleteTitle": "Delete this recipe?",
       "deleteMessage": "“{{title}}” will be permanently deleted.",
-      "deleteFailed": "Couldn't delete the recipe. Try again in a moment."
+      "deleteFailed": "Couldn't delete the recipe. Try again in a moment.",
+      "deleted": "Recipe deleted."
     },
     "edit": {
       "pageTitle": "Edit recipe",
@@ -95,7 +96,8 @@
       "tagsError": "Couldn't load the tags.",
       "leaveTitle": "Leave without saving?",
       "leaveMessage": "Your changes to this recipe will be lost.",
-      "leave": "Leave"
+      "leave": "Leave",
+      "saved": "Recipe saved."
     }
   },
   "tags": {

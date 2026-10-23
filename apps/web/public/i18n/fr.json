@@ -212,5 +212,9 @@
     "occasion": "Occasion",
     "cuisine": "Cuisine",
     "practical": "Pratique"
+  },
+  "httpErrors": {
+    "unreachable": "Impossible de joindre le serveur. Vérifie ta connexion et réessaie.",
+    "server": "Le serveur a rencontré un problème. Réessaie dans un instant."
   }
 }

@@ -20,6 +20,7 @@ import {
   TranslocoTitleStrategy,
 } from '@recip-e-book/web-shared-i18n';
 import { appRoutes } from './app.routes';
+import { httpErrorInterceptor } from './http-error-interceptor';
 import { TranslocoHttpLoader } from './transloco-loader';
 
 export const appConfig: ApplicationConfig = {
@@ -27,7 +28,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes, withComponentInputBinding()),
     { provide: TitleStrategy, useClass: TranslocoTitleStrategy },
-    provideHttpClient(withInterceptors([acceptLanguageInterceptor])),
+    provideHttpClient(
+      withInterceptors([acceptLanguageInterceptor, httpErrorInterceptor]),
+    ),
     provideTransloco({
       config: {
         availableLangs: LANGUAGES,

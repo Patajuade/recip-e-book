@@ -92,7 +92,10 @@
       "selectedTags": "Selected tags",
       "noTags": "No tags selected.",
       "removeTag": "Remove {{tag}}",
-      "tagsError": "Couldn't load the tags."
+      "tagsError": "Couldn't load the tags.",
+      "leaveTitle": "Leave without saving?",
+      "leaveMessage": "Your changes to this recipe will be lost.",
+      "leave": "Leave"
     }
   },
   "tags": {

@@ -92,7 +92,10 @@
       "selectedTags": "Tags sélectionnés",
       "noTags": "Aucun tag sélectionné.",
       "removeTag": "Retirer {{tag}}",
-      "tagsError": "Impossible de charger les tags."
+      "tagsError": "Impossible de charger les tags.",
+      "leaveTitle": "Quitter sans enregistrer ?",
+      "leaveMessage": "Tes modifications de cette recette seront perdues.",
+      "leave": "Quitter"
     }
   },
   "tags": {

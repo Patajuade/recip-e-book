@@ -1,3 +1,5 @@
+import { TagSummary } from './tag-models';
+
 // Write model: body of POST /api/recipes and PUT /api/recipes/{id} (RecipeInput in the API).
 export interface IngredientInput {
   name: string;
@@ -21,7 +23,7 @@ export interface RecipeSummary {
   id: string;
   title: string;
   totalTimeMinutes: number | null;
-  tags: string[];
+  tags: TagSummary[];
 }
 
 export interface IngredientDetails {
@@ -42,5 +44,5 @@ export interface RecipeDetails {
   updatedAt: string;
   ingredients: IngredientDetails[];
   steps: string[];
-  tags: string[];
+  tags: TagSummary[];
 }

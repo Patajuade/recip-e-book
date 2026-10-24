@@ -20,6 +20,15 @@
   --color-on-primary: #fff5f2;
   --color-danger: #ff8a65;
   --color-success: #90a955;
+
+  /* Tag categories, the same in every theme: the text color of every theme reaches 4.5:1 on them. */
+  --color-tag-course: #800e13;
+  --color-tag-diet: #4d752c;
+  --color-tag-main-ingredient: #3d6a8a;
+  --color-tag-cooking-method: #9a4a1f;
+  --color-tag-occasion: #6a3d8f;
+  --color-tag-cuisine: #22686a;
+  --color-tag-practical: #4a5568;
 }
 
 /*
@@ -204,6 +213,46 @@
 
   .btn-danger {
     @apply bg-danger text-canvas hover:bg-danger/85;
+  }
+
+  /* Tag category colors (data-category, camelCase like the API); seasons take the accent. */
+  [data-category='course'] {
+    --tag-color: var(--color-tag-course);
+  }
+  [data-category='diet'] {
+    --tag-color: var(--color-tag-diet);
+  }
+  [data-category='mainIngredient'] {
+    --tag-color: var(--color-tag-main-ingredient);
+  }
+  [data-category='cookingMethod'] {
+    --tag-color: var(--color-tag-cooking-method);
+  }
+  [data-category='season'] {
+    --tag-color: var(--color-accent);
+  }
+  [data-category='occasion'] {
+    --tag-color: var(--color-tag-occasion);
+  }
+  [data-category='cuisine'] {
+    --tag-color: var(--color-tag-cuisine);
+  }
+  [data-category='practical'] {
+    --tag-color: var(--color-tag-practical);
+  }
+
+  .tag-chip {
+    @apply rounded-full bg-(--tag-color) px-2 py-0.5 text-xs text-fg;
+
+    /* The accent is light: a tint with accent text instead of a filled chip. */
+    &[data-category='season'] {
+      @apply bg-accent/15 text-accent;
+    }
+  }
+
+  /* Legend dot of a category. */
+  .tag-dot {
+    @apply inline-block size-3 rounded-full bg-(--tag-color);
   }
 
   .alert-error {

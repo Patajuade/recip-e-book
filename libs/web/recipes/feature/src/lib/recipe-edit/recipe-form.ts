@@ -70,7 +70,7 @@ export const toFormValue = (recipe: RecipeDetails): RecipeFormValue => ({
   steps: recipe.steps.length
     ? recipe.steps.map((text) => ({ text }))
     : [emptyStep()],
-  tags: [...recipe.tags],
+  tags: recipe.tags.map((tag) => tag.key),
 });
 
 export const recipeFormSchema = schema<RecipeFormValue>((recipe) => {

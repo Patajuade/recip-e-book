@@ -14,7 +14,12 @@ namespace RecipEBook.Api.Features.Tags;
 public static class ListTags
 {
     /// <param name="Category">camelCase, like the frontend translation keys (`mainIngredient`).</param>
-    public record TagSummary(string Key, string Category);
+    public record TagSummary(string Key, string Category)
+    {
+        /// <summary>Also used by the recipe queries, so tags have one JSON shape everywhere.</summary>
+        public static TagSummary From(string key, TagCategory category) =>
+            new(key, JsonNamingPolicy.CamelCase.ConvertName(category.ToString()));
+    }
 
     private static readonly Dictionary<string, int> CatalogOrder = TagCatalog.Tags
         .Select((tag, index) => (tag.Key, index))
@@ -28,7 +33,7 @@ public static class ListTags
 
         List<TagSummary> catalog = tags
             .OrderBy(t => CatalogOrder.GetValueOrDefault(t.Key, int.MaxValue))
-            .Select(t => new TagSummary(t.Key, JsonNamingPolicy.CamelCase.ConvertName(t.Category.ToString())))
+            .Select(t => TagSummary.From(t.Key, t.Category))
             .ToList();
 
         return TypedResults.Ok(catalog);

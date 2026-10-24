@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
 
+using static RecipEBook.Api.Features.Tags.ListTags;
+
 namespace RecipEBook.Api.Features.Recipes;
 
 /// <summary>
@@ -11,7 +13,7 @@ namespace RecipEBook.Api.Features.Recipes;
 /// </summary>
 public static class ListRecipes
 {
-    public record RecipeSummary(Guid Id, string Title, int? TotalTimeMinutes, List<string> Tags);
+    public record RecipeSummary(Guid Id, string Title, int? TotalTimeMinutes, List<TagSummary> Tags);
 
     public static async Task<Ok<List<RecipeSummary>>> Handle(
         string? search,
@@ -32,16 +34,28 @@ public static class ListRecipes
             query = query.Where(r => r.Tags.Any(t => t.Key == tag));
         }
 
-        List<RecipeSummary> recipes = await query
+        var rows = await query
             .OrderByDescending(r => r.UpdatedAt)
-            .Select(r => new RecipeSummary(
+            .Select(r => new
+            {
                 r.Id,
                 r.Title,
-                r.PrepTimeMinutes == null && r.CookTimeMinutes == null
+                TotalTimeMinutes = r.PrepTimeMinutes == null && r.CookTimeMinutes == null
                     ? (int?)null
                     : (r.PrepTimeMinutes ?? 0) + (r.CookTimeMinutes ?? 0),
-                r.Tags.OrderBy(t => t.Key).Select(t => t.Key).ToList()))
+                Tags = r.Tags.OrderBy(t => t.Key).Select(t => new { t.Key, t.Category }).ToList(),
+            })
             .ToListAsync(cancellationToken);
+
+        // The category's camelCase name is computed in memory: SQL can't translate it.
+        List<RecipeSummary> recipes =
+        [
+            .. rows.Select(r => new RecipeSummary(
+                r.Id,
+                r.Title,
+                r.TotalTimeMinutes,
+                [.. r.Tags.Select(t => TagSummary.From(t.Key, t.Category))])),
+        ];
 
         return TypedResults.Ok(recipes);
     }

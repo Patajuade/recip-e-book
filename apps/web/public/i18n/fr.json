@@ -216,5 +216,21 @@
   "httpErrors": {
     "unreachable": "Impossible de joindre le serveur. Vérifie ta connexion et réessaie.",
     "server": "Le serveur a rencontré un problème. Réessaie dans un instant."
+  },
+  "themePicker": {
+    "label": "Thème",
+    "background": "Fond",
+    "accent": "Accent"
+  },
+  "themes": {
+    "cave": "Cave à vin",
+    "sousbois": "Sous-bois",
+    "nuit": "Nuit bleue"
+  },
+  "accents": {
+    "citron": "Citron",
+    "safran": "Safran",
+    "menthe": "Menthe",
+    "glacier": "Glacier"
   }
 }

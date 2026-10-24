@@ -4,7 +4,7 @@
       <li>
         <button
           type="button"
-          class="rounded px-2 py-1 text-sm hover:bg-stone-100"
+          class="rounded px-2 py-1 text-sm text-fg-muted not-aria-pressed:hover:bg-surface-raised aria-pressed:bg-primary aria-pressed:text-on-primary"
           [class.font-semibold]="language.id === activeLang()"
           [attr.aria-pressed]="language.id === activeLang()"
           [attr.lang]="language.id"

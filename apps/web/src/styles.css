@@ -1,14 +1,131 @@
 @import 'tailwindcss' source(none);
 @import '@angular/cdk/overlay-prebuilt.css';
+@import '@fontsource-variable/figtree/wght.css';
+@import '@fontsource/young-serif';
 @source '../';
 @source '../../../libs';
 
+/*
+ * Design tokens. Only these colors exist (the default palette is removed), so templates
+ * can't drift from the theme. The values here are the default theme: Cave à vin + Citron.
+ */
+@theme {
+  --color-*: initial;
+
+  --font-sans: 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Young Serif', ui-serif, Georgia, serif;
+
+  /* Brand, the same in every theme. */
+  --color-primary: #ad2831;
+  --color-on-primary: #fff5f2;
+  --color-danger: #ff8a65;
+  --color-success: #90a955;
+
+  /* Background (data-theme). line-strong reaches 3:1 for input borders (WCAG 1.4.11). */
+  --color-canvas: #180507;
+  --color-surface: #250902;
+  --color-surface-raised: #38040e;
+  --color-line: #5a1a22;
+  --color-line-strong: #865658;
+  --color-fg: #f6eae3;
+  --color-fg-muted: #c9afa8;
+  --color-primary-ink: #ec7e85;
+
+  /* Accent (data-accent): main call to action and focus ring. */
+  --color-accent: #ecf39e;
+  --color-on-accent: #250902;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  [data-theme='sousbois'] {
+    --color-canvas: #0a140a;
+    --color-surface: #132a13;
+    --color-surface-raised: #1d3a1c;
+    --color-line: #31572c;
+    --color-line-strong: #58784f;
+    --color-fg: #eef3e0;
+    --color-fg-muted: #afc09c;
+    --color-primary-ink: #f08a90;
+  }
+
+  [data-theme='nuit'] {
+    --color-canvas: #070d18;
+    --color-surface: #0e182b;
+    --color-surface-raised: #16233d;
+    --color-line: #26395e;
+    --color-line-strong: #566686;
+    --color-fg: #e9eef6;
+    --color-fg-muted: #9daac3;
+    --color-primary-ink: #f08a90;
+  }
+
+  [data-accent='safran'] {
+    --color-accent: #f2b84b;
+    --color-on-accent: #1f1300;
+  }
+
+  [data-accent='menthe'] {
+    --color-accent: #6fe0c8;
+    --color-on-accent: #04201a;
+  }
+
+  [data-accent='glacier'] {
+    --color-accent: #a8d8ff;
+    --color-on-accent: #08182a;
+  }
+
+  body {
+    @apply bg-canvas text-fg;
+  }
+
+  /* Young Serif has a single weight: a bold heading would be synthesized. */
+  h1,
+  h2 {
+    @apply font-display font-normal;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+}
+
 @layer components {
   .form-control {
-    @apply rounded border border-stone-300 px-3 py-2;
+    @apply rounded border border-line-strong bg-surface px-3 py-2 text-fg placeholder:text-fg-muted;
 
     &[aria-invalid='true'] {
-      @apply border-red-600;
+      @apply border-danger;
     }
+  }
+
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost,
+  .btn-danger {
+    @apply rounded px-4 py-2 text-sm font-medium disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-on-primary hover:bg-primary/85;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-on-accent hover:bg-accent/85;
+  }
+
+  .btn-ghost {
+    @apply border border-line hover:bg-surface-raised;
+  }
+
+  .btn-danger {
+    @apply bg-danger text-canvas hover:bg-danger/85;
+  }
+
+  .alert-error {
+    @apply rounded border border-danger/40 bg-danger/10 p-4 text-danger;
   }
 }

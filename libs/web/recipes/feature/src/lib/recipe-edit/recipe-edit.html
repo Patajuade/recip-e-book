@@ -1,20 +1,16 @@
 <ng-container *transloco="let t">
-  <h1 class="text-2xl font-bold">
+  <h1 class="text-3xl">
     {{ id() ? t('recipes.edit.heading') : t('recipes.new.heading') }}
   </h1>
 
   @if (recipe.isLoading()) {
-    <p class="mt-6 text-stone-600">{{ t('recipes.detail.loading') }}</p>
+    <p class="mt-6 text-fg-muted">{{ t('recipes.detail.loading') }}</p>
   } @else if (notFound()) {
-    <p class="mt-6 text-stone-600">{{ t('recipes.detail.notFound') }}</p>
+    <p class="mt-6 text-fg-muted">{{ t('recipes.detail.notFound') }}</p>
   } @else if (recipe.error()) {
-    <div class="mt-6 rounded border border-red-200 bg-red-50 p-4 text-red-800">
+    <div class="alert-error mt-6">
       <p>{{ t('recipes.detail.error') }}</p>
-      <button
-        type="button"
-        class="mt-2 rounded bg-red-700 px-3 py-1 text-sm text-white hover:bg-red-800"
-        (click)="recipe.reload()"
-      >
+      <button type="button" class="btn-ghost mt-2" (click)="recipe.reload()">
         {{ t('common.retry') }}
       </button>
     </div>
@@ -120,7 +116,7 @@
             </lib-labeled-field>
             <button
               type="button"
-              class="rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
+              class="rounded px-3 py-2 text-sm text-fg-muted hover:bg-surface-raised hover:text-fg"
               (click)="removeIngredient(i)"
             >
               {{ t('recipes.form.remove') }}
@@ -129,7 +125,7 @@
         }
         <button
           type="button"
-          class="self-start rounded border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100"
+          class="btn-ghost self-start"
           (click)="addIngredient()"
         >
           {{ t('recipes.form.addIngredient') }}
@@ -155,18 +151,14 @@
             </lib-labeled-field>
             <button
               type="button"
-              class="rounded px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
+              class="rounded px-3 py-2 text-sm text-fg-muted hover:bg-surface-raised hover:text-fg"
               (click)="removeStep(i)"
             >
               {{ t('recipes.form.remove') }}
             </button>
           </div>
         }
-        <button
-          type="button"
-          class="self-start rounded border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100"
-          (click)="addStep()"
-        >
+        <button type="button" class="btn-ghost self-start" (click)="addStep()">
           {{ t('recipes.form.addStep') }}
         </button>
       </fieldset>
@@ -181,7 +173,7 @@
             [catalog]="tagCatalog.value()"
           />
         } @else if (tagCatalog.error()) {
-          <p class="text-sm text-red-800">
+          <p class="text-sm text-danger">
             {{ t('recipes.form.tagsError') }}
             <button
               type="button"
@@ -207,10 +199,7 @@
       </lib-labeled-field>
 
       @for (error of recipeForm().errors(); track $index) {
-        <p
-          role="alert"
-          class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800"
-        >
+        <p role="alert" class="alert-error p-3 text-sm">
           {{
             error.kind === 'server'
               ? error.message
@@ -222,13 +211,13 @@
       <div class="flex gap-2">
         <button
           type="submit"
-          class="rounded bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+          class="btn-primary"
           [disabled]="recipeForm().submitting()"
         >
           {{ t('recipes.form.save') }}
         </button>
         <a
-          class="rounded px-4 py-2 text-sm text-stone-700 hover:bg-stone-100"
+          class="rounded px-4 py-2 text-sm text-fg-muted hover:bg-surface-raised hover:text-fg"
           [routerLink]="id() ? ['/recipes', id()] : ['/recipes']"
           >{{ t('recipes.form.cancel') }}</a
         >

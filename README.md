@@ -320,6 +320,16 @@ A phase is **done** when all its milestone issues are closed and its validation 
 
 **Tasks:** [Phase 10 milestone](https://github.com/Patajuade/recip-e-book/milestone/11)
 
+### Phase 11 — Shopping lists & PWA
+
+**Tasks:** [Phase 11 milestone](https://github.com/Patajuade/recip-e-book/milestone/12)
+
+Added on 2026-10-24 at the developer's request.
+
+- **PWA** (#58): installable, the app shell and the recipes already viewed stay readable offline; creating and editing stay online.
+- **Shopping lists** (#139–#142): several named lists stored by the API (the same lists on every device), filled from a recipe's ingredients (« Ajouter à la liste ») or by hand, items checked off in the store.
+- **Validation**: on a phone, install the app, add a recipe to a list, then check the items off in a store.
+
 ---
 
 ## 7. Progress & log

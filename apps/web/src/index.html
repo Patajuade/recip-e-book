@@ -5,7 +5,10 @@
     <title>Recip-e-book</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- The browser picks the best supported icon; if several fit, the last one wins (MDN). -->
+    <link rel="icon" href="favicon.ico" sizes="32x32" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <script>
       // Applies the saved theme before the first paint, so there's no flash of the default one.
       // ThemeSettings (shared/ui) validates the values and keeps them in sync afterwards.

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 
 using RecipEBook.Api.Features.Recipes;
+using RecipEBook.Api.Features.Tags;
 
 namespace RecipEBook.Api.IntegrationTests.Recipes;
 
@@ -25,7 +26,7 @@ public class GetRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Recipe
             [new GetRecipe.IngredientDetails("carrots", 3, "piece"), new GetRecipe.IngredientDetails("salt", null, null)],
             recipe.Ingredients);
         Assert.Equal(["Cut the carrots.", "Cook them."], recipe.Steps);
-        Assert.Equal(["soup", "vegetarian"], recipe.Tags);
+        Assert.Equal([new ListTags.TagSummary("soup", "course"), new ListTags.TagSummary("vegetarian", "diet")], recipe.Tags);
         Assert.Equal(DateTimeKind.Utc, recipe.CreatedAt.Kind);
         Assert.InRange(recipe.CreatedAt, before, DateTime.UtcNow);
     }

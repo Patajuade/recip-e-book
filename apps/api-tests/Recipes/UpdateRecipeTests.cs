@@ -34,7 +34,7 @@ public class UpdateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Rec
         Assert.Null(after.PrepTimeMinutes);
         Assert.Equal([new GetRecipe.IngredientDetails("eggs", 3, null)], after.Ingredients);
         Assert.Equal(["Beat the eggs."], after.Steps);
-        Assert.Equal(["eggs", "quick"], after.Tags);
+        Assert.Equal(["eggs", "quick"], after.Tags.Select(t => t.Key));
         Assert.Equal(before!.CreatedAt, after.CreatedAt);
         Assert.True(after.UpdatedAt > before.UpdatedAt);
     }
@@ -91,6 +91,6 @@ public class UpdateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Rec
         HttpValidationProblemDetails? problem = await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>();
         Assert.Equal(["Tags[0]"], problem!.Errors.Keys);
         GetRecipe.RecipeDetails? recipe = await _client.GetFromJsonAsync<GetRecipe.RecipeDetails>($"/api/recipes/{id}");
-        Assert.Equal(["soup"], recipe!.Tags);
+        Assert.Equal(["soup"], recipe!.Tags.Select(t => t.Key));
     }
 }

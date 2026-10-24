@@ -8,7 +8,8 @@
         <li>
           <button
             type="button"
-            class="rounded-full bg-primary px-3 py-1 text-sm text-on-primary hover:bg-primary/85"
+            class="tag-chip px-3 py-1 text-sm hover:underline"
+            [attr.data-category]="categoryOf().get(key)"
             [attr.aria-label]="
               t('recipes.form.removeTag', { tag: t('tags.' + key) })
             "
@@ -26,6 +27,11 @@
   @for (group of groups(); track group.category) {
     <details class="rounded border border-line bg-surface">
       <summary class="cursor-pointer px-3 py-2 text-sm font-medium">
+        <span
+          aria-hidden="true"
+          class="tag-dot mr-1 align-middle"
+          [attr.data-category]="group.category"
+        ></span>
         {{ t('tagCategories.' + group.category) }}
         @if (group.selectedCount) {
           <span class="text-fg-muted">({{ group.selectedCount }})</span>
@@ -39,9 +45,10 @@
               class="rounded-full border px-3 py-1 text-sm"
               [class]="
                 selected().has(key)
-                  ? 'border-primary bg-primary text-on-primary'
+                  ? 'tag-chip border-transparent'
                   : 'border-line-strong hover:bg-surface-raised'
               "
+              [attr.data-category]="group.category"
               [attr.aria-pressed]="selected().has(key)"
               (click)="toggle(key)"
             >

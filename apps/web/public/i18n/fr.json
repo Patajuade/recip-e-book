@@ -98,7 +98,8 @@
       "leaveMessage": "Tes modifications de cette recette seront perdues.",
       "leave": "Quitter",
       "saved": "Recette enregistrée."
-    }
+    },
+    "tagCategoryPrefix": "{{category}} : "
   },
   "tags": {
     "breakfast": "Petit-déjeuner",

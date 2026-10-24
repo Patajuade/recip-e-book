@@ -15,6 +15,9 @@ export class TagPicker implements FormValueControl<string[]> {
   readonly catalog = input.required<readonly TagSummary[]>();
 
   protected readonly selected = computed(() => new Set(this.value()));
+  protected readonly categoryOf = computed(
+    () => new Map(this.catalog().map((tag) => [tag.key, tag.category])),
+  );
 
   // Catalog order is kept: the API returns tags grouped by category.
   protected readonly groups = computed(() => {

@@ -129,6 +129,6 @@ public class CreateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Rec
         Guid id = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Duplicates", "quick", "eggs", "quick"));
 
         GetRecipe.RecipeDetails? recipe = await _client.GetFromJsonAsync<GetRecipe.RecipeDetails>($"/api/recipes/{id}");
-        Assert.Equal(["eggs", "quick"], recipe!.Tags);
+        Assert.Equal(["eggs", "quick"], recipe!.Tags.Select(t => t.Key));
     }
 }

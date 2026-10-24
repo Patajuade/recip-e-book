@@ -98,7 +98,8 @@
       "leaveMessage": "Your changes to this recipe will be lost.",
       "leave": "Leave",
       "saved": "Recipe saved."
-    }
+    },
+    "tagCategoryPrefix": "{{category}}: "
   },
   "tags": {
     "breakfast": "Breakfast",

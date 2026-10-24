@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 using RecipEBook.Api.Infrastructure.Persistence;
 
+using static RecipEBook.Api.Features.Tags.ListTags;
+
 namespace RecipEBook.Api.Features.Recipes;
 
 /// <summary>
@@ -24,7 +26,7 @@ public static class GetRecipe
         DateTime UpdatedAt,
         List<IngredientDetails> Ingredients,
         List<string> Steps,
-        List<string> Tags);
+        List<TagSummary> Tags);
 
     public static async Task<Results<Ok<RecipeDetails>, NotFound>> Handle(
         Guid id,
@@ -49,7 +51,7 @@ public static class GetRecipe
                 r.UpdatedAt,
                 r.Ingredients,
                 r.Steps,
-                Tags = r.Tags.OrderBy(t => t.Key).Select(t => t.Key).ToList(),
+                Tags = r.Tags.OrderBy(t => t.Key).Select(t => new { t.Key, t.Category }).ToList(),
             })
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -70,6 +72,6 @@ public static class GetRecipe
             row.UpdatedAt,
             [.. row.Ingredients.Select(i => new IngredientDetails(i.Name, i.Quantity, i.Unit))],
             [.. row.Steps.Select(s => s.Instruction)],
-            row.Tags));
+            [.. row.Tags.Select(t => TagSummary.From(t.Key, t.Category))]));
     }
 }

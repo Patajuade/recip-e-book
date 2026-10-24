@@ -15,7 +15,8 @@ export interface ConfirmDialogData {
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.css',
   host: {
-    class: 'flex max-w-md flex-col gap-4 rounded-lg bg-white p-6 shadow-xl',
+    class:
+      'flex max-w-md flex-col gap-4 rounded-lg border border-line bg-surface p-6 shadow-xl',
   },
 })
 export class ConfirmDialog {

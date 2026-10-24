@@ -8,7 +8,7 @@
         <li>
           <button
             type="button"
-            class="rounded-full bg-stone-900 px-3 py-1 text-sm text-white hover:bg-stone-700"
+            class="rounded-full bg-primary px-3 py-1 text-sm text-on-primary hover:bg-primary/85"
             [attr.aria-label]="
               t('recipes.form.removeTag', { tag: t('tags.' + key) })
             "
@@ -20,15 +20,15 @@
       }
     </ul>
   } @else {
-    <p class="text-sm text-stone-500">{{ t('recipes.form.noTags') }}</p>
+    <p class="text-sm text-fg-muted">{{ t('recipes.form.noTags') }}</p>
   }
 
   @for (group of groups(); track group.category) {
-    <details class="rounded border border-stone-200 bg-white">
+    <details class="rounded border border-line bg-surface">
       <summary class="cursor-pointer px-3 py-2 text-sm font-medium">
         {{ t('tagCategories.' + group.category) }}
         @if (group.selectedCount) {
-          <span class="text-stone-500">({{ group.selectedCount }})</span>
+          <span class="text-fg-muted">({{ group.selectedCount }})</span>
         }
       </summary>
       <ul class="flex flex-wrap gap-1 px-3 pb-3">
@@ -39,8 +39,8 @@
               class="rounded-full border px-3 py-1 text-sm"
               [class]="
                 selected().has(key)
-                  ? 'border-stone-900 bg-stone-900 text-white'
-                  : 'border-stone-300 bg-white hover:bg-stone-100'
+                  ? 'border-primary bg-primary text-on-primary'
+                  : 'border-line-strong hover:bg-surface-raised'
               "
               [attr.aria-pressed]="selected().has(key)"
               (click)="toggle(key)"

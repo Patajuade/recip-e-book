@@ -13,9 +13,32 @@
   } @else if (recipe.hasValue()) {
     <header class="flex flex-wrap items-center justify-between gap-2">
       <h1 class="text-2xl">{{ recipe.value().title }}</h1>
-      <a [routerLink]="['/recipes', id()]" class="btn-ghost">{{
-        t('recipes.cook.exit')
-      }}</a>
+      <div class="flex flex-wrap items-center gap-2">
+        @if (wakeLock.supported) {
+          <!-- MDN: show whether the screen is kept on, and let the user turn it off. -->
+          <button
+            type="button"
+            class="btn-ghost flex items-center gap-2"
+            [attr.aria-pressed]="wakeLock.enabled()"
+            (click)="wakeLock.enabled.set(!wakeLock.enabled())"
+          >
+            <span
+              aria-hidden="true"
+              class="size-2.5 rounded-full"
+              [class]="wakeLock.active() ? 'bg-success' : 'bg-line-strong'"
+            ></span>
+            {{ t('recipes.cook.keepScreenOn') }}
+          </button>
+          @if (wakeLock.enabled() && wakeLock.failed()) {
+            <span class="text-xs text-fg-muted">{{
+              t('recipes.cook.screenLockUnavailable')
+            }}</span>
+          }
+        }
+        <a [routerLink]="['/recipes', id()]" class="btn-ghost">{{
+          t('recipes.cook.exit')
+        }}</a>
+      </div>
     </header>
 
     @if (steps().length) {

@@ -3,6 +3,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
+import { ScreenWakeLock } from '@recip-e-book/web-shared-util';
 
 const SWIPE_DISTANCE_PX = 60;
 
@@ -12,6 +13,7 @@ const SWIPE_DISTANCE_PX = 60;
   imports: [TranslocoDirective, RouterLink],
   templateUrl: './recipe-cook.html',
   styleUrl: './recipe-cook.css',
+  providers: [ScreenWakeLock],
   host: {
     '(document:keydown.arrowright)': 'next()',
     '(document:keydown.arrowleft)': 'previous()',
@@ -36,6 +38,7 @@ export class RecipeCook {
     () => this.index() === this.steps().length - 1,
   );
 
+  protected readonly wakeLock = inject(ScreenWakeLock);
   private readonly router = inject(Router);
   private swipeStartX: number | null = null;
 

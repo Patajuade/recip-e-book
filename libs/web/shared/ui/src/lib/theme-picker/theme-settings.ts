@@ -1,6 +1,15 @@
 import { DOCUMENT, effect, inject, Service, signal } from '@angular/core';
 
-export const THEMES = ['cave', 'sousbois', 'nuit'] as const;
+export const THEMES = [
+  'cave',
+  'sousbois',
+  'nuit',
+  'bistrot',
+  'velours',
+  'jardin',
+  'terroir',
+  'prune',
+] as const;
 export const ACCENTS = ['citron', 'safran', 'menthe', 'glacier'] as const;
 export type Theme = (typeof THEMES)[number];
 export type Accent = (typeof ACCENTS)[number];

@@ -5,6 +5,8 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { TranslocoDecimalPipe } from '@jsverse/transloco-locale';
 import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
 import { ScreenWakeLock } from '@recip-e-book/web-shared-util';
+import { CookingTimers } from './cooking-timers';
+import { splitDurations } from './step-durations';
 
 const SWIPE_DISTANCE_PX = 60;
 
@@ -14,7 +16,7 @@ const SWIPE_DISTANCE_PX = 60;
   imports: [TranslocoDirective, TranslocoDecimalPipe, RouterLink],
   templateUrl: './recipe-cook.html',
   styleUrl: './recipe-cook.css',
-  providers: [ScreenWakeLock],
+  providers: [ScreenWakeLock, CookingTimers],
   host: {
     '(document:keydown.arrowright)': 'next()',
     '(document:keydown.arrowleft)': 'previous()',
@@ -34,6 +36,9 @@ export class RecipeCook {
     this.recipe.hasValue() ? this.recipe.value().steps : [],
   );
   protected readonly index = signal(0);
+  protected readonly segments = computed(() =>
+    splitDurations(this.steps()[this.index()] ?? ''),
+  );
   /** Indexes of the ingredients checked while cooking (not saved). */
   protected readonly checked = signal<ReadonlySet<number>>(new Set());
   protected readonly isFirst = computed(() => this.index() === 0);
@@ -42,6 +47,7 @@ export class RecipeCook {
   );
 
   protected readonly wakeLock = inject(ScreenWakeLock);
+  protected readonly timers = inject(CookingTimers);
   private readonly router = inject(Router);
   private swipeStartX: number | null = null;
 
@@ -61,6 +67,17 @@ export class RecipeCook {
       }
       return next;
     });
+  }
+
+  /** m:ss, or h:mm:ss from one hour. */
+  protected format(ms: number): string {
+    const total = Math.ceil(ms / 1000);
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const seconds = String(total % 60).padStart(2, '0');
+    return hours
+      ? `${hours}:${String(minutes).padStart(2, '0')}:${seconds}`
+      : `${minutes}:${seconds}`;
   }
 
   protected finish(): void {

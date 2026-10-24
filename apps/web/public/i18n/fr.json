@@ -112,7 +112,15 @@
       "noSteps": "Cette recette n'a pas encore d'étapes.",
       "keepScreenOn": "Garder l'écran allumé",
       "screenLockUnavailable": "Le navigateur ne peut pas garder l'écran allumé pour l'instant.",
-      "ingredients": "Ingrédients ({{checked}}/{{total}})"
+      "ingredients": "Ingrédients ({{checked}}/{{total}})",
+      "timers": "Minuteurs",
+      "startTimer": "Lancer un minuteur de {{duration}}",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "stop": "Arrêter",
+      "dismiss": "OK",
+      "timerDone": "Terminé !",
+      "timerRang": "Le minuteur de {{label}} est terminé."
     }
   },
   "tags": {

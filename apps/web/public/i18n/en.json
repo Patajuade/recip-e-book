@@ -112,7 +112,15 @@
       "noSteps": "This recipe doesn't have any steps yet.",
       "keepScreenOn": "Keep the screen on",
       "screenLockUnavailable": "The browser can't keep the screen on right now.",
-      "ingredients": "Ingredients ({{checked}}/{{total}})"
+      "ingredients": "Ingredients ({{checked}}/{{total}})",
+      "timers": "Timers",
+      "startTimer": "Start a {{duration}} timer",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop",
+      "dismiss": "OK",
+      "timerDone": "Done!",
+      "timerRang": "The {{label}} timer is done."
     }
   },
   "tags": {

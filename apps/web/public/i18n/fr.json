@@ -225,7 +225,12 @@
   "themes": {
     "cave": "Cave à vin",
     "sousbois": "Sous-bois",
-    "nuit": "Nuit bleue"
+    "nuit": "Nuit bleue",
+    "bistrot": "Bistrot",
+    "velours": "Velours",
+    "jardin": "Jardin d'hiver",
+    "terroir": "Terroir",
+    "prune": "Prune & sauge"
   },
   "accents": {
     "citron": "Citron",

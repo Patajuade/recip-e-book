@@ -225,7 +225,12 @@
   "themes": {
     "cave": "Wine cellar",
     "sousbois": "Undergrowth",
-    "nuit": "Midnight blue"
+    "nuit": "Midnight blue",
+    "bistrot": "Bistro",
+    "velours": "Velvet",
+    "jardin": "Winter garden",
+    "terroir": "Terroir",
+    "prune": "Plum & sage"
   },
   "accents": {
     "citron": "Lemon",

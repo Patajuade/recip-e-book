@@ -81,6 +81,62 @@
     --theme-primary-ink: #f08a90;
   }
 
+  /* Two-tone backgrounds: the background, header & cards, and fields use different hues. */
+  [data-theme='bistrot'] {
+    --theme-canvas: #0b1a0f;
+    --theme-surface: #2c0a10;
+    --theme-surface-raised: #43121a;
+    --theme-line: #5e2431;
+    --theme-line-strong: #6e8a5a;
+    --theme-fg: #f6ece4;
+    --theme-fg-muted: #b9c9a3;
+    --theme-primary-ink: #f39aa0;
+  }
+
+  [data-theme='velours'] {
+    --theme-canvas: #170408;
+    --theme-surface: #101b32;
+    --theme-surface-raised: #1a2a4a;
+    --theme-line: #2c3f66;
+    --theme-line-strong: #b2737e;
+    --theme-fg: #f2ecee;
+    --theme-fg-muted: #d0b4bb;
+    --theme-primary-ink: #f39aa0;
+  }
+
+  [data-theme='jardin'] {
+    --theme-canvas: #07101d;
+    --theme-surface: #12261a;
+    --theme-surface-raised: #1c3725;
+    --theme-line: #2e4f3a;
+    --theme-line-strong: #7189ae;
+    --theme-fg: #edf2e8;
+    --theme-fg-muted: #a9bad2;
+    --theme-primary-ink: #f39aa0;
+  }
+
+  [data-theme='terroir'] {
+    --theme-canvas: #14100b;
+    --theme-surface: #1e2513;
+    --theme-surface-raised: #3a1218;
+    --theme-line: #33405a;
+    --theme-line-strong: #6c7fa6;
+    --theme-fg: #f3ece2;
+    --theme-fg-muted: #c4b79f;
+    --theme-primary-ink: #f39aa0;
+  }
+
+  [data-theme='prune'] {
+    --theme-canvas: #1a0a16;
+    --theme-surface: #18271f;
+    --theme-surface-raised: #26392d;
+    --theme-line: #6a3a60;
+    --theme-line-strong: #a0728f;
+    --theme-fg: #f2edf0;
+    --theme-fg-muted: #c9b5c4;
+    --theme-primary-ink: #f39aa0;
+  }
+
   /* Accents (data-accent on <html>); Citron is the default. */
   :root,
   [data-accent='citron'] {

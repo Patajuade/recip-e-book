@@ -25,12 +25,14 @@
             [cdkMenuItemChecked]="theme === settings.theme()"
             (cdkMenuItemTriggered)="settings.theme.set(theme)"
           >
+            <!-- Background | header & cards, so two-tone themes can be told apart. -->
             <span
               aria-hidden="true"
-              class="flex size-5 items-center justify-center rounded-full border border-line-strong bg-canvas"
+              class="flex h-5 w-8 overflow-hidden rounded border border-line-strong"
               [attr.data-theme]="theme"
             >
-              <span class="size-2 rounded-full bg-primary"></span>
+              <span class="w-1/2 bg-canvas"></span>
+              <span class="w-1/2 bg-surface"></span>
             </span>
             {{ t('themes.' + theme) }}
             @if (theme === settings.theme()) {

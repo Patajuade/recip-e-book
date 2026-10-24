@@ -216,5 +216,21 @@
   "httpErrors": {
     "unreachable": "Can't reach the server. Check your connection and try again.",
     "server": "The server ran into a problem. Try again in a moment."
+  },
+  "themePicker": {
+    "label": "Theme",
+    "background": "Background",
+    "accent": "Accent"
+  },
+  "themes": {
+    "cave": "Wine cellar",
+    "sousbois": "Undergrowth",
+    "nuit": "Midnight blue"
+  },
+  "accents": {
+    "citron": "Lemon",
+    "safran": "Saffron",
+    "menthe": "Mint",
+    "glacier": "Glacier"
   }
 }

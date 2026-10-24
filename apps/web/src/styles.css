@@ -7,7 +7,7 @@
 
 /*
  * Design tokens. Only these colors exist (the default palette is removed), so templates
- * can't drift from the theme. The values here are the default theme: Cave à vin + Citron.
+ * can't drift from the theme.
  */
 @theme {
   --color-*: initial;
@@ -20,20 +20,25 @@
   --color-on-primary: #fff5f2;
   --color-danger: #ff8a65;
   --color-success: #90a955;
+}
 
-  /* Background (data-theme). line-strong reaches 3:1 for input borders (WCAG 1.4.11). */
-  --color-canvas: #180507;
-  --color-surface: #250902;
-  --color-surface-raised: #38040e;
-  --color-line: #5a1a22;
-  --color-line-strong: #865658;
-  --color-fg: #f6eae3;
-  --color-fg-muted: #c9afa8;
-  --color-primary-ink: #ec7e85;
-
-  /* Accent (data-accent): main call to action and focus ring. */
-  --color-accent: #ecf39e;
-  --color-on-accent: #250902;
+/*
+ * Themed tokens. `inline` makes utilities read var(--theme-…) on the element itself, so any
+ * element with data-theme / data-accent (like a swatch in the theme picker) shows that theme.
+ */
+@theme inline {
+  --color-canvas: var(--theme-canvas);
+  --color-surface: var(--theme-surface);
+  --color-surface-raised: var(--theme-surface-raised);
+  --color-line: var(--theme-line);
+  /* Reaches 3:1 for input borders (WCAG 1.4.11). */
+  --color-line-strong: var(--theme-line-strong);
+  --color-fg: var(--theme-fg);
+  --color-fg-muted: var(--theme-fg-muted);
+  --color-primary-ink: var(--theme-primary-ink);
+  /* Main call to action and focus ring. */
+  --color-accent: var(--theme-accent);
+  --color-on-accent: var(--theme-on-accent);
 }
 
 @layer base {
@@ -41,41 +46,61 @@
     color-scheme: dark;
   }
 
+  /* Backgrounds (data-theme on <html>); Cave à vin is the default. */
+  :root,
+  [data-theme='cave'] {
+    --theme-canvas: #180507;
+    --theme-surface: #250902;
+    --theme-surface-raised: #38040e;
+    --theme-line: #5a1a22;
+    --theme-line-strong: #865658;
+    --theme-fg: #f6eae3;
+    --theme-fg-muted: #c9afa8;
+    --theme-primary-ink: #ec7e85;
+  }
+
   [data-theme='sousbois'] {
-    --color-canvas: #0a140a;
-    --color-surface: #132a13;
-    --color-surface-raised: #1d3a1c;
-    --color-line: #31572c;
-    --color-line-strong: #58784f;
-    --color-fg: #eef3e0;
-    --color-fg-muted: #afc09c;
-    --color-primary-ink: #f08a90;
+    --theme-canvas: #0a140a;
+    --theme-surface: #132a13;
+    --theme-surface-raised: #1d3a1c;
+    --theme-line: #31572c;
+    --theme-line-strong: #58784f;
+    --theme-fg: #eef3e0;
+    --theme-fg-muted: #afc09c;
+    --theme-primary-ink: #f08a90;
   }
 
   [data-theme='nuit'] {
-    --color-canvas: #070d18;
-    --color-surface: #0e182b;
-    --color-surface-raised: #16233d;
-    --color-line: #26395e;
-    --color-line-strong: #566686;
-    --color-fg: #e9eef6;
-    --color-fg-muted: #9daac3;
-    --color-primary-ink: #f08a90;
+    --theme-canvas: #070d18;
+    --theme-surface: #0e182b;
+    --theme-surface-raised: #16233d;
+    --theme-line: #26395e;
+    --theme-line-strong: #566686;
+    --theme-fg: #e9eef6;
+    --theme-fg-muted: #9daac3;
+    --theme-primary-ink: #f08a90;
+  }
+
+  /* Accents (data-accent on <html>); Citron is the default. */
+  :root,
+  [data-accent='citron'] {
+    --theme-accent: #ecf39e;
+    --theme-on-accent: #250902;
   }
 
   [data-accent='safran'] {
-    --color-accent: #f2b84b;
-    --color-on-accent: #1f1300;
+    --theme-accent: #f2b84b;
+    --theme-on-accent: #1f1300;
   }
 
   [data-accent='menthe'] {
-    --color-accent: #6fe0c8;
-    --color-on-accent: #04201a;
+    --theme-accent: #6fe0c8;
+    --theme-on-accent: #04201a;
   }
 
   [data-accent='glacier'] {
-    --color-accent: #a8d8ff;
-    --color-on-accent: #08182a;
+    --theme-accent: #a8d8ff;
+    --theme-on-accent: #08182a;
   }
 
   body {

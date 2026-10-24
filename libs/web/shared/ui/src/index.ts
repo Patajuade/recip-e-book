@@ -7,3 +7,6 @@ export * from './lib/confirm-dialog/confirmation';
 
 export * from './lib/toast-list/toast-list';
 export * from './lib/toast-list/toaster';
+
+export * from './lib/theme-picker/theme-picker';
+export * from './lib/theme-picker/theme-settings';

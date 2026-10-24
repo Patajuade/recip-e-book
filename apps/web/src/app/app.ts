@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LanguageSwitcher } from '@recip-e-book/web-shared-i18n';
-import { ToastList } from '@recip-e-book/web-shared-ui';
+import { ThemePicker, ToastList } from '@recip-e-book/web-shared-ui';
 
 @Component({
   imports: [
@@ -11,6 +11,7 @@ import { ToastList } from '@recip-e-book/web-shared-ui';
     RouterLinkActive,
     TranslocoDirective,
     LanguageSwitcher,
+    ThemePicker,
     ToastList,
   ],
   selector: 'app-root',

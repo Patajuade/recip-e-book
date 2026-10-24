@@ -22,6 +22,11 @@
         <h1 class="text-4xl">{{ details.title }}</h1>
         <div class="flex gap-2">
           <a
+            [routerLink]="['/recipes', details.id, 'cook']"
+            class="btn-accent"
+            >{{ t('recipes.cook.start') }}</a
+          >
+          <a
             [routerLink]="['/recipes', details.id, 'edit']"
             class="btn-ghost"
             >{{ t('recipes.detail.edit') }}</a

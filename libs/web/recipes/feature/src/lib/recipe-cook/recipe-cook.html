@@ -1,0 +1,81 @@
+<section *transloco="let t" class="flex flex-col gap-6">
+  @if (recipe.isLoading()) {
+    <p class="text-fg-muted">{{ t('recipes.detail.loading') }}</p>
+  } @else if (notFound()) {
+    <p class="text-fg-muted">{{ t('recipes.detail.notFound') }}</p>
+  } @else if (recipe.error()) {
+    <div class="alert-error">
+      <p>{{ t('recipes.detail.error') }}</p>
+      <button type="button" class="btn-ghost mt-2" (click)="recipe.reload()">
+        {{ t('common.retry') }}
+      </button>
+    </div>
+  } @else if (recipe.hasValue()) {
+    <header class="flex flex-wrap items-center justify-between gap-2">
+      <h1 class="text-2xl">{{ recipe.value().title }}</h1>
+      <a [routerLink]="['/recipes', id()]" class="btn-ghost">{{
+        t('recipes.cook.exit')
+      }}</a>
+    </header>
+
+    @if (steps().length) {
+      <div class="flex flex-col gap-2">
+        <p class="text-sm text-fg-muted">
+          {{
+            t('recipes.cook.progress', {
+              current: index() + 1,
+              total: steps().length,
+            })
+          }}
+        </p>
+        <div
+          aria-hidden="true"
+          class="h-1.5 overflow-hidden rounded-full bg-surface-raised"
+        >
+          <div
+            class="h-full bg-accent transition-[width]"
+            [style.width.%]="((index() + 1) / steps().length) * 100"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Swiping left / right changes the step; vertical scrolling stays native. -->
+      <div
+        class="min-h-48 touch-pan-y rounded-lg border border-line bg-surface p-6"
+        (pointerdown)="swipeStart($event)"
+        (pointerup)="swipeEnd($event)"
+        (pointercancel)="swipeEnd($event)"
+      >
+        <p aria-live="polite" class="text-2xl leading-relaxed sm:text-3xl">
+          {{ steps()[index()] }}
+        </p>
+      </div>
+
+      <div class="flex justify-between gap-2">
+        <button
+          type="button"
+          class="btn-ghost px-6 py-3 text-base"
+          [disabled]="isFirst()"
+          (click)="previous()"
+        >
+          ← {{ t('recipes.cook.previous') }}
+        </button>
+        <!-- One button for both, so keyboard focus stays on it at the last step. -->
+        <button
+          type="button"
+          class="btn-accent px-6 py-3 text-base"
+          (click)="isLast() ? finish() : next()"
+        >
+          @if (isLast()) {
+            {{ t('recipes.cook.done') }}
+          } @else {
+            {{ t('recipes.cook.next') }} →
+          }
+        </button>
+      </div>
+      <p class="text-xs text-fg-muted">{{ t('recipes.cook.hint') }}</p>
+    } @else {
+      <p class="text-fg-muted">{{ t('recipes.cook.noSteps') }}</p>
+    }
+  }
+</section>

@@ -99,7 +99,18 @@
       "leave": "Leave",
       "saved": "Recipe saved."
     },
-    "tagCategoryPrefix": "{{category}}: "
+    "tagCategoryPrefix": "{{category}}: ",
+    "cook": {
+      "pageTitle": "Cooking mode",
+      "start": "Cook",
+      "exit": "Leave",
+      "progress": "Step {{current}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "done": "Done",
+      "hint": "Arrow keys or a swipe also change the step.",
+      "noSteps": "This recipe doesn't have any steps yet."
+    }
   },
   "tags": {
     "breakfast": "Breakfast",

@@ -99,7 +99,18 @@
       "leave": "Quitter",
       "saved": "Recette enregistrée."
     },
-    "tagCategoryPrefix": "{{category}} : "
+    "tagCategoryPrefix": "{{category}} : ",
+    "cook": {
+      "pageTitle": "Mode cuisine",
+      "start": "Cuisiner",
+      "exit": "Quitter",
+      "progress": "Étape {{current}} sur {{total}}",
+      "previous": "Précédente",
+      "next": "Suivante",
+      "done": "Terminé",
+      "hint": "Les flèches du clavier ou un glissement changent aussi d'étape.",
+      "noSteps": "Cette recette n'a pas encore d'étapes."
+    }
   },
   "tags": {
     "breakfast": "Petit-déjeuner",

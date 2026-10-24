@@ -41,64 +41,112 @@
       </div>
     </header>
 
-    @if (steps().length) {
-      <div class="flex flex-col gap-2">
-        <p class="text-sm text-fg-muted">
-          {{
-            t('recipes.cook.progress', {
-              current: index() + 1,
-              total: steps().length,
-            })
-          }}
-        </p>
-        <div
-          aria-hidden="true"
-          class="h-1.5 overflow-hidden rounded-full bg-surface-raised"
-        >
+    <div class="grid gap-6 md:grid-cols-[1fr_2fr] md:items-start">
+      @if (recipe.value().ingredients.length) {
+        <details open class="rounded-lg border border-line bg-surface">
+          <summary class="cursor-pointer px-4 py-3 font-medium">
+            {{
+              t('recipes.cook.ingredients', {
+                checked: checked().size,
+                total: recipe.value().ingredients.length,
+              })
+            }}
+          </summary>
+          <ul class="flex flex-col px-4 pb-3">
+            @for (
+              ingredient of recipe.value().ingredients;
+              track $index;
+              let i = $index
+            ) {
+              <li>
+                <label class="flex cursor-pointer items-start gap-3 py-1.5">
+                  <input
+                    type="checkbox"
+                    class="mt-1 size-5 shrink-0 accent-accent"
+                    [checked]="checked().has(i)"
+                    (change)="toggleIngredient(i)"
+                  />
+                  <span
+                    class="text-lg"
+                    [class.line-through]="checked().has(i)"
+                    [class.text-fg-muted]="checked().has(i)"
+                  >
+                    @if (ingredient.quantity !== null) {
+                      <span class="font-medium"
+                        >{{ ingredient.quantity | translocoDecimal }}
+                        {{ ingredient.unit }}</span
+                      >
+                    }
+                    {{ ingredient.name }}
+                  </span>
+                </label>
+              </li>
+            }
+          </ul>
+        </details>
+      }
+
+      <div class="flex flex-col gap-6 md:col-start-2">
+        @if (steps().length) {
+          <div class="flex flex-col gap-2">
+            <p class="text-sm text-fg-muted">
+              {{
+                t('recipes.cook.progress', {
+                  current: index() + 1,
+                  total: steps().length,
+                })
+              }}
+            </p>
+            <div
+              aria-hidden="true"
+              class="h-1.5 overflow-hidden rounded-full bg-surface-raised"
+            >
+              <div
+                class="h-full bg-accent transition-[width]"
+                [style.width.%]="((index() + 1) / steps().length) * 100"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Swiping left / right changes the step; vertical scrolling stays native. -->
           <div
-            class="h-full bg-accent transition-[width]"
-            [style.width.%]="((index() + 1) / steps().length) * 100"
-          ></div>
-        </div>
-      </div>
+            class="min-h-48 touch-pan-y rounded-lg border border-line bg-surface p-6"
+            (pointerdown)="swipeStart($event)"
+            (pointerup)="swipeEnd($event)"
+            (pointercancel)="swipeEnd($event)"
+          >
+            <p aria-live="polite" class="text-2xl leading-relaxed sm:text-3xl">
+              {{ steps()[index()] }}
+            </p>
+          </div>
 
-      <!-- Swiping left / right changes the step; vertical scrolling stays native. -->
-      <div
-        class="min-h-48 touch-pan-y rounded-lg border border-line bg-surface p-6"
-        (pointerdown)="swipeStart($event)"
-        (pointerup)="swipeEnd($event)"
-        (pointercancel)="swipeEnd($event)"
-      >
-        <p aria-live="polite" class="text-2xl leading-relaxed sm:text-3xl">
-          {{ steps()[index()] }}
-        </p>
+          <div class="flex justify-between gap-2">
+            <button
+              type="button"
+              class="btn-ghost px-6 py-3 text-base"
+              [disabled]="isFirst()"
+              (click)="previous()"
+            >
+              ← {{ t('recipes.cook.previous') }}
+            </button>
+            <!-- One button for both, so keyboard focus stays on it at the last step. -->
+            <button
+              type="button"
+              class="btn-accent px-6 py-3 text-base"
+              (click)="isLast() ? finish() : next()"
+            >
+              @if (isLast()) {
+                {{ t('recipes.cook.done') }}
+              } @else {
+                {{ t('recipes.cook.next') }} →
+              }
+            </button>
+          </div>
+          <p class="text-xs text-fg-muted">{{ t('recipes.cook.hint') }}</p>
+        } @else {
+          <p class="text-fg-muted">{{ t('recipes.cook.noSteps') }}</p>
+        }
       </div>
-
-      <div class="flex justify-between gap-2">
-        <button
-          type="button"
-          class="btn-ghost px-6 py-3 text-base"
-          [disabled]="isFirst()"
-          (click)="previous()"
-        >
-          ← {{ t('recipes.cook.previous') }}
-        </button>
-        <!-- One button for both, so keyboard focus stays on it at the last step. -->
-        <button
-          type="button"
-          class="btn-accent px-6 py-3 text-base"
-          (click)="isLast() ? finish() : next()"
-        >
-          @if (isLast()) {
-            {{ t('recipes.cook.done') }}
-          } @else {
-            {{ t('recipes.cook.next') }} →
-          }
-        </button>
-      </div>
-      <p class="text-xs text-fg-muted">{{ t('recipes.cook.hint') }}</p>
-    } @else {
-      <p class="text-fg-muted">{{ t('recipes.cook.noSteps') }}</p>
-    }
+    </div>
   }
 </section>

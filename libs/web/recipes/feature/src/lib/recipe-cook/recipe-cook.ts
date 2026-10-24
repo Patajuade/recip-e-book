@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDecimalPipe } from '@jsverse/transloco-locale';
 import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
 import { ScreenWakeLock } from '@recip-e-book/web-shared-util';
 
@@ -10,7 +11,7 @@ const SWIPE_DISTANCE_PX = 60;
 /** Cooking mode: one step at a time, in big text, for a recipe on the counter. */
 @Component({
   selector: 'lib-recipe-cook',
-  imports: [TranslocoDirective, RouterLink],
+  imports: [TranslocoDirective, TranslocoDecimalPipe, RouterLink],
   templateUrl: './recipe-cook.html',
   styleUrl: './recipe-cook.css',
   providers: [ScreenWakeLock],
@@ -33,6 +34,8 @@ export class RecipeCook {
     this.recipe.hasValue() ? this.recipe.value().steps : [],
   );
   protected readonly index = signal(0);
+  /** Indexes of the ingredients checked while cooking (not saved). */
+  protected readonly checked = signal<ReadonlySet<number>>(new Set());
   protected readonly isFirst = computed(() => this.index() === 0);
   protected readonly isLast = computed(
     () => this.index() === this.steps().length - 1,
@@ -48,6 +51,16 @@ export class RecipeCook {
 
   protected previous(): void {
     this.index.update((i) => Math.max(i - 1, 0));
+  }
+
+  protected toggleIngredient(index: number): void {
+    this.checked.update((checked) => {
+      const next = new Set(checked);
+      if (!next.delete(index)) {
+        next.add(index);
+      }
+      return next;
+    });
   }
 
   protected finish(): void {

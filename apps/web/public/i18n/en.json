@@ -111,7 +111,8 @@
       "hint": "Arrow keys or a swipe also change the step.",
       "noSteps": "This recipe doesn't have any steps yet.",
       "keepScreenOn": "Keep the screen on",
-      "screenLockUnavailable": "The browser can't keep the screen on right now."
+      "screenLockUnavailable": "The browser can't keep the screen on right now.",
+      "ingredients": "Ingredients ({{checked}}/{{total}})"
     }
   },
   "tags": {

@@ -18,7 +18,8 @@
     },
     "nav": {
       "recipes": "Recettes",
-      "newRecipe": "Nouvelle recette"
+      "newRecipe": "Nouvelle recette",
+      "shopping": "Courses"
     }
   },
   "languageSwitcher": {
@@ -262,5 +263,28 @@
     "safran": "Safran",
     "menthe": "Menthe",
     "glacier": "Glacier"
+  },
+  "shopping": {
+    "lists": {
+      "pageTitle": "Listes de courses",
+      "heading": "Listes de courses",
+      "newList": "Nouvelle liste",
+      "newListPlaceholder": "ex. Courses de la semaine",
+      "create": "Créer",
+      "saveFailed": "Impossible d'enregistrer la liste. Réessaie dans un instant.",
+      "loading": "Chargement des listes…",
+      "error": "Impossible de charger les listes.",
+      "empty": "Aucune liste pour l'instant : crée la première ci-dessus.",
+      "progress": "{{checked}} article(s) coché(s) sur {{count}}",
+      "noItems": "Liste vide",
+      "nameLabel": "Nom de la liste",
+      "rename": "Renommer",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer cette liste ?",
+      "deleteMessage": "« {{name}} » et tous ses articles seront supprimés.",
+      "deleteFailed": "Impossible de supprimer la liste. Réessaie dans un instant.",
+      "deleted": "Liste supprimée."
+    }
   }
 }

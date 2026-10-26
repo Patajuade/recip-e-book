@@ -18,7 +18,8 @@
     },
     "nav": {
       "recipes": "Recipes",
-      "newRecipe": "New recipe"
+      "newRecipe": "New recipe",
+      "shopping": "Shopping"
     }
   },
   "languageSwitcher": {
@@ -262,5 +263,28 @@
     "safran": "Saffron",
     "menthe": "Mint",
     "glacier": "Glacier"
+  },
+  "shopping": {
+    "lists": {
+      "pageTitle": "Shopping lists",
+      "heading": "Shopping lists",
+      "newList": "New list",
+      "newListPlaceholder": "e.g. Weekly shopping",
+      "create": "Create",
+      "saveFailed": "Couldn't save the list. Try again in a moment.",
+      "loading": "Loading the lists…",
+      "error": "Couldn't load the lists.",
+      "empty": "No list yet: create your first one above.",
+      "progress": "{{checked}} of {{count}} items checked",
+      "noItems": "Empty list",
+      "nameLabel": "Name of the list",
+      "rename": "Rename",
+      "save": "Save",
+      "delete": "Delete",
+      "deleteTitle": "Delete this list?",
+      "deleteMessage": "“{{name}}” and all its items will be deleted.",
+      "deleteFailed": "Couldn't delete the list. Try again in a moment.",
+      "deleted": "List deleted."
+    }
   }
 }

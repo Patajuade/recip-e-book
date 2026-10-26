@@ -86,6 +86,64 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                     b.ToTable("Recipes");
                 });
 
+            modelBuilder.Entity("RecipEBook.Api.Domain.ShoppingList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingLists");
+                });
+
+            modelBuilder.Entity("RecipEBook.Api.Domain.ShoppingListItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Checked")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Quantity")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ShoppingListId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("SourceRecipeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShoppingListId");
+
+                    b.HasIndex("SourceRecipeId");
+
+                    b.ToTable("ShoppingListItems", (string)null);
+                });
+
             modelBuilder.Entity("RecipEBook.Api.Domain.Tag", b =>
                 {
                     b.Property<string>("Key")
@@ -622,6 +680,22 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                     b.ToTable("RecipeTag");
                 });
 
+            modelBuilder.Entity("RecipEBook.Api.Domain.ShoppingListItem", b =>
+                {
+                    b.HasOne("RecipEBook.Api.Domain.ShoppingList", null)
+                        .WithMany("Items")
+                        .HasForeignKey("ShoppingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipEBook.Api.Domain.Recipe", "SourceRecipe")
+                        .WithMany()
+                        .HasForeignKey("SourceRecipeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SourceRecipe");
+                });
+
             modelBuilder.Entity("RecipeTag", b =>
                 {
                     b.HasOne("RecipEBook.Api.Domain.Recipe", null)
@@ -635,6 +709,11 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TagsKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RecipEBook.Api.Domain.ShoppingList", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

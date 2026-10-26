@@ -5,34 +5,72 @@ using RecipEBook.Api.Domain;
 namespace RecipEBook.Api.Infrastructure.Persistence;
 
 /// <summary>
-/// Demo recipes for local development, registered with UseSeeding/UseAsyncSeeding.
-/// Seeding runs after every migration/database update, so it only inserts data
-/// into a database that has no recipe yet.
+/// Demo recipes and shopping list for local development, registered with
+/// UseSeeding/UseAsyncSeeding. Seeding runs after every migration/database update, so each
+/// kind of data is only inserted into a database that has none yet.
 /// </summary>
 internal static class DemoData
 {
+    private const string SoupTitle = "Soupe de légumes improvisée";
+
     public static void Seed(DbContext context)
     {
-        if (context.Set<Recipe>().Any())
+        if (!context.Set<Recipe>().Any())
         {
-            return;
+            Dictionary<string, Tag> tags = context.Set<Tag>().ToDictionary(t => t.Key);
+            context.Set<Recipe>().AddRange(CreateRecipes(tags));
+            context.SaveChanges();
         }
 
-        Dictionary<string, Tag> tags = context.Set<Tag>().ToDictionary(t => t.Key);
-        context.Set<Recipe>().AddRange(CreateRecipes(tags));
-        context.SaveChanges();
+        if (!context.Set<ShoppingList>().Any())
+        {
+            Recipe? soup = context.Set<Recipe>().FirstOrDefault(r => r.Title == SoupTitle);
+            context.Set<ShoppingList>().Add(CreateShoppingList(soup));
+            context.SaveChanges();
+        }
     }
 
     public static async Task SeedAsync(DbContext context, CancellationToken cancellationToken)
     {
-        if (await context.Set<Recipe>().AnyAsync(cancellationToken))
+        if (!await context.Set<Recipe>().AnyAsync(cancellationToken))
         {
-            return;
+            Dictionary<string, Tag> tags = await context.Set<Tag>().ToDictionaryAsync(t => t.Key, cancellationToken);
+            context.Set<Recipe>().AddRange(CreateRecipes(tags));
+            await context.SaveChangesAsync(cancellationToken);
         }
 
-        Dictionary<string, Tag> tags = await context.Set<Tag>().ToDictionaryAsync(t => t.Key, cancellationToken);
-        context.Set<Recipe>().AddRange(CreateRecipes(tags));
-        await context.SaveChangesAsync(cancellationToken);
+        if (!await context.Set<ShoppingList>().AnyAsync(cancellationToken))
+        {
+            Recipe? soup = await context.Set<Recipe>().FirstOrDefaultAsync(r => r.Title == SoupTitle, cancellationToken);
+            context.Set<ShoppingList>().Add(CreateShoppingList(soup));
+            await context.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    // Some items come from the soup (when that demo recipe exists), the others are free items.
+    private static ShoppingList CreateShoppingList(Recipe? soup)
+    {
+        DateTime now = DateTime.UtcNow;
+        ShoppingList list = new() { Name = "Courses de la semaine", CreatedAt = now, UpdatedAt = now };
+        (string Name, decimal? Quantity, string? Unit, bool FromSoup, bool Checked)[] items =
+        [
+            ("carottes", 3, "pièce", true, false),
+            ("poireau", 1, "pièce", true, false),
+            ("pommes de terre", 2, "pièce", true, true),
+            ("lait", 1, "l", false, false),
+            ("pain", null, null, false, true),
+            ("café", 250, "g", false, false),
+        ];
+        list.Items.AddRange(items.Select((item, position) => new ShoppingListItem
+        {
+            Name = item.Name,
+            Quantity = item.Quantity,
+            Unit = item.Unit,
+            Checked = item.Checked,
+            Position = position,
+            SourceRecipe = item.FromSoup ? soup : null,
+        }));
+        return list;
     }
 
     // Tags come from the catalog, inserted by migrations before seeding runs.
@@ -45,7 +83,7 @@ internal static class DemoData
         [
             new Recipe
             {
-                Title = "Soupe de légumes improvisée",
+                Title = SoupTitle,
                 Description = "Une soupe faite un peu au pif avec ce qui restait dans le frigo.",
                 Servings = 4,
                 PrepTimeMinutes = 15,

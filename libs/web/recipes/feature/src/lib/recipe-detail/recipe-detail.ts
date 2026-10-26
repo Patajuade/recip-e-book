@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -13,6 +14,10 @@ import {
 import { RecipeDetails } from '@recip-e-book/web-recipes-models';
 import { Confirmation, Toaster } from '@recip-e-book/web-shared-ui';
 import { DurationPipe } from '@recip-e-book/web-shared-util';
+import {
+  AddToShoppingList,
+  AddToShoppingListData,
+} from './add-to-shopping-list/add-to-shopping-list';
 
 @Component({
   selector: 'lib-recipe-detail',
@@ -43,8 +48,20 @@ export class RecipeDetail {
 
   private readonly api = inject(RecipeApi);
   private readonly confirmation = inject(Confirmation);
+  private readonly dialog = inject(Dialog);
   private readonly router = inject(Router);
   private readonly toaster = inject(Toaster);
+
+  protected addToShoppingList(recipe: RecipeDetails): void {
+    this.dialog.open<void, AddToShoppingListData>(AddToShoppingList, {
+      data: {
+        recipeId: recipe.id,
+        recipeTitle: recipe.title,
+        servings: recipe.servings,
+      },
+      ariaLabelledBy: 'add-to-shopping-list-title',
+    });
+  }
 
   protected async delete(recipe: RecipeDetails): Promise<void> {
     const confirmed = await this.confirmation.ask({

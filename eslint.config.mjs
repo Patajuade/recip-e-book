@@ -45,7 +45,12 @@ export default [
             },
             {
               sourceTag: 'scope:recipes',
-              onlyDependOnLibsWithTags: ['scope:recipes', 'scope:shared'],
+              // A recipe can be added to a shopping list; shopping never imports recipes.
+              onlyDependOnLibsWithTags: [
+                'scope:recipes',
+                'scope:shopping',
+                'scope:shared',
+              ],
             },
             {
               sourceTag: 'scope:shopping',

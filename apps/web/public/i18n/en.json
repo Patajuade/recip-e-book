@@ -97,9 +97,33 @@
       "leaveTitle": "Leave without saving?",
       "leaveMessage": "Your changes to this recipe will be lost.",
       "leave": "Leave",
-      "saved": "Recipe saved."
+      "saved": "Recipe saved.",
+      "stepsHint": "Write durations with numbers (“10 min”, “1 h 30”, “45 sec”): in cooking mode they become timers you start with a click.",
+      "detectedTimers": "Timers: {{timers}}"
     },
-    "tagCategoryPrefix": "{{category}}: "
+    "tagCategoryPrefix": "{{category}}: ",
+    "cook": {
+      "pageTitle": "Cooking mode",
+      "start": "Cook",
+      "exit": "Leave",
+      "progress": "Step {{current}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "done": "Done",
+      "hint": "Arrow keys or a swipe also change the step.",
+      "noSteps": "This recipe doesn't have any steps yet.",
+      "keepScreenOn": "Keep the screen on",
+      "screenLockUnavailable": "The browser can't keep the screen on right now.",
+      "ingredients": "Ingredients ({{checked}}/{{total}})",
+      "timers": "Timers",
+      "startTimer": "Start a {{duration}} timer",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop",
+      "dismiss": "OK",
+      "timerDone": "Done!",
+      "timerRang": "The {{label}} timer is done."
+    }
   },
   "tags": {
     "breakfast": "Breakfast",

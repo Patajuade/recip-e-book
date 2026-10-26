@@ -132,11 +132,15 @@
         </button>
       </fieldset>
 
-      <fieldset class="flex flex-col gap-2">
+      <fieldset class="flex flex-col gap-2" aria-describedby="steps-hint">
         <legend class="mb-1 text-sm font-medium">
           {{ t('recipes.form.steps') }}
         </legend>
+        <p id="steps-hint" class="-mt-1 text-xs text-fg-muted">
+          {{ t('recipes.form.stepsHint') }}
+        </p>
         @for (step of recipeForm.steps; track step; let i = $index) {
+          @let timers = durationsIn(step.text().value());
           <div class="flex items-end gap-2">
             <lib-labeled-field
               class="flex-1"
@@ -157,6 +161,14 @@
               {{ t('recipes.form.remove') }}
             </button>
           </div>
+          @if (timers.length) {
+            <p class="-mt-1 text-xs text-accent">
+              <span aria-hidden="true">⏱</span>
+              {{
+                t('recipes.form.detectedTimers', { timers: timers.join(', ') })
+              }}
+            </p>
+          }
         }
         <button type="button" class="btn-ghost self-start" (click)="addStep()">
           {{ t('recipes.form.addStep') }}

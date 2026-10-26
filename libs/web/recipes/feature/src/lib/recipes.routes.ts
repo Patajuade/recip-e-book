@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { RecipeCook } from './recipe-cook/recipe-cook';
 import { RecipeDetail } from './recipe-detail/recipe-detail';
 import { RecipeEdit } from './recipe-edit/recipe-edit';
 import { unsavedChangesGuard } from './recipe-edit/unsaved-changes-guard';
@@ -20,6 +21,11 @@ export const recipesRoutes: Routes = [
     path: ':id',
     component: RecipeDetail,
     title: 'recipes.detail.pageTitle',
+  },
+  {
+    path: ':id/cook',
+    component: RecipeCook,
+    title: 'recipes.cook.pageTitle',
   },
   {
     path: ':id/edit',

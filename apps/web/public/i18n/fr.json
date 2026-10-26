@@ -97,9 +97,33 @@
       "leaveTitle": "Quitter sans enregistrer ?",
       "leaveMessage": "Tes modifications de cette recette seront perdues.",
       "leave": "Quitter",
-      "saved": "Recette enregistrée."
+      "saved": "Recette enregistrée.",
+      "stepsHint": "Écris les durées en chiffres (« 10 min », « 1 h 30 », « 45 secondes ») : en mode cuisine, elles deviennent des minuteurs à lancer d'un clic.",
+      "detectedTimers": "Minuteurs : {{timers}}"
     },
-    "tagCategoryPrefix": "{{category}} : "
+    "tagCategoryPrefix": "{{category}} : ",
+    "cook": {
+      "pageTitle": "Mode cuisine",
+      "start": "Cuisiner",
+      "exit": "Quitter",
+      "progress": "Étape {{current}} sur {{total}}",
+      "previous": "Précédente",
+      "next": "Suivante",
+      "done": "Terminé",
+      "hint": "Les flèches du clavier ou un glissement changent aussi d'étape.",
+      "noSteps": "Cette recette n'a pas encore d'étapes.",
+      "keepScreenOn": "Garder l'écran allumé",
+      "screenLockUnavailable": "Le navigateur ne peut pas garder l'écran allumé pour l'instant.",
+      "ingredients": "Ingrédients ({{checked}}/{{total}})",
+      "timers": "Minuteurs",
+      "startTimer": "Lancer un minuteur de {{duration}}",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "stop": "Arrêter",
+      "dismiss": "OK",
+      "timerDone": "Terminé !",
+      "timerRang": "Le minuteur de {{label}} est terminé."
+    }
   },
   "tags": {
     "breakfast": "Petit-déjeuner",

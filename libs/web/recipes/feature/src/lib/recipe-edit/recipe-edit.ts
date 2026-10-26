@@ -32,6 +32,7 @@ import {
   toRecipeInput,
   toServerErrors,
 } from './recipe-form';
+import { splitDurations } from '../step-durations';
 
 @Component({
   selector: 'lib-recipe-edit',
@@ -143,6 +144,13 @@ export class RecipeEdit {
       ...recipe,
       steps: [...recipe.steps, emptyStep()],
     }));
+  }
+
+  /** The durations cooking mode will turn into timers, shown under each step. */
+  protected durationsIn(step: string): string[] {
+    return splitDurations(step).flatMap((segment) =>
+      segment.kind === 'duration' ? [segment.text] : [],
+    );
   }
 
   protected removeStep(index: number): void {

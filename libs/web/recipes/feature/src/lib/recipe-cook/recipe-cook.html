@@ -1,0 +1,240 @@
+<section *transloco="let t" class="flex flex-col gap-6">
+  @if (recipe.isLoading()) {
+    <p class="text-fg-muted">{{ t('recipes.detail.loading') }}</p>
+  } @else if (notFound()) {
+    <p class="text-fg-muted">{{ t('recipes.detail.notFound') }}</p>
+  } @else if (recipe.error()) {
+    <div class="alert-error">
+      <p>{{ t('recipes.detail.error') }}</p>
+      <button type="button" class="btn-ghost mt-2" (click)="recipe.reload()">
+        {{ t('common.retry') }}
+      </button>
+    </div>
+  } @else if (recipe.hasValue()) {
+    <header class="flex flex-wrap items-center justify-between gap-2">
+      <h1 class="text-2xl">{{ recipe.value().title }}</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        @if (wakeLock.supported) {
+          <!-- MDN: show whether the screen is kept on, and let the user turn it off. -->
+          <button
+            type="button"
+            class="btn-ghost flex items-center gap-2"
+            [attr.aria-pressed]="wakeLock.enabled()"
+            (click)="wakeLock.enabled.set(!wakeLock.enabled())"
+          >
+            <span
+              aria-hidden="true"
+              class="size-2.5 rounded-full"
+              [class]="wakeLock.active() ? 'bg-success' : 'bg-line-strong'"
+            ></span>
+            {{ t('recipes.cook.keepScreenOn') }}
+          </button>
+          @if (wakeLock.enabled() && wakeLock.failed()) {
+            <span class="text-xs text-fg-muted">{{
+              t('recipes.cook.screenLockUnavailable')
+            }}</span>
+          }
+        }
+        <a [routerLink]="['/recipes', id()]" class="btn-ghost">{{
+          t('recipes.cook.exit')
+        }}</a>
+      </div>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-[1fr_2fr] md:items-start">
+      @if (recipe.value().ingredients.length) {
+        <!-- On a phone the current step comes first, the ingredients below it. -->
+        <details
+          open
+          class="order-last rounded-lg border border-line bg-surface md:order-none"
+        >
+          <summary class="cursor-pointer px-4 py-3 font-medium">
+            {{
+              t('recipes.cook.ingredients', {
+                checked: checked().size,
+                total: recipe.value().ingredients.length,
+              })
+            }}
+          </summary>
+          <ul class="flex flex-col px-4 pb-3">
+            @for (
+              ingredient of recipe.value().ingredients;
+              track $index;
+              let i = $index
+            ) {
+              <li>
+                <label class="flex cursor-pointer items-start gap-3 py-1.5">
+                  <input
+                    type="checkbox"
+                    class="mt-1 size-5 shrink-0 accent-accent"
+                    [checked]="checked().has(i)"
+                    (change)="toggleIngredient(i)"
+                  />
+                  <span
+                    class="text-lg"
+                    [class.line-through]="checked().has(i)"
+                    [class.text-fg-muted]="checked().has(i)"
+                  >
+                    @if (ingredient.quantity !== null) {
+                      <span class="font-medium"
+                        >{{ ingredient.quantity | translocoDecimal }}
+                        {{ ingredient.unit }}</span
+                      >
+                    }
+                    {{ ingredient.name }}
+                  </span>
+                </label>
+              </li>
+            }
+          </ul>
+        </details>
+      }
+
+      <div class="flex flex-col gap-6 md:col-start-2">
+        @if (steps().length) {
+          <div class="flex flex-col gap-2">
+            <p class="text-sm text-fg-muted">
+              {{
+                t('recipes.cook.progress', {
+                  current: index() + 1,
+                  total: steps().length,
+                })
+              }}
+            </p>
+            <div
+              aria-hidden="true"
+              class="h-1.5 overflow-hidden rounded-full bg-surface-raised"
+            >
+              <div
+                class="h-full bg-accent transition-[width]"
+                [style.width.%]="((index() + 1) / steps().length) * 100"
+              ></div>
+            </div>
+          </div>
+
+          @if (timers.timers().length) {
+            <section
+              class="rounded-lg border border-line bg-surface p-4"
+              [attr.aria-label]="t('recipes.cook.timers')"
+            >
+              <ul class="flex flex-col gap-3">
+                @for (timer of timers.timers(); track timer.id) {
+                  <li
+                    class="flex flex-wrap items-center gap-3"
+                    [class.text-accent]="timer.done"
+                  >
+                    <span class="font-medium">
+                      <span aria-hidden="true">⏱</span> {{ timer.label }}
+                    </span>
+                    <span
+                      role="timer"
+                      class="font-mono text-2xl tabular-nums"
+                      >{{ format(timers.leftMs(timer)) }}</span
+                    >
+                    @if (timer.done) {
+                      <span class="font-semibold">{{
+                        t('recipes.cook.timerDone')
+                      }}</span>
+                    }
+                    <span class="ml-auto flex gap-2">
+                      @if (!timer.done) {
+                        @if (timer.pausedLeft === null) {
+                          <button
+                            type="button"
+                            class="btn-ghost"
+                            (click)="timers.pause(timer.id)"
+                          >
+                            {{ t('recipes.cook.pause') }}
+                          </button>
+                        } @else {
+                          <button
+                            type="button"
+                            class="btn-ghost"
+                            (click)="timers.resume(timer.id)"
+                          >
+                            {{ t('recipes.cook.resume') }}
+                          </button>
+                        }
+                      }
+                      <button
+                        type="button"
+                        class="btn-ghost"
+                        (click)="timers.remove(timer.id)"
+                      >
+                        {{
+                          timer.done
+                            ? t('recipes.cook.dismiss')
+                            : t('recipes.cook.stop')
+                        }}
+                      </button>
+                    </span>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+          <!-- Always rendered, so screen readers announce a timer as soon as it rings. -->
+          <div role="alert" class="sr-only">
+            @for (label of timers.rang(); track $index) {
+              <p>{{ t('recipes.cook.timerRang', { label }) }}</p>
+            }
+          </div>
+
+          <!-- Swiping left / right changes the step; vertical scrolling stays native. -->
+          <div
+            class="min-h-48 touch-pan-y rounded-lg border border-line bg-surface p-6"
+            (pointerdown)="swipeStart($event)"
+            (pointerup)="swipeEnd($event)"
+            (pointercancel)="swipeEnd($event)"
+          >
+            <p aria-live="polite" class="text-2xl leading-relaxed sm:text-3xl">
+              @for (segment of segments(); track $index) {
+                @if (segment.kind === 'duration') {
+                  <button
+                    type="button"
+                    class="mx-0.5 inline-flex items-center gap-1 rounded-full border border-accent px-2 align-baseline text-accent hover:bg-accent/15"
+                    [attr.aria-label]="
+                      t('recipes.cook.startTimer', { duration: segment.text })
+                    "
+                    (click)="timers.start(segment.text, segment.seconds)"
+                  >
+                    <span aria-hidden="true">⏱</span>{{ segment.text }}
+                  </button>
+                } @else {
+                  <!-- [textContent]: no template whitespace around the text (« 10 min. »). -->
+                  <span [textContent]="segment.text"></span>
+                }
+              }
+            </p>
+          </div>
+
+          <div class="flex justify-between gap-2">
+            <button
+              type="button"
+              class="btn-ghost px-6 py-3 text-base"
+              [disabled]="isFirst()"
+              (click)="previous()"
+            >
+              ← {{ t('recipes.cook.previous') }}
+            </button>
+            <!-- One button for both, so keyboard focus stays on it at the last step. -->
+            <button
+              type="button"
+              class="btn-accent px-6 py-3 text-base"
+              (click)="isLast() ? finish() : next()"
+            >
+              @if (isLast()) {
+                {{ t('recipes.cook.done') }}
+              } @else {
+                {{ t('recipes.cook.next') }} →
+              }
+            </button>
+          </div>
+          <p class="text-xs text-fg-muted">{{ t('recipes.cook.hint') }}</p>
+        } @else {
+          <p class="text-fg-muted">{{ t('recipes.cook.noSteps') }}</p>
+        }
+      </div>
+    </div>
+  }
+</section>

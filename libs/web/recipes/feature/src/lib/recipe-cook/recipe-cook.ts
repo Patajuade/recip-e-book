@@ -6,7 +6,7 @@ import { TranslocoDecimalPipe } from '@jsverse/transloco-locale';
 import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
 import { ScreenWakeLock } from '@recip-e-book/web-shared-util';
 import { CookingTimers } from './cooking-timers';
-import { splitDurations } from './step-durations';
+import { splitDurations } from '../step-durations';
 
 const SWIPE_DISTANCE_PX = 60;
 

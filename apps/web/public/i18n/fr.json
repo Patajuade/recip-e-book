@@ -97,7 +97,9 @@
       "leaveTitle": "Quitter sans enregistrer ?",
       "leaveMessage": "Tes modifications de cette recette seront perdues.",
       "leave": "Quitter",
-      "saved": "Recette enregistrée."
+      "saved": "Recette enregistrée.",
+      "stepsHint": "Écris les durées en chiffres (« 10 min », « 1 h 30 », « 45 secondes ») : en mode cuisine, elles deviennent des minuteurs à lancer d'un clic.",
+      "detectedTimers": "Minuteurs : {{timers}}"
     },
     "tagCategoryPrefix": "{{category}} : ",
     "cook": {

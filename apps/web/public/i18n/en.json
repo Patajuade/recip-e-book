@@ -97,7 +97,9 @@
       "leaveTitle": "Leave without saving?",
       "leaveMessage": "Your changes to this recipe will be lost.",
       "leave": "Leave",
-      "saved": "Recipe saved."
+      "saved": "Recipe saved.",
+      "stepsHint": "Write durations with numbers (“10 min”, “1 h 30”, “45 sec”): in cooking mode they become timers you start with a click.",
+      "detectedTimers": "Timers: {{timers}}"
     },
     "tagCategoryPrefix": "{{category}}: ",
     "cook": {

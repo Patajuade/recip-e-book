@@ -285,6 +285,30 @@
       "deleteMessage": "“{{name}}” and all its items will be deleted.",
       "deleteFailed": "Couldn't delete the list. Try again in a moment.",
       "deleted": "List deleted."
+    },
+    "list": {
+      "pageTitle": "Shopping list",
+      "back": "All lists",
+      "loading": "Loading the list…",
+      "notFound": "This list doesn't exist.",
+      "error": "Couldn't load the list.",
+      "quantity": "Qty",
+      "unit": "Unit",
+      "item": "Item",
+      "add": "Add",
+      "saveFailed": "Couldn't save the item. Try again in a moment.",
+      "empty": "This list is empty: add a first item above.",
+      "toBuy": "To buy ({{count}})",
+      "allInCart": "Everything is in the cart.",
+      "inCart": "In the cart ({{count}})",
+      "clearChecked": "Remove checked items",
+      "clearTitle": "Remove the checked items?",
+      "clearMessage": "{{count}} checked item(s) will be removed from the list.",
+      "clearConfirm": "Remove",
+      "cleared": "Checked items removed.",
+      "fromRecipe": "from {{title}}",
+      "edit": "Edit {{name}}",
+      "remove": "Remove {{name}}"
     }
   }
 }

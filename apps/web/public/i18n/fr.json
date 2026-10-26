@@ -285,6 +285,30 @@
       "deleteMessage": "« {{name}} » et tous ses articles seront supprimés.",
       "deleteFailed": "Impossible de supprimer la liste. Réessaie dans un instant.",
       "deleted": "Liste supprimée."
+    },
+    "list": {
+      "pageTitle": "Liste de courses",
+      "back": "Toutes les listes",
+      "loading": "Chargement de la liste…",
+      "notFound": "Cette liste n'existe pas.",
+      "error": "Impossible de charger la liste.",
+      "quantity": "Qté",
+      "unit": "Unité",
+      "item": "Article",
+      "add": "Ajouter",
+      "saveFailed": "Impossible d'enregistrer l'article. Réessaie dans un instant.",
+      "empty": "Cette liste est vide : ajoute un premier article ci-dessus.",
+      "toBuy": "À acheter ({{count}})",
+      "allInCart": "Tout est dans le panier.",
+      "inCart": "Dans le panier ({{count}})",
+      "clearChecked": "Retirer les articles cochés",
+      "clearTitle": "Retirer les articles cochés ?",
+      "clearMessage": "{{count}} article(s) coché(s) seront retirés de la liste.",
+      "clearConfirm": "Retirer",
+      "cleared": "Articles cochés retirés.",
+      "fromRecipe": "pour {{title}}",
+      "edit": "Modifier {{name}}",
+      "remove": "Retirer {{name}}"
     }
   }
 }

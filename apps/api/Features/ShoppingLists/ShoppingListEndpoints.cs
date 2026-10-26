@@ -8,6 +8,9 @@ public static class ShoppingListEndpoints
 
         lists.MapGet("/", ListShoppingLists.Handle).WithName("ListShoppingLists");
         lists.MapGet("/{id:guid}", GetShoppingList.Handle).WithName("GetShoppingList");
+        lists.MapPost("/", CreateShoppingList.Handle).WithName("CreateShoppingList").ProducesValidationProblem();
+        lists.MapPut("/{id:guid}", RenameShoppingList.Handle).WithName("RenameShoppingList").ProducesValidationProblem();
+        lists.MapDelete("/{id:guid}", DeleteShoppingList.Handle).WithName("DeleteShoppingList");
 
         return api;
     }

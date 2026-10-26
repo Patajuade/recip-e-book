@@ -19,6 +19,14 @@ export class TagPicker implements FormValueControl<string[]> {
     () => new Map(this.catalog().map((tag) => [tag.key, tag.category])),
   );
 
+  /** The selected tags in catalog order (grouped by category), like on the recipe page. */
+  protected readonly selectedInOrder = computed(() => [
+    ...this.catalog()
+      .filter((tag) => this.selected().has(tag.key))
+      .map((tag) => tag.key),
+    ...this.value().filter((key) => !this.categoryOf().has(key)),
+  ]);
+
   // Catalog order is kept: the API returns tags grouped by category.
   protected readonly groups = computed(() => {
     const groups = new Map<string, string[]>();

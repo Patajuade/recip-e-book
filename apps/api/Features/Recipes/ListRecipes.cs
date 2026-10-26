@@ -43,18 +43,23 @@ public static class ListRecipes
                 TotalTimeMinutes = r.PrepTimeMinutes == null && r.CookTimeMinutes == null
                     ? (int?)null
                     : (r.PrepTimeMinutes ?? 0) + (r.CookTimeMinutes ?? 0),
-                Tags = r.Tags.OrderBy(t => t.Key).Select(t => new { t.Key, t.Category }).ToList(),
+                Tags = r.Tags.Select(t => new { t.Key, t.Category }).ToList(),
             })
             .ToListAsync(cancellationToken);
 
-        // The category's camelCase name is computed in memory: SQL can't translate it.
+        // Tags are sorted (catalog order, grouped by category) and named in memory: SQL can do
+        // neither, the category is stored as text.
         List<RecipeSummary> recipes =
         [
             .. rows.Select(r => new RecipeSummary(
                 r.Id,
                 r.Title,
                 r.TotalTimeMinutes,
-                [.. r.Tags.Select(t => TagSummary.From(t.Key, t.Category))])),
+                [
+                    .. r.Tags
+                        .OrderBy(t => TagCatalog.Position(t.Key))
+                        .Select(t => TagSummary.From(t.Key, t.Category)),
+                ])),
         ];
 
         return TypedResults.Ok(recipes);

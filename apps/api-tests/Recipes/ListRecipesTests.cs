@@ -35,9 +35,10 @@ public class ListRecipesTests(RecipeBookApiFactory factory) : IClassFixture<Reci
     }
 
     [Fact]
-    public async Task List_ReturnsTotalTimeAndSortedTagsWithCategories()
+    public async Task List_ReturnsTotalTimeAndTagsGroupedByCategory()
     {
-        Guid id = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Summary", "vegetarian", "soup", "eggs"));
+        Guid id = await TestRecipes.CreateAsync(
+            _client, TestRecipes.Valid("Summary", "italian", "vegetarian", "eggs", "soup", "quick"));
 
         List<ListRecipes.RecipeSummary>? recipes =
             await _client.GetFromJsonAsync<List<ListRecipes.RecipeSummary>>("/api/recipes?search=summary");
@@ -46,9 +47,12 @@ public class ListRecipesTests(RecipeBookApiFactory factory) : IClassFixture<Reci
         Assert.Equal(30, summary.TotalTimeMinutes);
         Assert.Equal(
             [
-                new ListTags.TagSummary("eggs", "mainIngredient"),
+                // Catalog order: dish type, diet, main ingredient, …, cuisine, practical.
                 new ListTags.TagSummary("soup", "course"),
                 new ListTags.TagSummary("vegetarian", "diet"),
+                new ListTags.TagSummary("eggs", "mainIngredient"),
+                new ListTags.TagSummary("italian", "cuisine"),
+                new ListTags.TagSummary("quick", "practical"),
             ],
             summary.Tags);
     }

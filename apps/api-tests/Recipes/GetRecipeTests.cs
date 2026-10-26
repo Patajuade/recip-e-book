@@ -14,7 +14,7 @@ public class GetRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Recipe
     public async Task Get_ExistingRecipe_ReturnsAllItsFields()
     {
         DateTime before = DateTime.UtcNow;
-        Guid id = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Carrot soup", "soup", "vegetarian"));
+        Guid id = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Carrot soup", "eggs", "soup", "vegetarian"));
 
         GetRecipe.RecipeDetails? recipe = await _client.GetFromJsonAsync<GetRecipe.RecipeDetails>($"/api/recipes/{id}");
 
@@ -26,7 +26,13 @@ public class GetRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Recipe
             [new GetRecipe.IngredientDetails("carrots", 3, "piece"), new GetRecipe.IngredientDetails("salt", null, null)],
             recipe.Ingredients);
         Assert.Equal(["Cut the carrots.", "Cook them."], recipe.Steps);
-        Assert.Equal([new ListTags.TagSummary("soup", "course"), new ListTags.TagSummary("vegetarian", "diet")], recipe.Tags);
+        Assert.Equal(
+            [
+                new ListTags.TagSummary("soup", "course"),
+                new ListTags.TagSummary("vegetarian", "diet"),
+                new ListTags.TagSummary("eggs", "mainIngredient"),
+            ],
+            recipe.Tags);
         Assert.Equal(DateTimeKind.Utc, recipe.CreatedAt.Kind);
         Assert.InRange(recipe.CreatedAt, before, DateTime.UtcNow);
     }

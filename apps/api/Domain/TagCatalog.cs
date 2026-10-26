@@ -36,6 +36,17 @@ public static class TagCatalog
             "quick", "easy", "budget", "make-ahead", "freezer-friendly"),
     ];
 
+    private static readonly Dictionary<string, int> Positions = Tags
+        .Select((tag, index) => (tag.Key, index))
+        .ToDictionary(tag => tag.Key, tag => tag.index);
+
+    /// <summary>
+    /// A tag's place in the catalog, which is grouped by category: sorting by it groups tags
+    /// by category (dish type first). The database can't sort that way, it stores the category
+    /// as text.
+    /// </summary>
+    public static int Position(string key) => Positions.GetValueOrDefault(key, int.MaxValue);
+
     private static IEnumerable<Tag> Category(TagCategory category, params string[] keys) =>
         keys.Select(key => new Tag { Key = key, Category = category });
 }

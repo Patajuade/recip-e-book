@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
+using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
 
 using static RecipEBook.Api.Features.Tags.ListTags;
@@ -51,7 +52,7 @@ public static class GetRecipe
                 r.UpdatedAt,
                 r.Ingredients,
                 r.Steps,
-                Tags = r.Tags.OrderBy(t => t.Key).Select(t => new { t.Key, t.Category }).ToList(),
+                Tags = r.Tags.Select(t => new { t.Key, t.Category }).ToList(),
             })
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -72,6 +73,10 @@ public static class GetRecipe
             row.UpdatedAt,
             [.. row.Ingredients.Select(i => new IngredientDetails(i.Name, i.Quantity, i.Unit))],
             [.. row.Steps.Select(s => s.Instruction)],
-            [.. row.Tags.Select(t => TagSummary.From(t.Key, t.Category))]));
+            [
+                .. row.Tags
+                    .OrderBy(t => TagCatalog.Position(t.Key))
+                    .Select(t => TagSummary.From(t.Key, t.Category)),
+            ]));
     }
 }

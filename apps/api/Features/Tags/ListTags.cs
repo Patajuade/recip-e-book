@@ -21,10 +21,6 @@ public static class ListTags
             new(key, JsonNamingPolicy.CamelCase.ConvertName(category.ToString()));
     }
 
-    private static readonly Dictionary<string, int> CatalogOrder = TagCatalog.Tags
-        .Select((tag, index) => (tag.Key, index))
-        .ToDictionary(tag => tag.Key, tag => tag.index);
-
     public static async Task<Ok<List<TagSummary>>> Handle(
         AppDbContext db,
         CancellationToken cancellationToken)
@@ -32,7 +28,7 @@ public static class ListTags
         List<Tag> tags = await db.Tags.AsNoTracking().ToListAsync(cancellationToken);
 
         List<TagSummary> catalog = tags
-            .OrderBy(t => CatalogOrder.GetValueOrDefault(t.Key, int.MaxValue))
+            .OrderBy(t => TagCatalog.Position(t.Key))
             .Select(t => TagSummary.From(t.Key, t.Category))
             .ToList();
 

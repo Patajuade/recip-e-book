@@ -21,6 +21,9 @@ public static class ShoppingListEndpoints
         lists.MapDelete("/{id:guid}/items/{itemId:guid}", DeleteShoppingListItem.Handle)
             .WithName("DeleteShoppingListItem");
         lists.MapDelete("/{id:guid}/checked-items", ClearCheckedItems.Handle).WithName("ClearCheckedItems");
+        lists.MapPost("/{id:guid}/recipes", AddRecipeToShoppingList.Handle)
+            .WithName("AddRecipeToShoppingList")
+            .ProducesValidationProblem();
 
         return api;
     }

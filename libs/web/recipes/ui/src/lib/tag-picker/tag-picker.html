@@ -4,7 +4,7 @@
       class="flex flex-wrap gap-1"
       [attr.aria-label]="t('recipes.form.selectedTags')"
     >
-      @for (key of value(); track key) {
+      @for (key of selectedInOrder(); track key) {
         <li>
           <button
             type="button"

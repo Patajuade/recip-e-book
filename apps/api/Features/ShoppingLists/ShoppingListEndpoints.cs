@@ -12,6 +12,16 @@ public static class ShoppingListEndpoints
         lists.MapPut("/{id:guid}", RenameShoppingList.Handle).WithName("RenameShoppingList").ProducesValidationProblem();
         lists.MapDelete("/{id:guid}", DeleteShoppingList.Handle).WithName("DeleteShoppingList");
 
+        lists.MapPost("/{id:guid}/items", AddShoppingListItem.Handle)
+            .WithName("AddShoppingListItem")
+            .ProducesValidationProblem();
+        lists.MapPut("/{id:guid}/items/{itemId:guid}", UpdateShoppingListItem.Handle)
+            .WithName("UpdateShoppingListItem")
+            .ProducesValidationProblem();
+        lists.MapDelete("/{id:guid}/items/{itemId:guid}", DeleteShoppingListItem.Handle)
+            .WithName("DeleteShoppingListItem");
+        lists.MapDelete("/{id:guid}/checked-items", ClearCheckedItems.Handle).WithName("ClearCheckedItems");
+
         return api;
     }
 }

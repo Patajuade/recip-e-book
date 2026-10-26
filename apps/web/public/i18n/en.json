@@ -1,7 +1,8 @@
 {
   "common": {
     "retry": "Retry",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "forms": {
     "errors": {
@@ -66,6 +67,19 @@
       "deleteMessage": "“{{title}}” will be permanently deleted.",
       "deleteFailed": "Couldn't delete the recipe. Try again in a moment.",
       "deleted": "Recipe deleted."
+    },
+    "addToList": {
+      "open": "Add to a shopping list",
+      "title": "Add to a shopping list",
+      "intro": "The ingredients of “{{title}}” will be added at the end of the list.",
+      "list": "List",
+      "newList": "New list",
+      "newListName": "Name of the new list",
+      "servings": "Servings",
+      "add": "Add",
+      "failed": "Couldn't add the ingredients. Try again in a moment.",
+      "added": "{{count}} ingredient(s) added to “{{name}}”.",
+      "openList": "Open the list"
     },
     "edit": {
       "pageTitle": "Edit recipe",

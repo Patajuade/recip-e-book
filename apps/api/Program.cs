@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using RecipEBook.Api.Features.Recipes;
+using RecipEBook.Api.Features.ShoppingLists;
 using RecipEBook.Api.Features.Tags;
 using RecipEBook.Api.Infrastructure.Persistence;
 
@@ -56,5 +57,6 @@ app.MapHealthChecks("/health");
 RouteGroupBuilder api = app.MapGroup("/api");
 api.MapRecipeEndpoints();
 api.MapTagEndpoints();
+api.MapShoppingListEndpoints();
 
 app.Run();

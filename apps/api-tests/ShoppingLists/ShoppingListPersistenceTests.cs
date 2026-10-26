@@ -17,7 +17,8 @@ public class ShoppingListPersistenceTests(RecipeBookApiFactory factory) : IClass
     public async Task DeletingARecipe_KeepsTheItemsCopiedFromItWithoutTheLink()
     {
         Guid recipeId = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Source"));
-        Guid listId = await AddListAsync(new ShoppingListItem { Name = "carrots", Quantity = 3, SourceRecipeId = recipeId });
+        Guid listId = await TestShoppingLists.AddAsync(
+            factory, "Test", DateTime.UtcNow, new ShoppingListItem { Name = "carrots", Quantity = 3, SourceRecipeId = recipeId });
 
         HttpResponseMessage response = await _client.DeleteAsync($"/api/recipes/{recipeId}");
 
@@ -36,7 +37,8 @@ public class ShoppingListPersistenceTests(RecipeBookApiFactory factory) : IClass
     [Fact]
     public async Task DeletingAList_DeletesItsItems()
     {
-        Guid listId = await AddListAsync(new ShoppingListItem { Name = "bread" }, new ShoppingListItem { Name = "milk" });
+        Guid listId = await TestShoppingLists.AddAsync(
+            factory, "Test", DateTime.UtcNow, new ShoppingListItem { Name = "bread" }, new ShoppingListItem { Name = "milk" });
 
         using IServiceScope scope = factory.Services.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -47,21 +49,5 @@ public class ShoppingListPersistenceTests(RecipeBookApiFactory factory) : IClass
             .SqlQuery<int>($"""SELECT COUNT(*) AS "Value" FROM "ShoppingListItems" WHERE "ShoppingListId" = {listId}""")
             .SingleAsync();
         Assert.Equal(0, items);
-    }
-
-    private async Task<Guid> AddListAsync(params ShoppingListItem[] items)
-    {
-        using IServiceScope scope = factory.Services.CreateScope();
-        AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        DateTime now = DateTime.UtcNow;
-        ShoppingList list = new() { Name = "Test", CreatedAt = now, UpdatedAt = now };
-        list.Items.AddRange(items.Select((item, position) =>
-        {
-            item.Position = position;
-            return item;
-        }));
-        db.ShoppingLists.Add(list);
-        await db.SaveChangesAsync();
-        return list.Id;
     }
 }

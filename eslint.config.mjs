@@ -48,6 +48,10 @@ export default [
               onlyDependOnLibsWithTags: ['scope:recipes', 'scope:shared'],
             },
             {
+              sourceTag: 'scope:shopping',
+              onlyDependOnLibsWithTags: ['scope:shopping', 'scope:shared'],
+            },
+            {
               sourceTag: 'scope:shared',
               onlyDependOnLibsWithTags: ['scope:shared'],
             },

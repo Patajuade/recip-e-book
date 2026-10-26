@@ -186,7 +186,7 @@ recip-e-book/
 | `type:ui`          | `ui`, `util`                           |
 | `type:util`        | `util`                                 |
 
-Plus `scope:recipes` / `scope:shared`: a `scope:recipes` lib can import `scope:shared`, not the other way around.
+Plus `scope:recipes` / `scope:shopping` / `scope:shared`: a `scope:recipes` or `scope:shopping` lib can import `scope:shared`, not the other way around.
 
 Enforced by `@nx/enforce-module-boundaries` in the root `eslint.config.mjs` ([docs](https://nx.dev/docs/features/enforce-module-boundaries)). A project must satisfy every constraint matching one of its tags (its `type:` rule **and** its `scope:` rule).
 

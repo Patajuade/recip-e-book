@@ -27,6 +27,16 @@
       "@recip-e-book/web-shared-util": ["./libs/web/shared/util/src/index.ts"],
       "@recip-e-book/web-recipes-models": [
         "./libs/web/recipes/models/src/index.ts"
+      ],
+      "@recip-e-book/web-shopping-feature": [
+        "./libs/web/shopping/feature/src/index.ts"
+      ],
+      "@recip-e-book/web-shopping-data-access": [
+        "./libs/web/shopping/data-access/src/index.ts"
+      ],
+      "@recip-e-book/web-shopping-ui": ["./libs/web/shopping/ui/src/index.ts"],
+      "@recip-e-book/web-shopping-models": [
+        "./libs/web/shopping/models/src/index.ts"
       ]
     }
   },

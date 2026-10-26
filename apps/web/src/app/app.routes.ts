@@ -9,6 +9,13 @@ export const appRoutes: Route[] = [
       import('@recip-e-book/web-recipes-feature').then((m) => m.recipesRoutes),
   },
   {
+    path: 'shopping',
+    loadChildren: () =>
+      import('@recip-e-book/web-shopping-feature').then(
+        (m) => m.shoppingRoutes,
+      ),
+  },
+  {
     path: '**',
     component: NotFound,
     title: 'notFound.pageTitle',

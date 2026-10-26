@@ -1,0 +1,186 @@
+<section *transloco="let t" class="flex flex-col gap-6">
+  <a routerLink="/shopping" class="text-sm text-primary-ink hover:underline"
+    >← {{ t('shopping.list.back') }}</a
+  >
+
+  @if (list.isLoading() && !list.hasValue()) {
+    <p class="text-fg-muted">{{ t('shopping.list.loading') }}</p>
+  } @else if (notFound()) {
+    <p class="text-fg-muted">{{ t('shopping.list.notFound') }}</p>
+  } @else if (list.error()) {
+    <div class="alert-error">
+      <p>{{ t('shopping.list.error') }}</p>
+      <button type="button" class="btn-ghost mt-2" (click)="list.reload()">
+        {{ t('common.retry') }}
+      </button>
+    </div>
+  } @else if (list.hasValue()) {
+    <header class="flex flex-col gap-1">
+      <h1 class="text-3xl">{{ list.value().name }}</h1>
+      @if (list.value().items.length) {
+        <p class="text-sm text-fg-muted">
+          {{
+            t('shopping.lists.progress', {
+              checked: inCart().length,
+              count: list.value().items.length,
+            })
+          }}
+        </p>
+      }
+    </header>
+
+    <form [formRoot]="newItemForm" class="flex flex-col gap-2">
+      <div class="flex flex-wrap items-start gap-2">
+        <lib-labeled-field
+          class="w-20"
+          labelHidden
+          [label]="t('shopping.list.quantity')"
+          [field]="newItemForm.quantity"
+        >
+          <input
+            type="number"
+            class="form-control"
+            [placeholder]="t('shopping.list.quantity')"
+            [formField]="newItemForm.quantity"
+          />
+        </lib-labeled-field>
+        <lib-labeled-field
+          class="w-24"
+          labelHidden
+          [label]="t('shopping.list.unit')"
+          [field]="newItemForm.unit"
+        >
+          <input
+            class="form-control"
+            [placeholder]="t('shopping.list.unit')"
+            [formField]="newItemForm.unit"
+          />
+        </lib-labeled-field>
+        <lib-labeled-field
+          class="min-w-40 flex-1"
+          labelHidden
+          [label]="t('shopping.list.item')"
+          [field]="newItemForm.name"
+        >
+          <input
+            class="form-control"
+            [placeholder]="t('shopping.list.item')"
+            [formField]="newItemForm.name"
+          />
+        </lib-labeled-field>
+        <button
+          type="submit"
+          class="btn-accent"
+          [disabled]="newItemForm().submitting()"
+        >
+          {{ t('shopping.list.add') }}
+        </button>
+      </div>
+      @if (newItemForm().errors().length) {
+        <p role="alert" class="alert-error p-3 text-sm">
+          {{ t('shopping.list.saveFailed') }}
+        </p>
+      }
+    </form>
+
+    @if (list.value().items.length === 0) {
+      <p class="text-fg-muted">{{ t('shopping.list.empty') }}</p>
+    } @else {
+      <section class="flex flex-col gap-2" aria-labelledby="to-buy-heading">
+        <h2 id="to-buy-heading" class="text-2xl">
+          {{ t('shopping.list.toBuy', { count: toBuy().length }) }}
+        </h2>
+        @if (toBuy().length === 0) {
+          <p class="text-fg-muted">{{ t('shopping.list.allInCart') }}</p>
+        }
+        <ul class="flex flex-col gap-2">
+          @for (item of toBuy(); track item.id) {
+            <li>
+              <ng-container
+                *ngTemplateOutlet="row; context: { $implicit: item }"
+              />
+            </li>
+          }
+        </ul>
+      </section>
+
+      @if (inCart().length) {
+        <section class="flex flex-col gap-2" aria-labelledby="in-cart-heading">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 id="in-cart-heading" class="text-2xl">
+              {{ t('shopping.list.inCart', { count: inCart().length }) }}
+            </h2>
+            <button type="button" class="btn-ghost" (click)="clearChecked()">
+              {{ t('shopping.list.clearChecked') }}
+            </button>
+          </div>
+          <ul class="flex flex-col gap-2">
+            @for (item of inCart(); track item.id) {
+              <li>
+                <ng-container
+                  *ngTemplateOutlet="row; context: { $implicit: item }"
+                />
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+
+    <!-- One row: the item, or its inline edit form. -->
+    <ng-template #row let-item>
+      @if (editing()?.id === item.id) {
+        <form
+          [formRoot]="editForm"
+          class="flex flex-wrap items-start gap-2 rounded-lg border border-line-strong bg-surface p-2"
+        >
+          <lib-labeled-field
+            class="w-20"
+            labelHidden
+            [label]="t('shopping.list.quantity')"
+            [field]="editForm.quantity"
+          >
+            <input
+              type="number"
+              class="form-control"
+              [formField]="editForm.quantity"
+            />
+          </lib-labeled-field>
+          <lib-labeled-field
+            class="w-24"
+            labelHidden
+            [label]="t('shopping.list.unit')"
+            [field]="editForm.unit"
+          >
+            <input class="form-control" [formField]="editForm.unit" />
+          </lib-labeled-field>
+          <lib-labeled-field
+            class="min-w-40 flex-1"
+            labelHidden
+            [label]="t('shopping.list.item')"
+            [field]="editForm.name"
+          >
+            <input class="form-control" [formField]="editForm.name" />
+          </lib-labeled-field>
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="editForm().submitting()"
+          >
+            {{ t('shopping.lists.save') }}
+          </button>
+          <button type="button" class="btn-ghost" (click)="editing.set(null)">
+            {{ t('common.cancel') }}
+          </button>
+        </form>
+      } @else {
+        <lib-shopping-item
+          [item]="item"
+          (toggled)="toggle(item)"
+          (editRequested)="startEdit(item)"
+          (removeRequested)="remove(item)"
+        />
+      }
+    </ng-template>
+  }
+</section>

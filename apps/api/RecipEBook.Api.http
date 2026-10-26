@@ -103,3 +103,88 @@ Accept-Language: fr
 }
 
 ###
+
+# --- Shopping lists ---
+
+# Lists with their item and checked counts, most recently updated first
+GET {{RecipEBook.Api_HostAddress}}/api/shopping-lists
+Accept: application/json
+
+###
+
+# Create a list → 201 + Location (copy the id for the requests below)
+POST {{RecipEBook.Api_HostAddress}}/api/shopping-lists
+Content-Type: application/json
+
+{
+  "name": "Courses de la semaine"
+}
+
+###
+
+# One list with its items (replace the id)
+GET {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+###
+
+# Rename a list → 204
+PUT {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "name": "Anniversaire"
+}
+
+###
+
+# Add a free item → 201 with its id
+POST {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000/items
+Content-Type: application/json
+
+{
+  "name": "lait",
+  "quantity": 1,
+  "unit": "l"
+}
+
+###
+
+# Check an item (the whole item is sent) → 204; an item of another list → 404
+PUT {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000/items/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "name": "lait",
+  "quantity": 1,
+  "unit": "l",
+  "checked": true
+}
+
+###
+
+# Add a recipe's ingredients, for 2 servings → 200 { itemsAdded }
+POST {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000/recipes
+Content-Type: application/json
+
+{
+  "recipeId": "00000000-0000-0000-0000-000000000000",
+  "servings": 2
+}
+
+###
+
+# Remove the checked items → 204
+DELETE {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000/checked-items
+
+###
+
+# Remove an item → 204
+DELETE {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000/items/00000000-0000-0000-0000-000000000000
+
+###
+
+# Delete a list and its items → 204
+DELETE {{RecipEBook.Api_HostAddress}}/api/shopping-lists/00000000-0000-0000-0000-000000000000
+
+###

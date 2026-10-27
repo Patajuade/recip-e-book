@@ -52,28 +52,27 @@ export const toItemInput = (
   checked,
 });
 
-/** The API's 400 errors go under their field; anything else is a banner (root error). */
-export function toItemErrors(
+/** The API's 400 errors, placed under their field; empty for any other failure. */
+export function toItemFieldErrors(
   error: unknown,
   itemForm: FieldTree<ItemFormValue>,
-): WithOptionalFieldTree<ValidationError>[] | ValidationError {
+): WithOptionalFieldTree<ValidationError>[] {
   const errors: Record<string, string[]> | undefined =
     error instanceof HttpErrorResponse && error.status === 400
       ? error.error?.errors
       : undefined;
-  if (!errors) {
-    return { kind: 'saveFailed' };
-  }
   const fields: Record<string, FieldTree<unknown>> = {
     Name: itemForm.name,
     Quantity: itemForm.quantity,
     Unit: itemForm.unit,
   };
-  return Object.entries(errors).flatMap(([path, messages]) =>
-    messages.map((message) => ({
-      kind: 'server',
-      message,
-      fieldTree: fields[path],
-    })),
-  );
+  return Object.entries(errors ?? {})
+    .filter(([path]) => path in fields)
+    .flatMap(([path, messages]) =>
+      messages.map((message) => ({
+        kind: 'server',
+        message,
+        fieldTree: fields[path],
+      })),
+    );
 }

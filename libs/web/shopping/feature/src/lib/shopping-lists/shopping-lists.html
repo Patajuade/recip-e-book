@@ -22,7 +22,7 @@
         {{ t('shopping.lists.create') }}
       </button>
     </div>
-    @if (newListForm().errors().length) {
+    @if (createFailed()) {
       <p role="alert" class="alert-error p-3 text-sm">
         {{ t('shopping.lists.saveFailed') }}
       </p>
@@ -74,6 +74,11 @@
                 >
                   {{ t('common.cancel') }}
                 </button>
+                @if (renameFailed()) {
+                  <p role="alert" class="alert-error basis-full p-3 text-sm">
+                    {{ t('shopping.lists.saveFailed') }}
+                  </p>
+                }
               </form>
             } @else {
               <a [routerLink]="[list.id]" class="min-w-40 flex-1">

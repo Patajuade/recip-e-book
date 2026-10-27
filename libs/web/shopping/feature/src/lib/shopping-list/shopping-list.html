@@ -76,7 +76,7 @@
           {{ t('shopping.list.add') }}
         </button>
       </div>
-      @if (newItemForm().errors().length) {
+      @if (addFailed()) {
         <p role="alert" class="alert-error p-3 text-sm">
           {{ t('shopping.list.saveFailed') }}
         </p>
@@ -172,6 +172,11 @@
           <button type="button" class="btn-ghost" (click)="editing.set(null)">
             {{ t('common.cancel') }}
           </button>
+          @if (editFailed()) {
+            <p role="alert" class="alert-error basis-full p-3 text-sm">
+              {{ t('shopping.list.saveFailed') }}
+            </p>
+          }
         </form>
       } @else {
         <lib-shopping-item

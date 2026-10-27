@@ -2,6 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Toaster } from '@recip-e-book/web-shared-ui';
+import { NetworkStatus } from '@recip-e-book/web-shared-util';
 import { tap } from 'rxjs';
 
 // 0: network error or timeout. 502–504: a proxy couldn't reach the API (the dev server proxy
@@ -14,6 +15,7 @@ const UNREACHABLE = new Set([0, 502, 503, 504]);
  * not found). The error is passed on unchanged.
  */
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
+  const network = inject(NetworkStatus);
   const toaster = inject(Toaster);
   const transloco = inject(TranslocoService);
   return next(req).pipe(
@@ -25,7 +27,16 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         ) {
           return;
         }
-        if (UNREACHABLE.has(error.status)) {
+        if (UNREACHABLE.has(error.status) && !network.online()) {
+          // Offline, the service worker answers what it has cached; this one wasn't.
+          toaster.show(
+            transloco.translate(
+              req.method === 'GET'
+                ? 'httpErrors.offlineRead'
+                : 'httpErrors.offlineWrite',
+            ),
+          );
+        } else if (UNREACHABLE.has(error.status)) {
           toaster.show(transloco.translate('httpErrors.unreachable'));
         } else if (error.status >= 500) {
           toaster.show(transloco.translate('httpErrors.server'));

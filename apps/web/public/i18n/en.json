@@ -254,7 +254,9 @@
   },
   "httpErrors": {
     "unreachable": "Can't reach the server. Check your connection and try again.",
-    "server": "The server ran into a problem. Try again in a moment."
+    "server": "The server ran into a problem. Try again in a moment.",
+    "offlineRead": "You're offline and this page hasn't been saved on this device yet.",
+    "offlineWrite": "You're offline: changes can't be saved. Try again once you're back online."
   },
   "themePicker": {
     "label": "Theme",
@@ -323,5 +325,8 @@
       "edit": "Edit {{name}}",
       "remove": "Remove {{name}}"
     }
+  },
+  "pwa": {
+    "offline": "You're offline: you can read the recipes and lists already opened on this device."
   }
 }

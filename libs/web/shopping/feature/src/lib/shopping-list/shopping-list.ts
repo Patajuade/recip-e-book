@@ -19,7 +19,7 @@ import {
   emptyItem,
   ItemFormValue,
   itemFormSchema,
-  toItemErrors,
+  toItemFieldErrors,
   toItemFormValue,
   toItemInput,
 } from './item-form';
@@ -65,14 +65,22 @@ export class ShoppingList {
   private readonly toaster = inject(Toaster);
   private readonly transloco = inject(TranslocoService);
 
+  // Failures that aren't about a field. Not submission errors: those block submit()
+  // until a value changes, so a plain retry would do nothing.
+  protected readonly addFailed = signal(false);
+  protected readonly editFailed = signal(false);
+
   protected readonly newItem = signal<ItemFormValue>(emptyItem());
   protected readonly newItemForm = form(this.newItem, itemFormSchema, {
     submission: {
       action: async (newItemForm) => {
+        this.addFailed.set(false);
         try {
           await this.api.addItem(this.id(), toItemInput(this.newItem(), false));
         } catch (error) {
-          return toItemErrors(error, newItemForm);
+          const fieldErrors = toItemFieldErrors(error, newItemForm);
+          this.addFailed.set(fieldErrors.length === 0);
+          return fieldErrors;
         }
         this.newItemForm().reset(emptyItem());
         this.list.reload();
@@ -91,6 +99,7 @@ export class ShoppingList {
         if (!item) {
           return undefined;
         }
+        this.editFailed.set(false);
         try {
           await this.api.updateItem(
             this.id(),
@@ -98,7 +107,9 @@ export class ShoppingList {
             toItemInput(this.edit(), item.checked),
           );
         } catch (error) {
-          return toItemErrors(error, editForm);
+          const fieldErrors = toItemFieldErrors(error, editForm);
+          this.editFailed.set(fieldErrors.length === 0);
+          return fieldErrors;
         }
         this.editing.set(null);
         this.list.reload();
@@ -108,6 +119,7 @@ export class ShoppingList {
   });
 
   protected startEdit(item: ShoppingListItem): void {
+    this.editFailed.set(false);
     this.editForm().reset(toItemFormValue(item));
     this.editing.set(item);
   }

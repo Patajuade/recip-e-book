@@ -327,6 +327,9 @@
     }
   },
   "pwa": {
-    "offline": "You're offline: you can read the recipes and lists already opened on this device."
+    "offline": "You're offline: you can read the recipes and lists already opened on this device.",
+    "updateReady": "A new version of Recip-e-book is available.",
+    "broken": "Part of the app is no longer available. Reload to use the latest version.",
+    "reload": "Reload"
   }
 }

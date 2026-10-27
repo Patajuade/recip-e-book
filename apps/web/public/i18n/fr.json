@@ -327,6 +327,9 @@
     }
   },
   "pwa": {
-    "offline": "Tu es hors ligne : tu peux lire les recettes et les listes déjà ouvertes sur cet appareil."
+    "offline": "Tu es hors ligne : tu peux lire les recettes et les listes déjà ouvertes sur cet appareil.",
+    "updateReady": "Une nouvelle version de Recip-e-book est disponible.",
+    "broken": "Une partie de l'app n'est plus disponible. Recharge pour utiliser la dernière version.",
+    "reload": "Recharger"
   }
 }

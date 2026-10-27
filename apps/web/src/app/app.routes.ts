@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { marker } from '@jsverse/transloco-keys-manager/marker';
 import { NotFound } from './not-found/not-found';
 
 export const appRoutes: Route[] = [
@@ -18,6 +19,6 @@ export const appRoutes: Route[] = [
   {
     path: '**',
     component: NotFound,
-    title: 'notFound.pageTitle',
+    title: marker('notFound.pageTitle'),
   },
 ];

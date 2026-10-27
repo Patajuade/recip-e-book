@@ -210,13 +210,13 @@
         ></textarea>
       </lib-labeled-field>
 
+      <!-- API errors that match no field. -->
       @for (error of recipeForm().errors(); track $index) {
+        <p role="alert" class="alert-error p-3 text-sm">{{ error.message }}</p>
+      }
+      @if (saveFailed()) {
         <p role="alert" class="alert-error p-3 text-sm">
-          {{
-            error.kind === 'server'
-              ? error.message
-              : t('recipes.form.saveFailed')
-          }}
+          {{ t('recipes.form.saveFailed') }}
         </p>
       }
 

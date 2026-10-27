@@ -94,11 +94,16 @@ export class RecipeEdit {
     });
   }
 
+  // A failure that isn't a validation error (server down…). Not a submission error: those
+  // block submit() until a value changes, so a plain retry would do nothing.
+  protected readonly saveFailed = signal(false);
+
   protected readonly recipeForm = form(this.model, recipeFormSchema, {
     submission: {
       // Runs only when the form is valid. Returned errors go to their fieldTree,
       // or to the root field (shown as a banner) when they have none.
       action: async (recipeForm) => {
+        this.saveFailed.set(false);
         const recipe = this.model();
         const id = this.id();
         try {
@@ -119,7 +124,8 @@ export class RecipeEdit {
           ) {
             return toServerErrors(error.error.errors, recipeForm, recipe);
           }
-          return { kind: 'saveFailed' };
+          this.saveFailed.set(true);
+          return undefined;
         }
       },
     },

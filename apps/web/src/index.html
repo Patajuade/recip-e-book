@@ -9,6 +9,9 @@
     <link rel="icon" href="favicon.ico" sizes="32x32" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <!-- Surface color of the default theme, as in the manifest. -->
+    <meta name="theme-color" content="#250902" />
     <script>
       // Applies the saved theme before the first paint, so there's no flash of the default one.
       // ThemeSettings (shared/ui) validates the values and keeps them in sync afterwards.
@@ -22,5 +25,6 @@
   </head>
   <body>
     <app-root></app-root>
+    <noscript>Recip-e-book needs JavaScript.</noscript>
   </body>
 </html>

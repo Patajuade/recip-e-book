@@ -9,6 +9,7 @@ import {
   TitleStrategy,
   withComponentInputBinding,
 } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoLocale } from '@jsverse/transloco-locale';
 import { provideTranslocoPersistLang } from '@jsverse/transloco-persist-lang';
@@ -49,5 +50,10 @@ export const appConfig: ApplicationConfig = {
       storage: { useValue: localStorage },
     }),
     provideDocumentLang(),
+    // Production builds only: the dev server doesn't build ngsw-worker.js.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

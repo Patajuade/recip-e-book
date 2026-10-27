@@ -254,7 +254,9 @@
   },
   "httpErrors": {
     "unreachable": "Impossible de joindre le serveur. Vérifie ta connexion et réessaie.",
-    "server": "Le serveur a rencontré un problème. Réessaie dans un instant."
+    "server": "Le serveur a rencontré un problème. Réessaie dans un instant.",
+    "offlineRead": "Tu es hors ligne et cette page n'est pas encore enregistrée sur cet appareil.",
+    "offlineWrite": "Tu es hors ligne : impossible d'enregistrer. Réessaie une fois la connexion revenue."
   },
   "themePicker": {
     "label": "Thème",
@@ -323,5 +325,11 @@
       "edit": "Modifier {{name}}",
       "remove": "Retirer {{name}}"
     }
+  },
+  "pwa": {
+    "offline": "Tu es hors ligne : tu peux lire les recettes et les listes déjà ouvertes sur cet appareil.",
+    "updateReady": "Une nouvelle version de Recip-e-book est disponible.",
+    "broken": "Une partie de l'app n'est plus disponible. Recharge pour utiliser la dernière version.",
+    "reload": "Recharger"
   }
 }

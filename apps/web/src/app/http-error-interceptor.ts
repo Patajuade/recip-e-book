@@ -30,11 +30,9 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         if (UNREACHABLE.has(error.status) && !network.online()) {
           // Offline, the service worker answers what it has cached; this one wasn't.
           toaster.show(
-            transloco.translate(
-              req.method === 'GET'
-                ? 'httpErrors.offlineRead'
-                : 'httpErrors.offlineWrite',
-            ),
+            req.method === 'GET'
+              ? transloco.translate('httpErrors.offlineRead')
+              : transloco.translate('httpErrors.offlineWrite'),
           );
         } else if (UNREACHABLE.has(error.status)) {
           toaster.show(transloco.translate('httpErrors.unreachable'));

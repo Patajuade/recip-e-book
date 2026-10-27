@@ -1,7 +1,8 @@
 {
   "common": {
     "retry": "Réessayer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "close": "Fermer"
   },
   "forms": {
     "errors": {
@@ -66,6 +67,19 @@
       "deleteMessage": "« {{title}} » sera définitivement supprimée.",
       "deleteFailed": "Impossible de supprimer la recette. Réessaie dans un instant.",
       "deleted": "Recette supprimée."
+    },
+    "addToList": {
+      "open": "Ajouter à une liste de courses",
+      "title": "Ajouter à une liste de courses",
+      "intro": "Les ingrédients de « {{title}} » seront ajoutés à la fin de la liste.",
+      "list": "Liste",
+      "newList": "Nouvelle liste",
+      "newListName": "Nom de la nouvelle liste",
+      "servings": "Portions",
+      "add": "Ajouter",
+      "failed": "Impossible d'ajouter les ingrédients. Réessaie dans un instant.",
+      "added": "{{count}} ingrédient(s) ajouté(s) à « {{name}} ».",
+      "openList": "Voir la liste"
     },
     "edit": {
       "pageTitle": "Modifier la recette",

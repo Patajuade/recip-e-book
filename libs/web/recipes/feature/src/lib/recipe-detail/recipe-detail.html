@@ -112,6 +112,15 @@
             </li>
           }
         </ul>
+        @if (details.ingredients.length) {
+          <button
+            type="button"
+            class="btn-ghost mt-4"
+            (click)="addToShoppingList(details)"
+          >
+            {{ t('recipes.addToList.open') }}
+          </button>
+        }
       </section>
 
       <section>

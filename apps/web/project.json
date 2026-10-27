@@ -89,6 +89,23 @@
         "staticFilePath": "dist/apps/web/browser",
         "spa": true
       }
+    },
+    "i18n-validate": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["{projectRoot}/public/i18n/*.json"],
+      "options": {
+        "command": "transloco-validator apps/web/public/i18n/en.json apps/web/public/i18n/fr.json"
+      }
+    },
+    "i18n-find": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default", "{workspaceRoot}/transloco.config.ts"],
+      "dependsOn": ["i18n-validate"],
+      "options": {
+        "command": "transloco-keys-manager find"
+      }
     }
   }
 }

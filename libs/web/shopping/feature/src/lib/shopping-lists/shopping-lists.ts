@@ -49,14 +49,22 @@ export class ShoppingLists {
   private readonly toaster = inject(Toaster);
   private readonly transloco = inject(TranslocoService);
 
+  // Failures that aren't about the name. Not submission errors: those block submit()
+  // until a value changes, so a plain retry would do nothing.
+  protected readonly createFailed = signal(false);
+  protected readonly renameFailed = signal(false);
+
   protected readonly newList = signal<ListName>({ name: '' });
   protected readonly newListForm = form(this.newList, listNameSchema, {
     submission: {
       action: async (newListForm) => {
+        this.createFailed.set(false);
         try {
           await this.api.create({ name: this.newList().name });
         } catch (error) {
-          return nameErrors(error, newListForm);
+          const fieldErrors = nameErrors(error, newListForm);
+          this.createFailed.set(fieldErrors.length === 0);
+          return fieldErrors;
         }
         this.newListForm().reset({ name: '' });
         this.lists.reload();
@@ -75,10 +83,13 @@ export class ShoppingLists {
         if (!id) {
           return undefined;
         }
+        this.renameFailed.set(false);
         try {
           await this.api.rename(id, { name: this.rename().name });
         } catch (error) {
-          return nameErrors(error, renameForm);
+          const fieldErrors = nameErrors(error, renameForm);
+          this.renameFailed.set(fieldErrors.length === 0);
+          return fieldErrors;
         }
         this.renaming.set(null);
         this.lists.reload();
@@ -88,6 +99,7 @@ export class ShoppingLists {
   });
 
   protected startRename(list: ShoppingListSummary): void {
+    this.renameFailed.set(false);
     this.renameForm().reset({ name: list.name });
     this.renaming.set(list.id);
   }
@@ -119,20 +131,18 @@ export class ShoppingLists {
   }
 }
 
-/** The API's 400 errors on Name go under the field; anything else is a banner. */
+/** The API's 400 errors on Name, placed under the field; empty for any other failure. */
 function nameErrors(
   error: unknown,
   listForm: FieldTree<ListName>,
-): WithOptionalFieldTree<ValidationError>[] | ValidationError {
-  const messages: string[] | undefined =
+): WithOptionalFieldTree<ValidationError>[] {
+  const messages: string[] =
     error instanceof HttpErrorResponse && error.status === 400
-      ? error.error?.errors?.Name
-      : undefined;
-  return messages
-    ? messages.map((message) => ({
-        kind: 'server',
-        message,
-        fieldTree: listForm.name,
-      }))
-    : { kind: 'saveFailed' };
+      ? (error.error?.errors?.Name ?? [])
+      : [];
+  return messages.map((message) => ({
+    kind: 'server',
+    message,
+    fieldTree: listForm.name,
+  }));
 }

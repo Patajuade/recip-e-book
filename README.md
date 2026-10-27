@@ -389,7 +389,7 @@ Added on 2026-10-25 at the developer's request, with phases 13 and 14.
 
 ## 7. Progress & log
 
-**Current phase: 8 — UX polish, backend i18n & state** (phases 0–7 done)
+**Current phases: 11 — Shopping lists & PWA, and the end of 8 — UX polish, backend i18n & state** (phases 0–7 done; phases 12–14 planned)
 
 - Task-level progress: [project board](https://github.com/users/Patajuade/projects/2) (Todo / In Progress / Done).
 - Phase-level progress: [milestones](https://github.com/Patajuade/recip-e-book/milestones) (open/closed issue ratio).
@@ -470,6 +470,31 @@ Added on 2026-10-25 at the developer's request, with phases 13 and 14.
 - Next step: …
 - Open questions: …
 -->
+
+#### 2026-10-23 → 27 — Phases 8 and 11 (+ planning of phases 11 to 14)
+
+- Done:
+  - Phase 7 end: #43 toasts (PR #130).
+  - Phase 8 (UX polish & backend i18n): #44 global HTTP error interceptor with translated toasts (PR #131), #45 part 1: the API's own validation messages localized from `Accept-Language` (PR #133), #112 dark app themes as Tailwind design tokens (PR #135), #47 theme and accent picker with the CDK Menu (PR #136), #134 « Marmite » favicon and header logo (PR #137), #144 five two-tone themes (PR #145), #138 tag chips colored by category (PR #158), #46 cooking mode (PR #159), #164 a recipe's tags grouped by category (PR #165).
+  - README for the portfolio: #160 screenshots below the pitch (PR #161), #162 title banner (PR #163).
+  - Planning: phases 11 to 14 added at the developer's request: shopping lists & PWA, meal planner, foods & structured ingredients, nutrition dashboard (PR #143).
+  - Phase 11 (shopping lists): #139 domain and database (PR #166), #140 API (PR #167), #141 pages (PR #168).
+  - In review: #142 add a recipe to a shopping list (PR #169), #170 no « New recipe » in the navigation (PR #171).
+- Learned:
+  - functional HTTP interceptors and `HttpErrorResponse`, a toast service with signals and a `role="status"` region;
+  - .NET localization: `AddLocalization`, `UseRequestLocalization`, `.resx` files, `IStringLocalizer<T>`;
+  - Tailwind v4 design tokens (`@theme inline` reading CSS variables), Fontsource fonts imported in `styles.css`;
+  - Angular CDK: Menu (roles, keyboard, focus return), Dialog (`closeOnNavigation` only covers history navigation);
+  - `@Service({ autoProvided: false })` for services provided by a page, Screen Wake Lock, Web Audio, pointer events;
+  - EF Core: items in their own table vs a JSON column, `OnDelete(SetNull)` vs the default `ClientSetNull` with `ExecuteDeleteAsync`, filtered `Include` as an IDOR guard;
+  - optimistic updates with `httpResource` (`WritableResource.update()`), `@let` for template narrowing;
+  - Signal Forms: native radios with `[formField]`, submission errors kept until a value changes;
+  - Nx scopes between features (`scope:recipes` → `scope:shopping`).
+- Next step: #58 PWA (end of phase 11), then #48 missing translation keys; #132 waits for .NET 11 (after November 10).
+- Open questions:
+  - after a server error (500), the other forms (create and rename a list, add and edit an item, probably the recipe form) don't send again on a plain re-click: their error is a submission error, which blocks `submit()` until a value changes (fixed in the #142 dialog);
+  - the initial bundle is over the 500 kB budget (529 kB, warning only), to look at with the PWA;
+  - the README screenshots don't show the shopping lists yet and still show the « New recipe » link: retake them once #142 and #170 are merged.
 
 #### 2026-10-19 → 23 — Phases 6 and 7 (+ phase 4 writes)
 

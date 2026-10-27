@@ -1,0 +1,113 @@
+<ng-container *transloco="let t">
+  <h2 id="add-to-shopping-list-title" class="text-xl">
+    {{ t('recipes.addToList.title') }}
+  </h2>
+
+  @if (added(); as outcome) {
+    <p #addedMessage tabindex="-1" class="outline-none">
+      {{
+        t('recipes.addToList.added', {
+          count: outcome.count,
+          name: outcome.listName,
+        })
+      }}
+    </p>
+    <div class="flex justify-end gap-2">
+      <button type="button" class="btn-ghost" (click)="dialogRef.close()">
+        {{ t('common.close') }}
+      </button>
+      <!-- CDK closeOnNavigation only covers history navigation, not links. -->
+      <a
+        [routerLink]="['/shopping', outcome.listId]"
+        class="btn-accent"
+        (click)="dialogRef.close()"
+        >{{ t('recipes.addToList.openList') }}</a
+      >
+    </div>
+  } @else if (lists.hasValue()) {
+    <form [formRoot]="addForm" class="flex flex-col gap-4">
+      <p class="text-fg-muted">
+        {{ t('recipes.addToList.intro', { title: data.recipeTitle }) }}
+      </p>
+      <fieldset class="flex flex-col gap-1">
+        <legend class="mb-1 text-sm font-medium">
+          {{ t('recipes.addToList.list') }}
+        </legend>
+        @for (list of lists.value(); track list.id) {
+          <label class="flex min-h-11 cursor-pointer items-center gap-3">
+            <input
+              type="radio"
+              class="size-5 accent-accent"
+              [value]="list.id"
+              [formField]="addForm.target"
+            />
+            {{ list.name }}
+          </label>
+        }
+        <label class="flex min-h-11 cursor-pointer items-center gap-3">
+          <input
+            type="radio"
+            class="size-5 accent-accent"
+            [value]="newList"
+            [formField]="addForm.target"
+          />
+          {{ t('recipes.addToList.newList') }}
+        </label>
+        @if (value().target === newList) {
+          <lib-labeled-field
+            class="ml-8"
+            labelHidden
+            [label]="t('recipes.addToList.newListName')"
+            [field]="addForm.newName"
+          >
+            <input
+              class="form-control"
+              [placeholder]="t('shopping.lists.newListPlaceholder')"
+              [formField]="addForm.newName"
+            />
+          </lib-labeled-field>
+        }
+      </fieldset>
+      <!-- Without the recipe's servings, quantities can't be scaled. -->
+      @if (data.servings !== null) {
+        <lib-labeled-field
+          class="w-32"
+          [label]="t('recipes.addToList.servings')"
+          [field]="addForm.servings"
+        >
+          <input
+            type="number"
+            class="form-control"
+            [formField]="addForm.servings"
+          />
+        </lib-labeled-field>
+      }
+      @if (failed()) {
+        <p role="alert" class="alert-error p-3 text-sm">
+          {{ t('recipes.addToList.failed') }}
+        </p>
+      }
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn-ghost" (click)="dialogRef.close()">
+          {{ t('common.cancel') }}
+        </button>
+        <button
+          type="submit"
+          class="btn-accent"
+          [disabled]="addForm().submitting()"
+        >
+          {{ t('recipes.addToList.add') }}
+        </button>
+      </div>
+    </form>
+  } @else if (lists.error()) {
+    <div class="alert-error">
+      <p>{{ t('shopping.lists.error') }}</p>
+      <button type="button" class="btn-ghost mt-2" (click)="lists.reload()">
+        {{ t('common.retry') }}
+      </button>
+    </div>
+  } @else {
+    <p class="text-fg-muted">{{ t('shopping.lists.loading') }}</p>
+  }
+</ng-container>

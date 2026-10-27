@@ -30,19 +30,9 @@
             <a
               routerLink="/recipes"
               routerLinkActive="bg-surface-raised font-semibold"
-              [routerLinkActiveOptions]="{ exact: true }"
               ariaCurrentWhenActive="page"
               class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg aria-[current=page]:text-fg"
               >{{ t('layout.nav.recipes') }}</a
-            >
-          </li>
-          <li>
-            <a
-              routerLink="/recipes/new"
-              routerLinkActive="bg-surface-raised font-semibold"
-              ariaCurrentWhenActive="page"
-              class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg aria-[current=page]:text-fg"
-              >{{ t('layout.nav.newRecipe') }}</a
             >
           </li>
           <li>

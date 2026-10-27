@@ -1,39 +1,45 @@
 <div
   *transloco="let t"
-  class="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-line bg-surface px-3 py-1"
+  class="flex items-start gap-3 rounded-lg border border-line bg-surface px-3 py-1"
 >
-  <!-- The whole label is the touch target: easy to hit with one hand in a store. -->
-  <label
-    class="flex min-h-11 min-w-40 flex-1 cursor-pointer items-center gap-3"
+  <!-- On a phone the source recipe goes under the name, so the buttons keep their place. -->
+  <div
+    class="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center sm:gap-3"
   >
-    <input
-      type="checkbox"
-      class="size-6 shrink-0 accent-accent"
-      [checked]="item().checked"
-      (change)="toggled.emit()"
-    />
-    <span
-      class="text-lg"
-      [class.line-through]="item().checked"
-      [class.text-fg-muted]="item().checked"
+    <!-- The whole label is the touch target: easy to hit with one hand in a store. -->
+    <label
+      class="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-3"
     >
-      @let quantity = item().quantity;
-      @if (quantity !== null) {
-        <span class="font-medium"
-          >{{ quantity | translocoDecimal }} {{ item().unit }}</span
-        >
-      }
-      {{ item().name }}
-    </span>
-  </label>
-  @if (item().sourceRecipe; as recipe) {
-    <a
-      [routerLink]="['/recipes', recipe.id]"
-      class="text-xs text-primary-ink hover:underline"
-      >{{ t('shopping.list.fromRecipe', { title: recipe.title }) }}</a
-    >
-  }
-  <span class="flex">
+      <input
+        type="checkbox"
+        class="size-6 shrink-0 accent-accent"
+        [checked]="item().checked"
+        (change)="toggled.emit()"
+      />
+      <span
+        class="min-w-0 text-lg wrap-break-word"
+        [class.line-through]="item().checked"
+        [class.text-fg-muted]="item().checked"
+      >
+        @let quantity = item().quantity;
+        @if (quantity !== null) {
+          <span class="font-medium"
+            >{{ quantity | translocoDecimal }} {{ item().unit }}</span
+          >
+        }
+        {{ item().name }}
+      </span>
+    </label>
+    @if (item().sourceRecipe; as recipe) {
+      <!-- Under the name (checkbox + gap), 24 px high: WCAG 2.5.8 target size. -->
+      <a
+        [routerLink]="['/recipes', recipe.id]"
+        class="ms-9 self-start py-1 text-xs text-primary-ink hover:underline sm:ms-0 sm:self-center"
+        >{{ t('shopping.list.fromRecipe', { title: recipe.title }) }}</a
+      >
+    }
+  </div>
+  <span class="flex min-h-11 shrink-0 items-center">
     <button
       type="button"
       class="rounded px-3 py-2 text-fg-muted hover:bg-surface-raised hover:text-fg"

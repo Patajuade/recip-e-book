@@ -387,11 +387,22 @@ Added on 2026-10-25 at the developer's request, with phases 13 and 14.
 - A dashboard with accessible charts (#157). Informative only, not medical advice.
 - **Validation**: after a week of checked meals, the dashboard shows the intake and the gaps.
 
+### Phase 15 — Environments & deployment
+
+**Tasks:** [Phase 15 milestone](https://github.com/Patajuade/recip-e-book/milestone/16)
+
+Added on 2026-10-30 at the developer's request, to do **after user accounts** (#53).
+
+- **Hosting and production database**: #60 and #91 (moved from phase 10).
+- **Two environments** (#183): development and production, each with its own database. Development data and accounts never reach production. Which branch or tag feeds each environment is decided when starting.
+- **Automatic deployment** (#184): a GitHub Actions workflow deploys once CI is green. Each environment has its own GitHub environment and secrets. Migrations are applied on each deployment, and the app is served over HTTPS.
+- **Validation**: the production app runs on its own, without the development PC. A change reaches development, then production, without a manual step on the server. The phase 11 phone validation is done on production.
+
 ---
 
 ## 7. Progress & log
 
-**Current phases: 11 — Shopping lists & PWA, and the end of 8 — UX polish, backend i18n & state** (phases 0–7 done; phases 12–14 planned)
+**Current phases: 11 — Shopping lists & PWA, and the end of 8 — UX polish, backend i18n & state** (phases 0–7 done; phases 12–15 planned)
 
 - Task-level progress: [project board](https://github.com/users/Patajuade/projects/2) (Todo / In Progress / Done).
 - Phase-level progress: [milestones](https://github.com/Patajuade/recip-e-book/milestones) (open/closed issue ratio).
@@ -492,7 +503,8 @@ Added on 2026-10-25 at the developer's request, with phases 13 and 14.
   - README: #176 screenshots with the shopping lists (PR #177).
   - Phase 8: #48 missing translation keys (PR #178).
   - Phase 11: #180 shopping items on one line on a phone (PR #181).
-  - In review: #51 CI with GitHub Actions.
+  - Phase 9: #51 CI with GitHub Actions (PR #182).
+  - Planning: phase 15, environments & deployment, added at the developer's request, after user accounts (#53).
 - Learned:
   - functional HTTP interceptors and `HttpErrorResponse`, a toast service with signals and a `role="status"` region;
   - .NET localization: `AddLocalization`, `UseRequestLocalization`, `.resx` files, `IStringLocalizer<T>`;
@@ -509,7 +521,7 @@ Added on 2026-10-25 at the developer's request, with phases 13 and 14.
 - Next step: phase 9 (#179 bundle size, #50 TS types from OpenAPI, #49 frontend unit tests) or phase 12; #132 waits for .NET 11 (after November 10).
 - Open questions:
   - the initial bundle is over the 500 kB budget (538 kB with the service worker, warning only): tracked in #179;
-  - phase 11 validation on a phone (install the app, add a recipe to a list, check the items off in a store) waits for the deployment (#60): no test phone for now.
+  - phase 11 validation on a phone (install the app, add a recipe to a list, check the items off in a store) waits for the production deployment (#184): no test phone for now.
 
 #### 2026-10-19 → 23 — Phases 6 and 7 (+ phase 4 writes)
 

@@ -22,6 +22,32 @@
       "shopping": "Courses"
     }
   },
+  "landing": {
+    "pageTitle": "Recip-e-book",
+    "heading": "Tes recettes, du fourneau au magasin",
+    "intro": "Note les recettes que tu cuisines, retrouve-les en quelques lettres, cuisine-les pas à pas et transforme-les en liste de courses.",
+    "openRecipes": "Ouvrir mes recettes",
+    "openShopping": "Mes listes de courses",
+    "features": {
+      "heading": "Tout ce qu'il faut pour cuisiner à la maison",
+      "recipes": {
+        "title": "Ton propre livre de recettes",
+        "text": "Ingrédients, étapes, temps et portions. Cherche par titre, filtre par tag : plat, saison, régime, cuisine…"
+      },
+      "cooking": {
+        "title": "Mode cuisine",
+        "text": "Une étape à la fois en gros caractères, des minuteurs trouvés dans les étapes, et l'écran reste allumé pendant que tu cuisines."
+      },
+      "shopping": {
+        "title": "Listes de courses",
+        "text": "Ajoute les ingrédients d'une recette à une liste pour le nombre de portions voulu, puis coche-les au magasin."
+      },
+      "anywhere": {
+        "title": "Aussi sur ton téléphone",
+        "text": "Installe-la comme une app et relis les recettes et listes déjà ouvertes, même hors ligne. En français ou en anglais, dans l'un des 8 thèmes."
+      }
+    }
+  },
   "languageSwitcher": {
     "label": "Langue"
   },

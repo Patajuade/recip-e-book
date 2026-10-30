@@ -3,7 +3,12 @@ import { marker } from '@jsverse/transloco-keys-manager/marker';
 import { NotFound } from './not-found/not-found';
 
 export const appRoutes: Route[] = [
-  { path: '', redirectTo: '/recipes', pathMatch: 'full' },
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./landing/landing').then((m) => m.Landing),
+    title: marker('landing.pageTitle'),
+  },
   {
     path: 'recipes',
     loadChildren: () =>

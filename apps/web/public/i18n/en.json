@@ -22,6 +22,32 @@
       "shopping": "Shopping"
     }
   },
+  "landing": {
+    "pageTitle": "Recip-e-book",
+    "heading": "Your recipes, from the stove to the store",
+    "intro": "Write down the recipes you make, find them in a few letters, cook them step by step and turn them into a shopping list.",
+    "openRecipes": "Open my recipes",
+    "openShopping": "My shopping lists",
+    "features": {
+      "heading": "Everything you need to cook at home",
+      "recipes": {
+        "title": "A cookbook of your own",
+        "text": "Ingredients, steps, times and servings. Search by title, filter by tag: course, season, diet, cuisine…"
+      },
+      "cooking": {
+        "title": "Cooking mode",
+        "text": "One step at a time in big text, timers found in the steps, and the screen stays on while you cook."
+      },
+      "shopping": {
+        "title": "Shopping lists",
+        "text": "Add a recipe's ingredients to a list for the servings you need, then check them off in the store."
+      },
+      "anywhere": {
+        "title": "On your phone too",
+        "text": "Install it like an app and read the recipes and lists you've opened, even offline. In English or French, in one of 8 themes."
+      }
+    }
+  },
   "languageSwitcher": {
     "label": "Language"
   },

@@ -5,6 +5,7 @@ import { LanguageSwitcher } from '@recip-e-book/web-shared-i18n';
 import { ThemePicker, ToastList } from '@recip-e-book/web-shared-ui';
 import { NetworkStatus } from '@recip-e-book/web-shared-util';
 import { AppUpdates } from './app-updates';
+import { Logo } from './logo/logo';
 
 @Component({
   imports: [
@@ -15,6 +16,7 @@ import { AppUpdates } from './app-updates';
     LanguageSwitcher,
     ThemePicker,
     ToastList,
+    Logo,
   ],
   selector: 'app-root',
   templateUrl: './app.html',

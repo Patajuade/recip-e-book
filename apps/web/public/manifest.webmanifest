@@ -3,7 +3,7 @@
   "short_name": "Recip-e-book",
   "description": "A personal recipe book with shopping lists.",
   "id": "./",
-  "start_url": "./",
+  "start_url": "./recipes",
   "scope": "./",
   "display": "standalone",
   "background_color": "#180507",

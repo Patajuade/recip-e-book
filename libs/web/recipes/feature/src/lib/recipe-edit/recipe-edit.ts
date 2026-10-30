@@ -18,6 +18,7 @@ import {
 } from '@recip-e-book/web-recipes-data-access';
 import { TagPicker } from '@recip-e-book/web-recipes-ui';
 import {
+  Confirmation,
   FieldErrors,
   LabeledField,
   Toaster,
@@ -81,6 +82,7 @@ export class RecipeEdit {
   private readonly router = inject(Router);
   private readonly toaster = inject(Toaster);
   private readonly transloco = inject(TranslocoService);
+  private readonly confirmation = inject(Confirmation);
 
   constructor() {
     // Closing the tab or reloading: only the browser's own prompt is possible here.
@@ -91,6 +93,18 @@ export class RecipeEdit {
       const warn = (event: BeforeUnloadEvent) => event.preventDefault();
       window.addEventListener('beforeunload', warn);
       onCleanup(() => window.removeEventListener('beforeunload', warn));
+    });
+  }
+
+  /** Asks before leaving the form with unsaved changes (navigation inside the app only). */
+  canLeave(): boolean | Promise<boolean> {
+    if (!this.hasUnsavedChanges()) {
+      return true;
+    }
+    return this.confirmation.ask({
+      title: this.transloco.translate('recipes.form.leaveTitle'),
+      message: this.transloco.translate('recipes.form.leaveMessage'),
+      confirmLabel: this.transloco.translate('recipes.form.leave'),
     });
   }
 

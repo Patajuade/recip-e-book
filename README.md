@@ -194,7 +194,7 @@ Enforced by `@nx/enforce-module-boundaries` in the root `eslint.config.mjs` ([do
 
 ### Principles
 
-- **Frontend**: split between _feature_ (pages, data-connected, routed) and _ui_ (presentational, only `input()` / `output()`). Feature routes are **lazy loaded** (`loadChildren`).
+- **Frontend**: split between _feature_ (pages, data-connected, routed) and _ui_ (presentational, only `input()` / `output()`). Feature routes are **lazy loaded** (`loadChildren`), and so is each page inside them (`loadComponent`): a routes file never imports a page as a value.
 - **Data**: each `data-access` lib exposes typed models, **read resources** built with `httpResource()` (reactive to signal parameters such as filters) and **write methods** built with `HttpClient` (create, update, delete). After a write, the caller reloads the affected resources (`reload()`). Components never make direct HTTP calls: keeping all fetching inside `data-access` lets us change the strategy later (a store such as NgRx SignalStore, or a cache library) without touching features and UI, as the app grows (#92).
 - **i18n**: no hardcoded UI text: templates use one `*transloco="let t"` per template and `t('recipes.list.heading')`; code uses `translateSignal()`; route `title`s are keys translated by `TranslocoTitleStrategy`. Keys are nested by feature (`recipes.list.heading`).
 - **Backend**: each file in `Features/Recipes` holds a complete use case (request DTO, handler, response DTO). Entities **never** leave the API: we return DTOs.
@@ -481,7 +481,12 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - **Fix:** `libs/web/shared/ui/package.json` holds `"sideEffects": false`, a Webpack convention that esbuild "respects for any imported file". The lib's files only declare classes, functions and constants (checked), so esbuild can drop the unused ones. The form helpers and the dialog moved to a lazy chunk.
   - **After:** 457.94 kB (118 kB transferred instead of 136 kB). Marking every web lib the same way only saved 1 kB more, so only `shared/ui` is marked. A module with a real top-level side effect (code run on import) must not be added to this lib.
   - **Checked** on a production build: theme menu, recipe form, delete confirmation.
-  - **Still to do:** the recipes page still downloads that chunk on a first visit, because the recipes routes import every page statically (open question below).
+  - **Still to do:** the recipes page still downloads that chunk on a first visit, because the recipes routes import every page statically (done in #187).
+- 2026-10-30 — **One lazy chunk per page** (#187).
+  - **Before:** `loadChildren` loaded each feature as one chunk, so a first visit to `/recipes` also downloaded the form, cooking mode and the 83 kB forms/dialog chunk: 129 kB of lazy code.
+  - **Fix:** every recipes and shopping route uses `loadComponent`, which lazily loads "the JavaScript for a component at the point at which that route would become active" ([route loading strategies](https://angular.dev/guide/routing/loading-strategies#lazily-loaded-components-and-routes)). The routes file must then not import a page as a value. `unsavedChangesGuard` imported `RecipeEdit` and the confirmation dialog, so the question moved into the page (`RecipeEdit.canLeave()`), and the guard imports `RecipeEdit` as a type only (`import type`, removed from the JavaScript).
+  - **After:** a first visit to `/recipes` loads 10 kB of lazy code instead of 129 kB (5 kB instead of 32 kB transferred). The forms/dialog chunk now comes with the pages that use it: detail, edit and both shopping pages. The initial total goes from 457.94 to 461.43 kB (118.25 → 118.52 kB transferred): the metafile shows a little Angular core and router code moving into `main` and some CDK overlay code moving out.
+  - **Checked** on a production build: `/recipes` loads only the list's chunks, and leaving the form with changes still asks (Escape stays, « Quitter » leaves).
 - 2026-10-27 — **Screenshots retaken** (#176), same method as #160. The demo database got the shopping lists migration (`dotnet ef database update` with the `Release` configuration, so the developer's running API keeps its `Debug` files, and outside the Development environment, so without the French demo lists), then English lists created through the API. New row in the gallery: the « Add to list » dialog, and three phone screens (the lists, a list's items to buy, the checked items in the cart).
 - 2026-10-27 — **Add a recipe to a shopping list** (#142). A button below the ingredients opens a CDK dialog: radios for the existing lists (the first one checked) and « Nouvelle liste » with a name field, the servings prefilled with the recipe's (hidden when it has none: nothing to scale). The dialog then says how many items were added and offers « Voir la liste » and « Fermer », instead of a toast with a link: a toast disappears on its own, so its link could vanish before a keyboard or screen reader user reaches it ([WCAG 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)); the focus moves to the result message. The dialog lives in `recipes/feature` and calls `shopping/data-access`, hence `scope:recipes` → `scope:shopping` (never the reverse). Native radios work with `[formField]` (Signal Forms gives them the field's `name`, so arrow keys move within the group). Two traps found by the end-to-end test: CDK `closeOnNavigation` only covers history navigation (back/forward), not a router link (doc comment of `DialogConfig.closeOnNavigation` in `@angular/cdk`: "does not apply to navigation via anchor element unless using URL-hash based routing"), so the link closes the dialog itself; and an error returned by a Signal Forms submission action makes the form invalid **until a value changes**, and `submit()` doesn't run the action of an invalid form, so after a server failure a plain retry did nothing. Field errors (400) stay submission errors; other failures go in a separate signal. After a failed add, a retry reuses the list just created instead of creating another one.
 - 2026-10-25 — **Cooking mode** (#46, features chosen by the developer). Route `/recipes/:id/cook`: one step at a time in big text (buttons, arrow keys, horizontal swipe with pointer events and `touch-action: pan-y`; one Next/Done button so keyboard focus survives the last step), ingredients to check off (not saved; below the step on a phone), and two services provided by the page with `@Service({ autoProvided: false })` ("It is up to the user to expose it in a providers list"), so they stop with it. `ScreenWakeLock` (`shared/util`) follows [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API): request again when the page becomes visible, release when done, show the state and let the user turn it off. Timers: `splitDurations` turns the durations of a step (fr/en, « 1 h 30 », « 10 min », « 45 secondes »; in « 10 à 15 min » only « 15 min ») into buttons; `CookingTimers` computes the time left from each end time, so it stays right when the browser throttles intervals in a hidden tab (the ring itself can then come late), and rings with Web Audio beeps (the `AudioContext` is created on the starting click, per the [autoplay guide](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)) and a vibration where `navigator.vibrate` exists; a ring is announced in a `role="alert"` region. The recipe form explains the duration format under « Étapes » (hint linked with `aria-describedby`) and shows, under each step, the timers that will be detected.
@@ -497,7 +502,7 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
 - Open questions: …
 -->
 
-#### 2026-10-23 → 29 — Phases 8, 9 and 11 (+ planning of phases 11 to 14)
+#### 2026-10-23 → 30 — Phases 8 to 11 (+ planning of phases 11 to 15)
 
 - Done:
   - Phase 7 end: #43 toasts (PR #130).
@@ -512,7 +517,8 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - Phase 11: #180 shopping items on one line on a phone (PR #181).
   - Phase 9: #51 CI with GitHub Actions (PR #182).
   - Planning: phase 15, environments & deployment, added at the developer's request, after user accounts (#53) (PR #185).
-  - In review: #179 initial bundle back under its budget.
+  - Phase 9: #179 initial bundle back under its budget (PR #186).
+  - In review: #188 landing page (phase 10), #187 one lazy chunk per page (phase 9).
 - Learned:
   - functional HTTP interceptors and `HttpErrorResponse`, a toast service with signals and a `role="status"` region;
   - .NET localization: `AddLocalization`, `UseRequestLocalization`, `.resx` files, `IStringLocalizer<T>`;
@@ -529,7 +535,6 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - bundle analysis with the esbuild metafile (`statsJson`), esbuild tree shaking and the `sideEffects` field.
 - Next step: phase 9 (#50 TS types from OpenAPI, #49 frontend unit tests) or phase 12; #132 waits for .NET 11 (after November 10).
 - Open questions:
-  - the recipes page still downloads the forms and dialog chunk on a first visit: the recipes routes import every page statically; `loadComponent` per page would avoid it (not done in #179);
   - phase 11 validation on a phone (install the app, add a recipe to a list, check the items off in a store) waits for the production deployment (#184): no test phone for now.
 
 #### 2026-10-19 → 23 — Phases 6 and 7 (+ phase 4 writes)

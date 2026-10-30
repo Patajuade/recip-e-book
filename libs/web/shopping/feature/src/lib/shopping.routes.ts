@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router';
 import { marker } from '@jsverse/transloco-keys-manager/marker';
-import { ShoppingList } from './shopping-list/shopping-list';
-import { ShoppingLists } from './shopping-lists/shopping-lists';
 
 export const shoppingRoutes: Routes = [
   {
     path: '',
-    component: ShoppingLists,
+    loadComponent: () =>
+      import('./shopping-lists/shopping-lists').then((m) => m.ShoppingLists),
     title: marker('shopping.lists.pageTitle'),
   },
   {
     path: ':id',
-    component: ShoppingList,
+    loadComponent: () =>
+      import('./shopping-list/shopping-list').then((m) => m.ShoppingList),
     title: marker('shopping.list.pageTitle'),
   },
 ];

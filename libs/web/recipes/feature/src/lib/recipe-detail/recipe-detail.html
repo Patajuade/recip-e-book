@@ -1,10 +1,59 @@
-<article *transloco="let t" class="flex flex-col gap-6">
+<article
+  *transloco="let t"
+  class="flex flex-col gap-6"
+  [attr.aria-busy]="skeleton() || waiting()"
+>
   <a routerLink="/recipes" class="text-sm text-primary-ink hover:underline"
     >← {{ t('recipes.detail.backToList') }}</a
   >
 
-  @if (recipe.isLoading()) {
-    <p class="text-fg-muted">{{ t('recipes.detail.loading') }}</p>
+  @if (skeleton() || waiting()) {
+    <p class="sr-only">{{ t('recipes.detail.loading') }}</p>
+    @if (skeleton()) {
+      <div aria-hidden="true" class="flex flex-col gap-6">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div class="skeleton h-10 w-2/3 max-w-md"></div>
+          <div class="flex gap-2">
+            <div class="skeleton h-9 w-28"></div>
+            <div class="skeleton h-9 w-24"></div>
+            <div class="skeleton h-9 w-24"></div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <div class="skeleton h-5 w-3/4"></div>
+          <div class="flex gap-4">
+            <div class="skeleton h-4 w-24"></div>
+            <div class="skeleton h-4 w-28"></div>
+            <div class="skeleton h-4 w-24"></div>
+          </div>
+          <div class="flex gap-1">
+            <div class="skeleton h-5 w-16 rounded-full"></div>
+            <div class="skeleton h-5 w-20 rounded-full"></div>
+            <div class="skeleton h-5 w-14 rounded-full"></div>
+          </div>
+        </div>
+        <div class="grid gap-6 md:grid-cols-[1fr_2fr]">
+          <div class="flex flex-col gap-2">
+            <div class="skeleton mb-1 h-8 w-40"></div>
+            @for (
+              width of ['w-3/4', 'w-1/2', 'w-2/3', 'w-1/2', 'w-3/5'];
+              track $index
+            ) {
+              <div class="skeleton h-5" [class]="width"></div>
+            }
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="skeleton mb-1 h-8 w-32"></div>
+            @for (
+              width of ['w-full', 'w-5/6', 'w-full', 'w-2/3'];
+              track $index
+            ) {
+              <div class="skeleton h-5" [class]="width"></div>
+            }
+          </div>
+        </div>
+      </div>
+    }
   } @else if (notFound()) {
     <p class="text-fg-muted">{{ t('recipes.detail.notFound') }}</p>
   } @else if (recipe.error()) {

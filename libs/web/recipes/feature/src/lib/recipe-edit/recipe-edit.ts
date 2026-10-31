@@ -23,6 +23,7 @@ import {
   LabeledField,
   Toaster,
 } from '@recip-e-book/web-shared-ui';
+import { delayedLoading } from '@recip-e-book/web-shared-util';
 import {
   emptyIngredient,
   emptyRecipe,
@@ -54,6 +55,10 @@ export class RecipeEdit {
 
   // Idle (no request) on /recipes/new, since there is no id.
   protected readonly recipe = recipeDetailResource(this.id);
+  protected readonly waiting = computed(
+    () => this.recipe.isLoading() && !this.recipe.hasValue(),
+  );
+  protected readonly skeleton = delayedLoading(this.waiting);
 
   protected readonly tagCatalog = tagCatalogResource();
 

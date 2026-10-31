@@ -34,28 +34,41 @@
     }
   </div>
 
-  @if (recipes.isLoading()) {
-    <p class="text-fg-muted">{{ t('recipes.list.loading') }}</p>
-  } @else if (recipes.error()) {
-    <div class="alert-error">
-      <p>{{ t('recipes.list.error') }}</p>
-      <button type="button" class="btn-ghost mt-2" (click)="recipes.reload()">
-        {{ t('common.retry') }}
-      </button>
-    </div>
-  } @else if (recipes.hasValue()) {
-    @if (recipes.value().length === 0) {
-      <p class="text-fg-muted">
-        {{
-          t(search() || tag() ? 'recipes.list.noResults' : 'recipes.list.empty')
-        }}
-      </p>
-    } @else {
-      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @for (recipe of recipes.value(); track recipe.id) {
-          <li><lib-recipe-card [recipe]="recipe" /></li>
-        }
-      </ul>
+  <div [attr.aria-busy]="skeleton() || waiting()">
+    @if (skeleton() || waiting()) {
+      <p class="sr-only">{{ t('recipes.list.loading') }}</p>
+      @if (skeleton()) {
+        <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (card of [1, 2, 3, 4, 5, 6]; track card) {
+            <li><lib-recipe-card-skeleton /></li>
+          }
+        </ul>
+      }
+    } @else if (recipes.error()) {
+      <div class="alert-error">
+        <p>{{ t('recipes.list.error') }}</p>
+        <button type="button" class="btn-ghost mt-2" (click)="recipes.reload()">
+          {{ t('common.retry') }}
+        </button>
+      </div>
+    } @else if (recipes.hasValue()) {
+      @if (recipes.value().length === 0) {
+        <p class="text-fg-muted">
+          {{
+            t(
+              search() || tag()
+                ? 'recipes.list.noResults'
+                : 'recipes.list.empty'
+            )
+          }}
+        </p>
+      } @else {
+        <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (recipe of recipes.value(); track recipe.id) {
+            <li><lib-recipe-card [recipe]="recipe" /></li>
+          }
+        </ul>
+      }
     }
-  }
+  </div>
 </section>

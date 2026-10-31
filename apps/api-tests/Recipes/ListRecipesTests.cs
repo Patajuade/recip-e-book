@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 
+using RecipEBook.Api.Common;
 using RecipEBook.Api.Features.Recipes;
 using RecipEBook.Api.Features.Tags;
 
@@ -14,10 +15,10 @@ public class ListRecipesTests(RecipeBookApiFactory factory) : IClassFixture<Reci
     {
         Guid id = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Soupe de légumes d'hiver"));
 
-        List<ListRecipes.RecipeSummary>? recipes =
-            await _client.GetFromJsonAsync<List<ListRecipes.RecipeSummary>>("/api/recipes?search=LEGUMES");
+        List<ListRecipes.RecipeSummary> recipes =
+            (await _client.GetFromJsonAsync<Page<ListRecipes.RecipeSummary>>("/api/recipes?search=LEGUMES"))!.Items;
 
-        Assert.Contains(recipes!, r => r.Id == id);
+        Assert.Contains(recipes, r => r.Id == id);
     }
 
     [Fact]
@@ -26,12 +27,12 @@ public class ListRecipesTests(RecipeBookApiFactory factory) : IClassFixture<Reci
         Guid tagged = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Tagged", "italian"));
         Guid other = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Not tagged", "french"));
 
-        List<ListRecipes.RecipeSummary>? recipes =
-            await _client.GetFromJsonAsync<List<ListRecipes.RecipeSummary>>("/api/recipes?tag=italian");
+        List<ListRecipes.RecipeSummary> recipes =
+            (await _client.GetFromJsonAsync<Page<ListRecipes.RecipeSummary>>("/api/recipes?tag=italian"))!.Items;
 
-        Assert.Contains(recipes!, r => r.Id == tagged);
-        Assert.DoesNotContain(recipes!, r => r.Id == other);
-        Assert.All(recipes!, r => Assert.Contains(r.Tags, t => t.Key == "italian"));
+        Assert.Contains(recipes, r => r.Id == tagged);
+        Assert.DoesNotContain(recipes, r => r.Id == other);
+        Assert.All(recipes, r => Assert.Contains(r.Tags, t => t.Key == "italian"));
     }
 
     [Fact]
@@ -40,10 +41,10 @@ public class ListRecipesTests(RecipeBookApiFactory factory) : IClassFixture<Reci
         Guid id = await TestRecipes.CreateAsync(
             _client, TestRecipes.Valid("Summary", "italian", "vegetarian", "eggs", "soup", "quick"));
 
-        List<ListRecipes.RecipeSummary>? recipes =
-            await _client.GetFromJsonAsync<List<ListRecipes.RecipeSummary>>("/api/recipes?search=summary");
+        List<ListRecipes.RecipeSummary> recipes =
+            (await _client.GetFromJsonAsync<Page<ListRecipes.RecipeSummary>>("/api/recipes?search=summary"))!.Items;
 
-        ListRecipes.RecipeSummary summary = Assert.Single(recipes!, r => r.Id == id);
+        ListRecipes.RecipeSummary summary = Assert.Single(recipes, r => r.Id == id);
         Assert.Equal(30, summary.TotalTimeMinutes);
         Assert.Equal(
             [
@@ -63,9 +64,9 @@ public class ListRecipesTests(RecipeBookApiFactory factory) : IClassFixture<Reci
         Guid first = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Order A"));
         Guid second = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Order B"));
 
-        List<ListRecipes.RecipeSummary>? recipes =
-            await _client.GetFromJsonAsync<List<ListRecipes.RecipeSummary>>("/api/recipes?search=order");
+        List<ListRecipes.RecipeSummary> recipes =
+            (await _client.GetFromJsonAsync<Page<ListRecipes.RecipeSummary>>("/api/recipes?search=order"))!.Items;
 
-        Assert.Equal([second, first], recipes!.Select(r => r.Id));
+        Assert.Equal([second, first], recipes.Select(r => r.Id));
     }
 }

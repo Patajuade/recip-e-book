@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   FieldTree,
   form,
@@ -23,6 +23,7 @@ import {
   LabeledField,
   Toaster,
 } from '@recip-e-book/web-shared-ui';
+import { delayedLoading } from '@recip-e-book/web-shared-util';
 
 interface ListName {
   name: string;
@@ -43,6 +44,10 @@ const listNameSchema = schema<ListName>((list) => {
 })
 export class ShoppingLists {
   protected readonly lists = shoppingListsResource();
+  protected readonly waiting = computed(
+    () => this.lists.isLoading() && !this.lists.hasValue(),
+  );
+  protected readonly skeleton = delayedLoading(this.waiting);
 
   private readonly api = inject(ShoppingListApi);
   private readonly confirmation = inject(Confirmation);

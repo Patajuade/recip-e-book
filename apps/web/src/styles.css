@@ -255,6 +255,11 @@
     @apply inline-block size-3 rounded-full bg-(--tag-color);
   }
 
+  /* A block of a loading skeleton, in the shape of the content on its way. */
+  .skeleton {
+    @apply rounded bg-surface-raised motion-safe:animate-pulse;
+  }
+
   .alert-error {
     @apply rounded border border-danger/40 bg-danger/10 p-4 text-danger;
   }

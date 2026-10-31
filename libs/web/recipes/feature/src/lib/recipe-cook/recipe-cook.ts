@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { TranslocoDecimalPipe } from '@jsverse/transloco-locale';
 import { recipeDetailResource } from '@recip-e-book/web-recipes-data-access';
-import { ScreenWakeLock } from '@recip-e-book/web-shared-util';
+import { delayedLoading, ScreenWakeLock } from '@recip-e-book/web-shared-util';
 import { CookingTimers } from './cooking-timers';
 import { splitDurations } from '../step-durations';
 
@@ -26,6 +26,10 @@ export class RecipeCook {
   readonly id = input.required<string>();
 
   protected readonly recipe = recipeDetailResource(this.id);
+  protected readonly waiting = computed(
+    () => this.recipe.isLoading() && !this.recipe.hasValue(),
+  );
+  protected readonly skeleton = delayedLoading(this.waiting);
 
   protected readonly notFound = computed(() => {
     const error = this.recipe.error();

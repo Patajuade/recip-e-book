@@ -29,91 +29,109 @@
     }
   </form>
 
-  @if (lists.isLoading()) {
-    <p class="text-fg-muted">{{ t('shopping.lists.loading') }}</p>
-  } @else if (lists.error()) {
-    <div class="alert-error">
-      <p>{{ t('shopping.lists.error') }}</p>
-      <button type="button" class="btn-ghost mt-2" (click)="lists.reload()">
-        {{ t('common.retry') }}
-      </button>
-    </div>
-  } @else if (lists.hasValue()) {
-    @if (lists.value().length === 0) {
-      <p class="text-fg-muted">{{ t('shopping.lists.empty') }}</p>
-    } @else {
-      <ul class="flex flex-col gap-2">
-        @for (list of lists.value(); track list.id) {
-          <li
-            class="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface p-4"
-          >
-            @if (renaming() === list.id) {
-              <form
-                [formRoot]="renameForm"
-                class="flex flex-1 flex-wrap items-start gap-2"
-              >
-                <lib-labeled-field
-                  class="min-w-60 flex-1"
-                  labelHidden
-                  [label]="t('shopping.lists.nameLabel')"
-                  [field]="renameForm.name"
+  <div [attr.aria-busy]="skeleton() || waiting()">
+    @if (skeleton() || waiting()) {
+      <p class="sr-only">{{ t('shopping.lists.loading') }}</p>
+      @if (skeleton()) {
+        <ul aria-hidden="true" class="flex flex-col gap-2">
+          @for (row of [1, 2, 3]; track row) {
+            <li
+              class="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface p-4"
+            >
+              <div class="flex min-w-40 flex-1 flex-col gap-1.5">
+                <div class="skeleton h-7 w-40"></div>
+                <div class="skeleton h-4 w-24"></div>
+              </div>
+              <div class="skeleton h-9 w-24"></div>
+              <div class="skeleton h-9 w-24"></div>
+            </li>
+          }
+        </ul>
+      }
+    } @else if (lists.error()) {
+      <div class="alert-error">
+        <p>{{ t('shopping.lists.error') }}</p>
+        <button type="button" class="btn-ghost mt-2" (click)="lists.reload()">
+          {{ t('common.retry') }}
+        </button>
+      </div>
+    } @else if (lists.hasValue()) {
+      @if (lists.value().length === 0) {
+        <p class="text-fg-muted">{{ t('shopping.lists.empty') }}</p>
+      } @else {
+        <ul class="flex flex-col gap-2">
+          @for (list of lists.value(); track list.id) {
+            <li
+              class="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface p-4"
+            >
+              @if (renaming() === list.id) {
+                <form
+                  [formRoot]="renameForm"
+                  class="flex flex-1 flex-wrap items-start gap-2"
                 >
-                  <input class="form-control" [formField]="renameForm.name" />
-                </lib-labeled-field>
-                <button
-                  type="submit"
-                  class="btn-primary"
-                  [disabled]="renameForm().submitting()"
-                >
-                  {{ t('shopping.lists.save') }}
-                </button>
+                  <lib-labeled-field
+                    class="min-w-60 flex-1"
+                    labelHidden
+                    [label]="t('shopping.lists.nameLabel')"
+                    [field]="renameForm.name"
+                  >
+                    <input class="form-control" [formField]="renameForm.name" />
+                  </lib-labeled-field>
+                  <button
+                    type="submit"
+                    class="btn-primary"
+                    [disabled]="renameForm().submitting()"
+                  >
+                    {{ t('shopping.lists.save') }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-ghost"
+                    (click)="renaming.set(null)"
+                  >
+                    {{ t('common.cancel') }}
+                  </button>
+                  @if (renameFailed()) {
+                    <p role="alert" class="alert-error basis-full p-3 text-sm">
+                      {{ t('shopping.lists.saveFailed') }}
+                    </p>
+                  }
+                </form>
+              } @else {
+                <a [routerLink]="[list.id]" class="min-w-40 flex-1">
+                  <span class="font-display text-xl hover:underline">{{
+                    list.name
+                  }}</span>
+                  <span class="block text-sm text-fg-muted">
+                    {{
+                      list.itemCount
+                        ? t('shopping.lists.progress', {
+                            checked: list.checkedCount,
+                            count: list.itemCount,
+                          })
+                        : t('shopping.lists.noItems')
+                    }}
+                  </span>
+                </a>
                 <button
                   type="button"
                   class="btn-ghost"
-                  (click)="renaming.set(null)"
+                  (click)="startRename(list)"
                 >
-                  {{ t('common.cancel') }}
+                  {{ t('shopping.lists.rename') }}
                 </button>
-                @if (renameFailed()) {
-                  <p role="alert" class="alert-error basis-full p-3 text-sm">
-                    {{ t('shopping.lists.saveFailed') }}
-                  </p>
-                }
-              </form>
-            } @else {
-              <a [routerLink]="[list.id]" class="min-w-40 flex-1">
-                <span class="font-display text-xl hover:underline">{{
-                  list.name
-                }}</span>
-                <span class="block text-sm text-fg-muted">
-                  {{
-                    list.itemCount
-                      ? t('shopping.lists.progress', {
-                          checked: list.checkedCount,
-                          count: list.itemCount,
-                        })
-                      : t('shopping.lists.noItems')
-                  }}
-                </span>
-              </a>
-              <button
-                type="button"
-                class="btn-ghost"
-                (click)="startRename(list)"
-              >
-                {{ t('shopping.lists.rename') }}
-              </button>
-              <button
-                type="button"
-                class="btn-ghost border-danger/60 text-danger"
-                (click)="delete(list)"
-              >
-                {{ t('shopping.lists.delete') }}
-              </button>
-            }
-          </li>
-        }
-      </ul>
+                <button
+                  type="button"
+                  class="btn-ghost border-danger/60 text-danger"
+                  (click)="delete(list)"
+                >
+                  {{ t('shopping.lists.delete') }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      }
     }
-  }
+  </div>
 </section>

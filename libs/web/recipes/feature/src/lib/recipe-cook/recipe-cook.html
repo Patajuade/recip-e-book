@@ -1,6 +1,48 @@
-<section *transloco="let t" class="flex flex-col gap-6">
-  @if (recipe.isLoading()) {
-    <p class="text-fg-muted">{{ t('recipes.detail.loading') }}</p>
+<section
+  *transloco="let t"
+  class="flex flex-col gap-6"
+  [attr.aria-busy]="skeleton() || waiting()"
+>
+  @if (skeleton() || waiting()) {
+    <p class="sr-only">{{ t('recipes.detail.loading') }}</p>
+    @if (skeleton()) {
+      <div aria-hidden="true" class="flex flex-col gap-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="skeleton h-8 w-1/2 max-w-sm"></div>
+          <div class="flex gap-2">
+            <div class="skeleton h-9 w-40"></div>
+            <div class="skeleton h-9 w-24"></div>
+          </div>
+        </div>
+        <div class="grid gap-6 md:grid-cols-[1fr_2fr] md:items-start">
+          <div
+            class="order-last flex flex-col gap-3 rounded-lg border border-line bg-surface p-4 md:order-none"
+          >
+            <div class="skeleton h-6 w-40"></div>
+            @for (width of ['w-3/4', 'w-1/2', 'w-2/3', 'w-1/2']; track $index) {
+              <div class="skeleton h-5" [class]="width"></div>
+            }
+          </div>
+          <div class="flex flex-col gap-6 md:col-start-2">
+            <div class="flex flex-col gap-2">
+              <div class="skeleton h-4 w-24"></div>
+              <div class="skeleton h-1.5 w-full rounded-full"></div>
+            </div>
+            <div
+              class="flex min-h-48 flex-col gap-3 rounded-lg border border-line bg-surface p-6"
+            >
+              <div class="skeleton h-8 w-full"></div>
+              <div class="skeleton h-8 w-5/6"></div>
+              <div class="skeleton h-8 w-2/3"></div>
+            </div>
+            <div class="flex justify-between gap-2">
+              <div class="skeleton h-12 w-36"></div>
+              <div class="skeleton h-12 w-36"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   } @else if (notFound()) {
     <p class="text-fg-muted">{{ t('recipes.detail.notFound') }}</p>
   } @else if (recipe.error()) {

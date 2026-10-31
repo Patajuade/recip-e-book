@@ -9,12 +9,16 @@ import {
   shoppingListResource,
 } from '@recip-e-book/web-shopping-data-access';
 import { ShoppingListItem } from '@recip-e-book/web-shopping-models';
-import { ShoppingItem } from '@recip-e-book/web-shopping-ui';
+import {
+  ShoppingItem,
+  ShoppingItemSkeleton,
+} from '@recip-e-book/web-shopping-ui';
 import {
   Confirmation,
   LabeledField,
   Toaster,
 } from '@recip-e-book/web-shared-ui';
+import { delayedLoading } from '@recip-e-book/web-shared-util';
 import {
   emptyItem,
   ItemFormValue,
@@ -35,6 +39,7 @@ import {
     FormRoot,
     LabeledField,
     ShoppingItem,
+    ShoppingItemSkeleton,
   ],
   templateUrl: './shopping-list.html',
   styleUrl: './shopping-list.css',
@@ -43,6 +48,10 @@ export class ShoppingList {
   readonly id = input.required<string>();
 
   protected readonly list = shoppingListResource(this.id);
+  protected readonly waiting = computed(
+    () => this.list.isLoading() && !this.list.hasValue(),
+  );
+  protected readonly skeleton = delayedLoading(this.waiting);
 
   protected readonly notFound = computed(() => {
     const error = this.list.error();

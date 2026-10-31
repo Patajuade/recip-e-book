@@ -13,7 +13,7 @@ import {
 } from '@recip-e-book/web-recipes-data-access';
 import { RecipeDetails } from '@recip-e-book/web-recipes-models';
 import { Confirmation, Toaster } from '@recip-e-book/web-shared-ui';
-import { DurationPipe } from '@recip-e-book/web-shared-util';
+import { delayedLoading, DurationPipe } from '@recip-e-book/web-shared-util';
 import {
   AddToShoppingList,
   AddToShoppingListData,
@@ -35,6 +35,10 @@ export class RecipeDetail {
   readonly id = input.required<string>();
 
   protected readonly recipe = recipeDetailResource(this.id);
+  protected readonly waiting = computed(
+    () => this.recipe.isLoading() && !this.recipe.hasValue(),
+  );
+  protected readonly skeleton = delayedLoading(this.waiting);
   private readonly transloco = inject(TranslocoService);
   protected readonly lang = this.transloco.activeLang;
 

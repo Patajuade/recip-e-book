@@ -1,10 +1,34 @@
-<section *transloco="let t" class="flex flex-col gap-6">
+<section
+  *transloco="let t"
+  class="flex flex-col gap-6"
+  [attr.aria-busy]="skeleton() || waiting()"
+>
   <a routerLink="/shopping" class="text-sm text-primary-ink hover:underline"
     >← {{ t('shopping.list.back') }}</a
   >
 
-  @if (list.isLoading() && !list.hasValue()) {
-    <p class="text-fg-muted">{{ t('shopping.list.loading') }}</p>
+  @if (skeleton() || waiting()) {
+    <p class="sr-only">{{ t('shopping.list.loading') }}</p>
+    @if (skeleton()) {
+      <div aria-hidden="true" class="flex flex-col gap-6">
+        <div class="flex flex-col gap-1.5">
+          <div class="skeleton h-9 w-1/2 max-w-xs"></div>
+          <div class="skeleton h-4 w-24"></div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <div class="skeleton h-10.5 w-20"></div>
+          <div class="skeleton h-10.5 w-24"></div>
+          <div class="skeleton h-10.5 min-w-40 flex-1"></div>
+          <div class="skeleton h-10.5 w-24"></div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="skeleton h-8 w-40"></div>
+          @for (row of [1, 2, 3, 4]; track row) {
+            <lib-shopping-item-skeleton />
+          }
+        </div>
+      </div>
+    }
   } @else if (notFound()) {
     <p class="text-fg-muted">{{ t('shopping.list.notFound') }}</p>
   } @else if (list.error()) {

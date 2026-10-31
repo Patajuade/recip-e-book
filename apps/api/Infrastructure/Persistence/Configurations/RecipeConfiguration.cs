@@ -12,5 +12,8 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
         // complex collections must be mapped to a JSON column.
         builder.ComplexCollection(r => r.Ingredients, b => b.ToJson());
         builder.ComplexCollection(r => r.Steps, b => b.ToJson());
+
+        // Matches the list's paging order (EF Core pagination guide: a composite index).
+        builder.HasIndex(r => new { r.UpdatedAt, r.Id });
     }
 }

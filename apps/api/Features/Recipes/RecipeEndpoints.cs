@@ -6,7 +6,7 @@ public static class RecipeEndpoints
     {
         RouteGroupBuilder recipes = api.MapGroup("/recipes").WithTags("Recipes");
 
-        recipes.MapGet("/", ListRecipes.Handle).WithName("ListRecipes");
+        recipes.MapGet("/", ListRecipes.Handle).WithName("ListRecipes").ProducesValidationProblem();
         recipes.MapGet("/{id:guid}", GetRecipe.Handle).WithName("GetRecipe");
         recipes.MapPost("/", CreateRecipe.Handle).WithName("CreateRecipe").ProducesValidationProblem();
         recipes.MapPut("/{id:guid}", UpdateRecipe.Handle).WithName("UpdateRecipe").ProducesValidationProblem();

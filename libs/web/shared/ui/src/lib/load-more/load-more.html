@@ -1,0 +1,21 @@
+@if (hasMore()) {
+  <div *transloco="let t" class="mt-6 flex flex-col items-center gap-2">
+    @if (failed()) {
+      <p role="alert" class="text-sm text-danger">
+        {{ t('loadMore.failed') }}
+      </p>
+    }
+    <!-- Paused while loading and after a failure: no retry loop, the button retries. -->
+    <button
+      #button
+      type="button"
+      class="btn-ghost"
+      libNearViewport
+      [nearViewportEnabled]="!loading() && !failed()"
+      (libNearViewport)="loadByScroll(button)"
+      (click)="loading() || loadByClick()"
+    >
+      {{ loading() ? t('loadMore.loading') : t('loadMore.button') }}
+    </button>
+  </div>
+}

@@ -79,7 +79,9 @@ export class AddToShoppingList {
   protected readonly dialogRef = inject(DialogRef);
   protected readonly newList = NEW_LIST;
 
-  protected readonly lists = shoppingListsResource();
+  // The 50 most recently updated lists (the API maximum), the likely targets: no « Charger
+  // plus » inside a dialog.
+  protected readonly lists = shoppingListsResource(50);
 
   private readonly api = inject(ShoppingListApi);
   private readonly injector = inject(Injector);
@@ -88,7 +90,7 @@ export class AddToShoppingList {
     // Defaults to the first list once they are loaded; later reloads keep the user's choice.
     source: () =>
       this.lists.hasValue()
-        ? (this.lists.value()[0]?.id ?? NEW_LIST)
+        ? (this.lists.items()[0]?.id ?? NEW_LIST)
         : undefined,
     computation: (defaultTarget, previous) =>
       previous?.source !== undefined
@@ -118,7 +120,7 @@ export class AddToShoppingList {
         const { target, newName, servings } = this.value();
         let listId = target;
         let listName = this.lists.hasValue()
-          ? this.lists.value().find((list) => list.id === target)?.name
+          ? this.lists.items().find((list) => list.id === target)?.name
           : undefined;
         try {
           if (target === NEW_LIST) {

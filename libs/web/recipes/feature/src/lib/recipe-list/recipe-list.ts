@@ -1,6 +1,7 @@
 import { TranslocoDirective } from '@jsverse/transloco';
 import { recipeListResource } from '@recip-e-book/web-recipes-data-access';
 import { RecipeCard, RecipeCardSkeleton } from '@recip-e-book/web-recipes-ui';
+import { LoadMore } from '@recip-e-book/web-shared-ui';
 import { delayedLoading } from '@recip-e-book/web-shared-util';
 import { Component, computed, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -9,7 +10,13 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'lib-recipe-list',
-  imports: [TranslocoDirective, RecipeCard, RecipeCardSkeleton, RouterLink],
+  imports: [
+    TranslocoDirective,
+    RecipeCard,
+    RecipeCardSkeleton,
+    RouterLink,
+    LoadMore,
+  ],
   templateUrl: './recipe-list.html',
   styleUrl: './recipe-list.css',
 })

@@ -56,11 +56,11 @@
         </button>
       </div>
     } @else if (lists.hasValue()) {
-      @if (lists.value().length === 0) {
+      @if (lists.items().length === 0) {
         <p class="text-fg-muted">{{ t('shopping.lists.empty') }}</p>
       } @else {
-        <ul class="flex flex-col gap-2">
-          @for (list of lists.value(); track list.id) {
+        <ul #rows class="flex flex-col gap-2">
+          @for (list of lists.items(); track list.id) {
             <li
               class="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface p-4"
             >
@@ -131,6 +131,13 @@
             </li>
           }
         </ul>
+        <lib-load-more
+          [list]="rows"
+          [hasMore]="lists.hasMore()"
+          [loading]="lists.loadingMore()"
+          [failed]="lists.loadMoreFailed()"
+          (loadMore)="lists.loadMore()"
+        />
       }
     }
   </div>

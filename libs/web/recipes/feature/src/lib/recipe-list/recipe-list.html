@@ -52,7 +52,7 @@
         </button>
       </div>
     } @else if (recipes.hasValue()) {
-      @if (recipes.value().length === 0) {
+      @if (recipes.items().length === 0) {
         <p class="text-fg-muted">
           {{
             t(
@@ -63,11 +63,18 @@
           }}
         </p>
       } @else {
-        <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          @for (recipe of recipes.value(); track recipe.id) {
+        <ul #cards class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (recipe of recipes.items(); track recipe.id) {
             <li><lib-recipe-card [recipe]="recipe" /></li>
           }
         </ul>
+        <lib-load-more
+          [list]="cards"
+          [hasMore]="recipes.hasMore()"
+          [loading]="recipes.loadingMore()"
+          [failed]="recipes.loadMoreFailed()"
+          (loadMore)="recipes.loadMore()"
+        />
       }
     }
   </div>

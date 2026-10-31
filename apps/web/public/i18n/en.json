@@ -51,6 +51,11 @@
   "languageSwitcher": {
     "label": "Language"
   },
+  "loadMore": {
+    "button": "Load more",
+    "loading": "Loading…",
+    "failed": "Couldn't load more. Try again."
+  },
   "notFound": {
     "pageTitle": "Page not found",
     "heading": "Page not found"

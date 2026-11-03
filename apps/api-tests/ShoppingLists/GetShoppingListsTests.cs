@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 
+using RecipEBook.Api.Common;
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Features.ShoppingLists;
 
@@ -18,12 +19,12 @@ public class GetShoppingListsTests(RecipeBookApiFactory factory) : IClassFixture
         Guid newer = await TestShoppingLists.AddAsync(
             factory, "Newer", now, new ShoppingListItem { Name = "milk", Checked = true }, new ShoppingListItem { Name = "eggs" });
 
-        List<ListShoppingLists.ShoppingListSummary>? lists =
-            await _client.GetFromJsonAsync<List<ListShoppingLists.ShoppingListSummary>>("/api/shopping-lists");
+        List<ListShoppingLists.ShoppingListSummary> lists =
+            (await _client.GetFromJsonAsync<Page<ListShoppingLists.ShoppingListSummary>>("/api/shopping-lists"))!.Items;
 
-        List<Guid> ids = [.. lists!.Select(l => l.Id)];
+        List<Guid> ids = [.. lists.Select(l => l.Id)];
         Assert.True(ids.IndexOf(newer) < ids.IndexOf(older));
-        ListShoppingLists.ShoppingListSummary summary = lists!.Single(l => l.Id == newer);
+        ListShoppingLists.ShoppingListSummary summary = lists.Single(l => l.Id == newer);
         Assert.Equal(("Newer", 2, 1), (summary.Name, summary.ItemCount, summary.CheckedCount));
     }
 

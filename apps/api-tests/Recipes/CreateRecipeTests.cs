@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 
 using Microsoft.AspNetCore.Http;
 
+using RecipEBook.Api.Common;
 using RecipEBook.Api.Features.Recipes;
 
 namespace RecipEBook.Api.IntegrationTests.Recipes;
@@ -90,9 +91,9 @@ public class CreateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Rec
         HttpValidationProblemDetails? problem = await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>();
         Assert.Equal(["Unknown tag 'not-a-tag'."], problem!.Errors["Tags[1]"]);
 
-        List<ListRecipes.RecipeSummary>? recipes =
-            await _client.GetFromJsonAsync<List<ListRecipes.RecipeSummary>>($"/api/recipes?search={Uri.EscapeDataString(title)}");
-        Assert.Empty(recipes!);
+        List<ListRecipes.RecipeSummary> recipes =
+            (await _client.GetFromJsonAsync<Page<ListRecipes.RecipeSummary>>($"/api/recipes?search={Uri.EscapeDataString(title)}"))!.Items;
+        Assert.Empty(recipes);
     }
 
     [Fact]

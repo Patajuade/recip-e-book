@@ -51,6 +51,11 @@
   "languageSwitcher": {
     "label": "Langue"
   },
+  "loadMore": {
+    "button": "Charger plus",
+    "loading": "Chargement…",
+    "failed": "Impossible de charger la suite. Réessaie."
+  },
   "notFound": {
     "pageTitle": "Page introuvable",
     "heading": "Page introuvable"

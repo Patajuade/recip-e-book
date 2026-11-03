@@ -33,7 +33,7 @@
         <legend class="mb-1 text-sm font-medium">
           {{ t('recipes.addToList.list') }}
         </legend>
-        @for (list of lists.value(); track list.id) {
+        @for (list of lists.items(); track list.id) {
           <label class="flex min-h-11 cursor-pointer items-center gap-3">
             <input
               type="radio"

@@ -21,6 +21,7 @@ import { ShoppingListSummary } from '@recip-e-book/web-shopping-models';
 import {
   Confirmation,
   LabeledField,
+  LoadMore,
   Toaster,
 } from '@recip-e-book/web-shared-ui';
 import { delayedLoading } from '@recip-e-book/web-shared-util';
@@ -38,7 +39,14 @@ const listNameSchema = schema<ListName>((list) => {
 /** The shopping lists: create, rename inline, delete after a confirmation. */
 @Component({
   selector: 'lib-shopping-lists',
-  imports: [TranslocoDirective, RouterLink, FormField, FormRoot, LabeledField],
+  imports: [
+    TranslocoDirective,
+    RouterLink,
+    FormField,
+    FormRoot,
+    LabeledField,
+    LoadMore,
+  ],
   templateUrl: './shopping-lists.html',
   styleUrl: './shopping-lists.css',
 })

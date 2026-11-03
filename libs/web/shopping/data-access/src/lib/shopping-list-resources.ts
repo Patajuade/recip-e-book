@@ -3,9 +3,14 @@ import {
   ShoppingListDetails,
   ShoppingListSummary,
 } from '@recip-e-book/web-shopping-models';
+import { pagedResource } from '@recip-e-book/web-shared-util';
 
-export function shoppingListsResource() {
-  return httpResource<ShoppingListSummary[]>(() => '/api/shopping-lists');
+/** The lists, a page at a time (`limit`: page size, the API's default when omitted). */
+export function shoppingListsResource(limit?: number) {
+  return pagedResource<ShoppingListSummary>(() => ({
+    url: '/api/shopping-lists',
+    params: limit ? { limit } : undefined,
+  }));
 }
 
 export function shoppingListResource(id: () => string | undefined) {

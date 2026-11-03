@@ -83,6 +83,8 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UpdatedAt", "Id");
+
                     b.ToTable("Recipes");
                 });
 
@@ -103,6 +105,8 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UpdatedAt", "Id");
 
                     b.ToTable("ShoppingLists");
                 });

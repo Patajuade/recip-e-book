@@ -6,7 +6,7 @@ public static class ShoppingListEndpoints
     {
         RouteGroupBuilder lists = api.MapGroup("/shopping-lists").WithTags("Shopping lists");
 
-        lists.MapGet("/", ListShoppingLists.Handle).WithName("ListShoppingLists");
+        lists.MapGet("/", ListShoppingLists.Handle).WithName("ListShoppingLists").ProducesValidationProblem();
         lists.MapGet("/{id:guid}", GetShoppingList.Handle).WithName("GetShoppingList");
         lists.MapPost("/", CreateShoppingList.Handle).WithName("CreateShoppingList").ProducesValidationProblem();
         lists.MapPut("/{id:guid}", RenameShoppingList.Handle).WithName("RenameShoppingList").ProducesValidationProblem();

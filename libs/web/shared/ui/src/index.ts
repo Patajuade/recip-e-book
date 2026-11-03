@@ -10,3 +10,5 @@ export * from './lib/toast-list/toaster';
 
 export * from './lib/theme-picker/theme-picker';
 export * from './lib/theme-picker/theme-settings';
+
+export * from './lib/load-more/load-more';

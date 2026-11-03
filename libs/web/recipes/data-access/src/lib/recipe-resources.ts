@@ -1,5 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { RecipeDetails, RecipeSummary } from '@recip-e-book/web-recipes-models';
+import { pagedResource } from '@recip-e-book/web-shared-util';
 
 export interface RecipeListFilters {
   search?: string;
@@ -9,7 +10,7 @@ export interface RecipeListFilters {
 export function recipeListResource(
   filters: () => RecipeListFilters = () => ({}),
 ) {
-  return httpResource<RecipeSummary[]>(() => {
+  return pagedResource<RecipeSummary>(() => {
     const { search, tag } = filters();
     const params: Record<string, string> = {};
     if (search) {

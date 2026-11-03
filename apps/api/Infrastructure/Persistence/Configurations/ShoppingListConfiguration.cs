@@ -14,5 +14,8 @@ public sealed class ShoppingListConfiguration : IEntityTypeConfiguration<Shoppin
             .WithOne()
             .HasForeignKey(i => i.ShoppingListId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Matches the list's paging order (EF Core pagination guide: a composite index).
+        builder.HasIndex(l => new { l.UpdatedAt, l.Id });
     }
 }

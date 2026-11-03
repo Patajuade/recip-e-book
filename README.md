@@ -250,27 +250,29 @@ Modeling choices (2026-10-18, from the EF Core docs):
 
 ### REST endpoints (`/api` prefix)
 
-| Method   | Route                                     | Description                                                                        |
-| -------- | ----------------------------------------- | ---------------------------------------------------------------------------------- |
-| `GET`    | `/api/recipes?search=&tag=`               | List (summary: id, title, tags, total time)                                        |
-| `GET`    | `/api/recipes/{id}`                       | Full details                                                                       |
-| `POST`   | `/api/recipes`                            | Create → `201 Created` + `Location`                                                |
-| `PUT`    | `/api/recipes/{id}`                       | Full replace (ingredients/steps included)                                          |
-| `DELETE` | `/api/recipes/{id}`                       | Delete → `204 No Content`                                                          |
-| `GET`    | `/api/tags`                               | Tag catalog (key, category) for the tag picker                                     |
-| `GET`    | `/api/shopping-lists`                     | Lists (id, name, item and checked counts), most recently updated first             |
-| `GET`    | `/api/shopping-lists/{id}`                | One list with its items (and the recipe each was copied from)                      |
-| `POST`   | `/api/shopping-lists`                     | Create a list → `201 Created` + `Location`                                         |
-| `PUT`    | `/api/shopping-lists/{id}`                | Rename a list                                                                      |
-| `DELETE` | `/api/shopping-lists/{id}`                | Delete a list and its items                                                        |
-| `POST`   | `/api/shopping-lists/{id}/items`          | Add a free item → `201 Created` with its id                                        |
-| `PUT`    | `/api/shopping-lists/{id}/items/{itemId}` | Replace an item (name, quantity, unit, checked)                                    |
-| `DELETE` | `/api/shopping-lists/{id}/items/{itemId}` | Remove an item                                                                     |
-| `DELETE` | `/api/shopping-lists/{id}/checked-items`  | Remove the checked items                                                           |
-| `POST`   | `/api/shopping-lists/{id}/recipes`        | Copy a recipe's ingredients (optionally scaled to servings) → `200` with the count |
-| `GET`    | `/health`                                 | Healthcheck                                                                        |
+| Method   | Route                                      | Description                                                                        |
+| -------- | ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `GET`    | `/api/recipes?search=&tag=&limit=&cursor=` | A page of summaries (id, title, tags, total time), most recently updated first     |
+| `GET`    | `/api/recipes/{id}`                        | Full details                                                                       |
+| `POST`   | `/api/recipes`                             | Create → `201 Created` + `Location`                                                |
+| `PUT`    | `/api/recipes/{id}`                        | Full replace (ingredients/steps included)                                          |
+| `DELETE` | `/api/recipes/{id}`                        | Delete → `204 No Content`                                                          |
+| `GET`    | `/api/tags`                                | Tag catalog (key, category) for the tag picker                                     |
+| `GET`    | `/api/shopping-lists?limit=&cursor=`       | A page of lists (id, name, item and checked counts), most recently updated first   |
+| `GET`    | `/api/shopping-lists/{id}`                 | One list with its items (and the recipe each was copied from)                      |
+| `POST`   | `/api/shopping-lists`                      | Create a list → `201 Created` + `Location`                                         |
+| `PUT`    | `/api/shopping-lists/{id}`                 | Rename a list                                                                      |
+| `DELETE` | `/api/shopping-lists/{id}`                 | Delete a list and its items                                                        |
+| `POST`   | `/api/shopping-lists/{id}/items`           | Add a free item → `201 Created` with its id                                        |
+| `PUT`    | `/api/shopping-lists/{id}/items/{itemId}`  | Replace an item (name, quantity, unit, checked)                                    |
+| `DELETE` | `/api/shopping-lists/{id}/items/{itemId}`  | Remove an item                                                                     |
+| `DELETE` | `/api/shopping-lists/{id}/checked-items`   | Remove the checked items                                                           |
+| `POST`   | `/api/shopping-lists/{id}/recipes`         | Copy a recipe's ingredients (optionally scaled to servings) → `200` with the count |
+| `GET`    | `/health`                                  | Healthcheck                                                                        |
 
 Errors: `400` (validation, ProblemDetails with `errors`), `404` (ProblemDetails).
+
+Paged lists return `{ items, nextCursor }`: `limit` is 20 by default and 50 at most, and `nextCursor` (null on the last page) is sent back as `cursor` for the next page.
 
 ---
 
@@ -493,6 +495,14 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - **First load only:** a page waits only when its resource is loading **and** has no value yet. A `reload()` after a write keeps the content on screen, as the shopping list already did for its optimistic updates.
   - **Accessibility:** the skeleton is `aria-hidden`, a « Chargement… » text stays for screen readers only (`sr-only`), and the region gets `aria-busy="true"` during the first load only, "to inform the assistive technology that it should wait until the modifications or changes are complete" ([MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy)). It is not set on background reloads, so checking items off in a store doesn't mark the whole list busy.
   - **Not unit tested:** the libs have no test target yet (#49). The timing was checked in the browser instead.
+- 2026-10-31 — **Pagination** (#191, « Charger plus » also triggered by scrolling, chosen by the developer).
+  - **API:** `GET /api/recipes` and `GET /api/shopping-lists` return `{ items, nextCursor }`. **Keyset pagination**, which the [EF Core pagination guide](https://learn.microsoft.com/en-us/ef/core/querying/pagination) recommends over `Skip`/`Take` (with offsets, "the database must still process the first 20 entries", and rows added between two requests shift the pages): ordered by `UpdatedAt` then `Id`, both descending, because "always make sure that your ordering is fully unique", and the next page is the rows after the cursor (`UpdatedAt < x || (UpdatedAt == x && Id < y)`, the guide's "multiple pagination keys" form). The cursor is opaque to clients (base64url of the two keys). A composite index on `(UpdatedAt, Id)` per table matches the order (migration `PagingIndexes`). `Common/Paging.cs` holds what both lists share: `PageRequest` (checks `limit` and `cursor`), `PageCursor`, `Page<T>`.
+  - **Server-side guards:** `limit` is 20 by default and capped at 50, so a client can't ask for every row at once; a malformed cursor (not base64url, not two keys, a date past `DateTime.MaxValue`) is a `400` with an `errors` entry, never a server error. Both messages are translated (`Resources/Common/PageRequest.fr.resx`). Checked in the handler rather than with `[Range]` on the query parameter: the docs read didn't confirm that .NET 10 validation covers query parameters.
+  - **Tests:** following `nextCursor` to the end returns every row once and in order, including three rows with the same `UpdatedAt` (only the `Id` orders them); filters still apply on later pages; the default page size; out-of-range limits and malformed cursors (English and French).
+  - **Frontend:** `pagedResource()` (`shared/util`) keeps the first page as an `httpResource` (it reloads with the filters and after a write) and appends the next ones with `loadMore()`; a page that arrives after the list was reloaded is dropped. `lib-load-more` (`shared/ui`) is a « Charger plus » button that also loads by itself when it comes within 300 px of the viewport (`IntersectionObserver`); it pauses while loading and after a failure (the button retries, no request loop). After a click, focus moves to the first new item, so keyboard users carry on from there; tabbing to the button scrolls it into view and loads, so that counts as a click too.
+  - **Trap found in the browser:** on resume after a load, the directive first reused its last "near the viewport" state, from before the new items pushed it down, and loaded a second page at once. It now observes the element again on resume, and `observe()` reports where it is now: one page per scroll.
+  - **The add-to-list dialog** shows the 50 most recently updated lists (the API maximum), the likely targets, without « Charger plus ».
+  - **Checked** in the browser on a demo database with 46 recipes and 27 lists: 20 cards then one page per scroll, search and tag filters, a blocked next page (message, a single request, the button retries), phone width, keyboard focus on the first new card, 28 choices in the dialog.
 - 2026-10-30 — **Landing page** (#188, scope chosen by the developer: for visitors who aren't signed in, at `/`, done now rather than after accounts). `/` used to redirect to `/recipes`; it now shows what the app is, two links into it (« Ouvrir mes recettes », « Mes listes de courses ») and four features (recipes, cooking mode, shopping lists, phone and offline). Until accounts exist (#53) the links lead straight into the app; with #53 they will lead to signing up / in, and a signed-in user will skip the page. The page lives in the app shell next to `NotFound` (it belongs to no feature scope) and is lazy loaded with `loadComponent`, so `main` doesn't grow (its chunk is 2.3 kB). The header's « Marmite » drawing became an `app-logo` component, shared by the header and the page. The installed PWA keeps opening on the recipes: the manifest's `start_url` is now `./recipes`, and its `id` stays `./`, so browsers treat the new manifest as an update of the installed app, not a new one ([MDN `id`](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/id): "Browsers will treat this new manifest as an update to the existing app because the `id` values match"). Checked in both languages at 390 and 1280 px: one `h1`, headings in order, no horizontal scroll, the main link opens the recipes.
 - 2026-10-27 — **Screenshots retaken** (#176), same method as #160. The demo database got the shopping lists migration (`dotnet ef database update` with the `Release` configuration, so the developer's running API keeps its `Debug` files, and outside the Development environment, so without the French demo lists), then English lists created through the API. New row in the gallery: the « Add to list » dialog, and three phone screens (the lists, a list's items to buy, the checked items in the cart).
 - 2026-10-27 — **Add a recipe to a shopping list** (#142). A button below the ingredients opens a CDK dialog: radios for the existing lists (the first one checked) and « Nouvelle liste » with a name field, the servings prefilled with the recipe's (hidden when it has none: nothing to scale). The dialog then says how many items were added and offers « Voir la liste » and « Fermer », instead of a toast with a link: a toast disappears on its own, so its link could vanish before a keyboard or screen reader user reaches it ([WCAG 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)); the focus moves to the result message. The dialog lives in `recipes/feature` and calls `shopping/data-access`, hence `scope:recipes` → `scope:shopping` (never the reverse). Native radios work with `[formField]` (Signal Forms gives them the field's `name`, so arrow keys move within the group). Two traps found by the end-to-end test: CDK `closeOnNavigation` only covers history navigation (back/forward), not a router link (doc comment of `DialogConfig.closeOnNavigation` in `@angular/cdk`: "does not apply to navigation via anchor element unless using URL-hash based routing"), so the link closes the dialog itself; and an error returned by a Signal Forms submission action makes the form invalid **until a value changes**, and `submit()` doesn't run the action of an invalid form, so after a server failure a plain retry did nothing. Field errors (400) stay submission errors; other failures go in a separate signal. After a failed add, a retry reuses the list just created instead of creating another one.
@@ -528,7 +538,8 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - Phase 10: #188 landing page (PR #189).
   - Phase 9: #187 one lazy chunk per page (PR #190).
   - Planning: #191 pagination and #192 loading skeletons added at the developer's request (phase 8).
-  - In review: #192 loading skeletons (phase 8).
+  - Phase 8: #192 loading skeletons (PR #193).
+  - In review: #191 pagination (phase 8).
 - Learned:
   - functional HTTP interceptors and `HttpErrorResponse`, a toast service with signals and a `role="status"` region;
   - .NET localization: `AddLocalization`, `UseRequestLocalization`, `.resx` files, `IStringLocalizer<T>`;
@@ -545,7 +556,7 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - bundle analysis with the esbuild metafile (`statsJson`), esbuild tree shaking and the `sideEffects` field;
   - `loadComponent` per route and `import type`, so a routes file doesn't pull its pages in;
   - loading skeletons: a signal delayed with `effect` and timers (`onCleanup`), `aria-busy`, `motion-safe:`.
-- Next step: #191 pagination (phase 8), phase 9 (#50 TS types from OpenAPI, #49 frontend unit tests, which would also cover `delayedLoading`) or phase 12; #132 waits for .NET 11 (after November 10).
+- Next step: phase 9 (#50 TS types from OpenAPI, #49 frontend unit tests, which would also cover `delayedLoading`) or phase 12; #132 waits for .NET 11 (after November 10).
 - Open questions:
   - phase 11 validation on a phone (install the app, add a recipe to a list, check the items off in a store) waits for the production deployment (#184): no test phone for now.
 

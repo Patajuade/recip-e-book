@@ -1,48 +1,14 @@
-import { TagSummary } from './tag-models';
+import type { components } from '@recip-e-book/web-shared-api-types';
 
-// Write model: body of POST /api/recipes and PUT /api/recipes/{id} (RecipeInput in the API).
-export interface IngredientInput {
-  name: string;
-  quantity: number | null;
-  unit: string | null;
-}
+type Schemas = components['schemas'];
 
-export interface RecipeInput {
-  title: string;
-  description: string | null;
-  servings: number | null;
-  prepTimeMinutes: number | null;
-  cookTimeMinutes: number | null;
-  notes: string | null;
-  ingredients: IngredientInput[];
-  steps: string[];
-  tags: string[];
-}
+// Generated from the API's OpenAPI document (web-shared-api-types), named for the app.
 
-export interface RecipeSummary {
-  id: string;
-  title: string;
-  totalTimeMinutes: number | null;
-  tags: TagSummary[];
-}
+// Write model: body of POST /api/recipes and PUT /api/recipes/{id}.
+export type RecipeInput = Schemas['RecipeInput'];
+export type IngredientInput = Schemas['IngredientInput'];
 
-export interface IngredientDetails {
-  name: string;
-  quantity: number | null;
-  unit: string | null;
-}
-
-export interface RecipeDetails {
-  id: string;
-  title: string;
-  description: string | null;
-  servings: number | null;
-  prepTimeMinutes: number | null;
-  cookTimeMinutes: number | null;
-  notes: string | null;
-  createdAt: string;
-  updatedAt: string;
-  ingredients: IngredientDetails[];
-  steps: string[];
-  tags: TagSummary[];
-}
+// Read models: responses of GET /api/recipes and GET /api/recipes/{id}.
+export type RecipeSummary = Schemas['RecipeSummary'];
+export type RecipeDetails = Schemas['RecipeDetails'];
+export type IngredientDetails = Schemas['IngredientDetails'];

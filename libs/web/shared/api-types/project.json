@@ -1,0 +1,48 @@
+{
+  "name": "web-shared-api-types",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/shared/api-types/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["type:util", "scope:shared"],
+  "targets": {
+    "lint": {
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.mjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ]
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "openapi-typescript apps/api/openapi/RecipEBook.Api.json -o libs/web/shared/api-types/src/lib/api.ts"
+      },
+      "inputs": [
+        "{workspaceRoot}/apps/api/openapi/RecipEBook.Api.json",
+        { "externalDependencies": ["openapi-typescript"] }
+      ],
+      "outputs": ["{projectRoot}/src/lib/api.ts"],
+      "cache": true
+    },
+    "check-generated": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "openapi-typescript apps/api/openapi/RecipEBook.Api.json -o libs/web/shared/api-types/src/lib/api.ts --check"
+      },
+      "dependsOn": [{ "projects": ["RecipEBook.Api"], "target": "build" }],
+      "inputs": [
+        "{workspaceRoot}/apps/api/openapi/RecipEBook.Api.json",
+        "{projectRoot}/src/lib/api.ts",
+        { "externalDependencies": ["openapi-typescript"] }
+      ],
+      "cache": true
+    }
+  }
+}

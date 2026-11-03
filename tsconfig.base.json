@@ -37,6 +37,9 @@
       "@recip-e-book/web-shopping-ui": ["./libs/web/shopping/ui/src/index.ts"],
       "@recip-e-book/web-shopping-models": [
         "./libs/web/shopping/models/src/index.ts"
+      ],
+      "@recip-e-book/web-shared-api-types": [
+        "./libs/web/shared/api-types/src/index.ts"
       ]
     }
   },

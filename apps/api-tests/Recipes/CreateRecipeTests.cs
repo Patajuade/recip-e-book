@@ -132,4 +132,15 @@ public class CreateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<Rec
         GetRecipe.RecipeDetails? recipe = await _client.GetFromJsonAsync<GetRecipe.RecipeDetails>($"/api/recipes/{id}");
         Assert.Equal(["eggs", "quick"], recipe!.Tags.Select(t => t.Key));
     }
+
+    [Fact]
+    public async Task Post_NumberWrittenAsAString_Returns400()
+    {
+        using StringContent body = new(
+            """{ "title": "Quoted number", "servings": "4" }""", System.Text.Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await _client.PostAsync("/api/recipes", body);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

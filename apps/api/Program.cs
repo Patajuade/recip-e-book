@@ -1,3 +1,6 @@
+using System.Reflection;
+using System.Text.Json.Serialization;
+
 using Microsoft.EntityFrameworkCore;
 
 using RecipEBook.Api.Features.Recipes;
@@ -9,8 +12,13 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// The build-time OpenAPI generation runs this file without the connection string. The
+// DbContext stays registered, so the endpoints still see it as a service; it is never opened.
+bool generatingOpenApiDocument = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
 var connectionString = builder.Configuration.GetConnectionString("RecipEBook")
-    ?? throw new InvalidOperationException("Connection string 'RecipEBook' not found.");
+    ?? (generatingOpenApiDocument
+        ? "Data Source=:memory:"
+        : throw new InvalidOperationException("Connection string 'RecipEBook' not found."));
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlite(connectionString);
@@ -24,6 +32,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
+// The web defaults also accept numbers written as strings ("4"), so the OpenAPI document typed
+// every integer as integer or string. Numbers are numbers.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict);
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
@@ -42,7 +54,14 @@ var app = builder.Build();
 
 // First, so every later middleware and endpoint sees the request culture (Accept-Language).
 app.UseRequestLocalization();
-app.UseExceptionHandler();
+app.UseExceptionHandler(new ExceptionHandlerOptions
+{
+    // In Development, an invalid request (malformed JSON…) throws instead of answering 400
+    // (RouteHandlerOptions.ThrowOnBadRequest): keep its status code rather than a 500.
+    StatusCodeSelector = exception => exception is BadHttpRequestException badRequest
+        ? badRequest.StatusCode
+        : StatusCodes.Status500InternalServerError,
+});
 app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())

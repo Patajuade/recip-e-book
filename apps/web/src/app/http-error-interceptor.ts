@@ -12,7 +12,8 @@ const UNREACHABLE = new Set([0, 502, 503, 504]);
 /**
  * Tells why an API call failed when the request itself isn't at fault: API unreachable or
  * server error (5xx). Screens still show what failed; 4xx are theirs to handle (validation,
- * not found). The error is passed on unchanged.
+ * not found). The error is passed on unchanged. The session is read at every start: without
+ * network the app stays usable, so that failure says nothing to the user.
  */
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const network = inject(NetworkStatus);
@@ -23,6 +24,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
       error: (error: unknown) => {
         if (
           !req.url.startsWith('/api/') ||
+          req.url === '/api/auth/session' ||
           !(error instanceof HttpErrorResponse)
         ) {
           return;

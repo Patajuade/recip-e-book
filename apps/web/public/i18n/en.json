@@ -4,9 +4,39 @@
     "cancel": "Cancel",
     "close": "Close"
   },
+  "accounts": {
+    "email": "Email",
+    "password": "Password",
+    "menu": {
+      "signIn": "Sign in",
+      "signOut": "Sign out"
+    },
+    "signIn": {
+      "pageTitle": "Sign in",
+      "heading": "Sign in",
+      "submit": "Sign in",
+      "refused": "Wrong email or password, or too many attempts. Try again in a few minutes.",
+      "unavailable": "Couldn't sign in right now. Try again in a moment.",
+      "noAccount": "No account yet?",
+      "createAccount": "Create an account"
+    },
+    "signUp": {
+      "pageTitle": "Create an account",
+      "heading": "Create an account",
+      "password": "Password (15 characters or more)",
+      "passwordHint": "A short sentence works well: it is long and easy to remember.",
+      "submit": "Create my account",
+      "unavailable": "Couldn't create the account right now. Try again in a moment.",
+      "closed": "Creating accounts is closed for now.",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
   "forms": {
     "errors": {
       "required": "This field is required.",
+      "email": "Enter a valid email address.",
+      "minLength": "{{minLength}} characters minimum.",
       "maxLength": "{{maxLength}} characters maximum.",
       "min": "Minimum value: {{min}}.",
       "max": "Maximum value: {{max}}.",
@@ -26,8 +56,8 @@
     "pageTitle": "Recip-e-book",
     "heading": "Your recipes, from the stove to the store",
     "intro": "Write down the recipes you make, find them in a few letters, cook them step by step and turn them into a shopping list.",
-    "openRecipes": "Open my recipes",
-    "openShopping": "My shopping lists",
+    "signIn": "Sign in",
+    "signUp": "Create an account",
     "features": {
       "heading": "Everything you need to cook at home",
       "recipes": {

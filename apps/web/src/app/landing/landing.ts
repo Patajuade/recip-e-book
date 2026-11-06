@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { AccountSession } from '@recip-e-book/web-accounts-data-access';
 import { Logo } from '../logo/logo';
 
 @Component({
@@ -9,4 +10,6 @@ import { Logo } from '../logo/logo';
   templateUrl: './landing.html',
   styleUrl: './landing.css',
 })
-export class Landing {}
+export class Landing {
+  protected readonly session = inject(AccountSession);
+}

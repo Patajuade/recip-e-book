@@ -4,9 +4,39 @@
     "cancel": "Annuler",
     "close": "Fermer"
   },
+  "accounts": {
+    "email": "Email",
+    "password": "Mot de passe",
+    "menu": {
+      "signIn": "Se connecter",
+      "signOut": "Se déconnecter"
+    },
+    "signIn": {
+      "pageTitle": "Connexion",
+      "heading": "Connexion",
+      "submit": "Se connecter",
+      "refused": "Email ou mot de passe incorrect, ou trop de tentatives. Réessaie dans quelques minutes.",
+      "unavailable": "Connexion impossible pour le moment. Réessaie dans un instant.",
+      "noAccount": "Pas encore de compte ?",
+      "createAccount": "Créer un compte"
+    },
+    "signUp": {
+      "pageTitle": "Créer un compte",
+      "heading": "Créer un compte",
+      "password": "Mot de passe (15 caractères ou plus)",
+      "passwordHint": "Une petite phrase fonctionne très bien : elle est longue et facile à retenir.",
+      "submit": "Créer mon compte",
+      "unavailable": "Impossible de créer le compte pour le moment. Réessaie dans un instant.",
+      "closed": "La création de comptes est fermée pour le moment.",
+      "hasAccount": "Tu as déjà un compte ?",
+      "signIn": "Se connecter"
+    }
+  },
   "forms": {
     "errors": {
       "required": "Ce champ est requis.",
+      "email": "Saisis une adresse email valide.",
+      "minLength": "{{minLength}} caractères minimum.",
       "maxLength": "{{maxLength}} caractères maximum.",
       "min": "Valeur minimale : {{min}}.",
       "max": "Valeur maximale : {{max}}.",
@@ -26,8 +56,8 @@
     "pageTitle": "Recip-e-book",
     "heading": "Tes recettes, du fourneau au magasin",
     "intro": "Note les recettes que tu cuisines, retrouve-les en quelques lettres, cuisine-les pas à pas et transforme-les en liste de courses.",
-    "openRecipes": "Ouvrir mes recettes",
-    "openShopping": "Mes listes de courses",
+    "signIn": "Se connecter",
+    "signUp": "Créer un compte",
     "features": {
       "heading": "Tout ce qu'il faut pour cuisiner à la maison",
       "recipes": {

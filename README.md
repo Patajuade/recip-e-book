@@ -251,25 +251,29 @@ Modeling choices (2026-10-18, from the EF Core docs):
 
 ### REST endpoints (`/api` prefix)
 
-| Method   | Route                                      | Description                                                                        |
-| -------- | ------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `GET`    | `/api/recipes?search=&tag=&limit=&cursor=` | A page of summaries (id, title, tags, total time), most recently updated first     |
-| `GET`    | `/api/recipes/{id}`                        | Full details                                                                       |
-| `POST`   | `/api/recipes`                             | Create → `201 Created` + `Location`                                                |
-| `PUT`    | `/api/recipes/{id}`                        | Full replace (ingredients/steps included)                                          |
-| `DELETE` | `/api/recipes/{id}`                        | Delete → `204 No Content`                                                          |
-| `GET`    | `/api/tags`                                | Tag catalog (key, category) for the tag picker                                     |
-| `GET`    | `/api/shopping-lists?limit=&cursor=`       | A page of lists (id, name, item and checked counts), most recently updated first   |
-| `GET`    | `/api/shopping-lists/{id}`                 | One list with its items (and the recipe each was copied from)                      |
-| `POST`   | `/api/shopping-lists`                      | Create a list → `201 Created` + `Location`                                         |
-| `PUT`    | `/api/shopping-lists/{id}`                 | Rename a list                                                                      |
-| `DELETE` | `/api/shopping-lists/{id}`                 | Delete a list and its items                                                        |
-| `POST`   | `/api/shopping-lists/{id}/items`           | Add a free item → `201 Created` with its id                                        |
-| `PUT`    | `/api/shopping-lists/{id}/items/{itemId}`  | Replace an item (name, quantity, unit, checked)                                    |
-| `DELETE` | `/api/shopping-lists/{id}/items/{itemId}`  | Remove an item                                                                     |
-| `DELETE` | `/api/shopping-lists/{id}/checked-items`   | Remove the checked items                                                           |
-| `POST`   | `/api/shopping-lists/{id}/recipes`         | Copy a recipe's ingredients (optionally scaled to servings) → `200` with the count |
-| `GET`    | `/health`                                  | Healthcheck                                                                        |
+| Method   | Route                                      | Description                                                                            |
+| -------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `GET`    | `/api/recipes?search=&tag=&limit=&cursor=` | A page of summaries (id, title, tags, total time), most recently updated first         |
+| `GET`    | `/api/recipes/{id}`                        | Full details                                                                           |
+| `POST`   | `/api/recipes`                             | Create → `201 Created` + `Location`                                                    |
+| `PUT`    | `/api/recipes/{id}`                        | Full replace (ingredients/steps included)                                              |
+| `DELETE` | `/api/recipes/{id}`                        | Delete → `204 No Content`                                                              |
+| `GET`    | `/api/tags`                                | Tag catalog (key, category) for the tag picker                                         |
+| `GET`    | `/api/shopping-lists?limit=&cursor=`       | A page of lists (id, name, item and checked counts), most recently updated first       |
+| `GET`    | `/api/shopping-lists/{id}`                 | One list with its items (and the recipe each was copied from)                          |
+| `POST`   | `/api/shopping-lists`                      | Create a list → `201 Created` + `Location`                                             |
+| `PUT`    | `/api/shopping-lists/{id}`                 | Rename a list                                                                          |
+| `DELETE` | `/api/shopping-lists/{id}`                 | Delete a list and its items                                                            |
+| `POST`   | `/api/shopping-lists/{id}/items`           | Add a free item → `201 Created` with its id                                            |
+| `PUT`    | `/api/shopping-lists/{id}/items/{itemId}`  | Replace an item (name, quantity, unit, checked)                                        |
+| `DELETE` | `/api/shopping-lists/{id}/items/{itemId}`  | Remove an item                                                                         |
+| `DELETE` | `/api/shopping-lists/{id}/checked-items`   | Remove the checked items                                                               |
+| `POST`   | `/api/shopping-lists/{id}/recipes`         | Copy a recipe's ingredients (optionally scaled to servings) → `200` with the count     |
+| `GET`    | `/api/auth/session`                        | Signed-in email (or null), whether registration is open; writes the antiforgery cookie |
+| `POST`   | `/api/auth/register`                       | Create an account and sign in → `204`; `403` while registration is closed              |
+| `POST`   | `/api/auth/login`                          | Sign in → `204`; `401` with one generic message                                        |
+| `POST`   | `/api/auth/logout`                         | Sign out → `204`                                                                       |
+| `GET`    | `/health`                                  | Healthcheck                                                                            |
 
 Errors: `400` (validation, ProblemDetails with `errors`), `404` (ProblemDetails).
 
@@ -516,6 +520,16 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - **In CI:** `check-generated` builds the API (rewriting the document), runs `openapi-typescript --check`, then `git diff --exit-code -- apps/api/openapi` fails if the committed document is out of date. Checked locally: the target passes, and fails on an edited `api.ts`.
   - **TypeScript 6:** `openapi-typescript` 7.13, the latest, declares `typescript ^5.x` as a peer dependency; the project uses 6.0. Developer's choice: keep the planned tool with an npm `overrides` entry that gives it the project's TypeScript (it generates the same types; checked), version pinned so a minor update can't change the output. To remove once it declares TypeScript 6.
   - **After an API change:** build the API (the document is rewritten), run `nx run web-shared-api-types:generate`, commit both.
+- 2026-11-06 — **Accounts API** (#197, part 1 of #53; developer's choices: ASP.NET Core Identity with cookies, registration behind a setting, no email at first).
+  - **Why Identity and cookies:** "For apps that don't share logins with other apps, the simplest way to quickly secure an app is to use the built-in ASP.NET Core Identity provider", and "Cookies are preferred over tokens for both security and simplicity" ([choose a solution](https://learn.microsoft.com/en-us/aspnet/core/security/how-to-choose-identity-solution?view=aspnetcore-10.0)); "the browser automatically handles them without exposing them to JavaScript" ([Identity for SPAs](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0)).
+  - **If the database moves to MongoDB (#91):** Identity's stores are replaceable ("you can replace the persistence mechanism without changing your application code", [custom storage](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-custom-storage-providers?view=aspnetcore-10.0)), but no official MongoDB store was found: a community package or our own `IUserStore`. The larger cost would be the API's queries, not the accounts.
+  - **Own endpoints rather than `MapIdentityApi`:** four small endpoints on `UserManager` and `SignInManager`, in the API's style (one file per use case, translated messages), so nothing unused is exposed: `MapIdentityApi` also adds tokens, `/refresh`, `/forgotPassword` and `/manage/*`, and its `/register` couldn't follow the registration setting. `IdentityUserContext` holds the account tables, without roles.
+  - **Registration setting:** `Accounts:RegistrationOpen`, closed when missing, so a deployment is closed unless told otherwise; on in `appsettings.Development.json`. The API refuses with a 403, whatever the page shows. In production: open it, create the accounts, close it.
+  - **Passwords:** hashed by Identity. The defaults (6 characters with an uppercase letter, a digit and a symbol) are replaced by [OWASP's advice](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html): "If MFA is not enabled passwords shorter than 15 characters are considered to be weak", and "no composition rules". At most 128 characters, so very long ones don't reach the hash function.
+  - **Sign in:** one answer for an unknown email, a wrong password and a locked account (OWASP), so it doesn't reveal who has an account. `lockoutOnFailure: true`: 5 failures lock the account for 5 minutes (Identity's defaults). Rate limiting per IP is left for the deployment, which sets up the proxy (#184).
+  - **Cookie:** `HttpOnly`, `Secure`, `SameSite=Lax`, persistent, so an installed PWA stays signed in.
+  - **CSRF:** a browser sends the cookie by itself, so a write must also prove it comes from the app. `GET /session` writes a token in `XSRF-TOKEN`, which [Angular's HttpClient](https://angular.dev/best-practices/security#httpclient-xsrf-csrf-security) copies to the `X-XSRF-TOKEN` header on writes. Minimal APIs only check it by themselves for form data, so an endpoint filter calls `IAntiforgery.IsRequestValidAsync`. The token contains the user, so the app reads `/session` again after signing in or out. Only `/api/auth` for now: the rest of the API follows in #199, once the app reads the token (#198).
+  - **Checked:** 20 integration tests, with clients that behave like a browser (HTTPS, cookies, the header). Three deliberate bugs (no lockout, no antiforgery, registration always open) each made the matching tests fail. In Chrome through the dev server's proxy: the `Secure` cookies work on `http://localhost`, the token cookie is readable and the authentication cookie isn't.
 - 2026-10-30 — **Landing page** (#188, scope chosen by the developer: for visitors who aren't signed in, at `/`, done now rather than after accounts). `/` used to redirect to `/recipes`; it now shows what the app is, two links into it (« Ouvrir mes recettes », « Mes listes de courses ») and four features (recipes, cooking mode, shopping lists, phone and offline). Until accounts exist (#53) the links lead straight into the app; with #53 they will lead to signing up / in, and a signed-in user will skip the page. The page lives in the app shell next to `NotFound` (it belongs to no feature scope) and is lazy loaded with `loadComponent`, so `main` doesn't grow (its chunk is 2.3 kB). The header's « Marmite » drawing became an `app-logo` component, shared by the header and the page. The installed PWA keeps opening on the recipes: the manifest's `start_url` is now `./recipes`, and its `id` stays `./`, so browsers treat the new manifest as an update of the installed app, not a new one ([MDN `id`](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/id): "Browsers will treat this new manifest as an update to the existing app because the `id` values match"). Checked in both languages at 390 and 1280 px: one `h1`, headings in order, no horizontal scroll, the main link opens the recipes.
 - 2026-10-27 — **Screenshots retaken** (#176), same method as #160. The demo database got the shopping lists migration (`dotnet ef database update` with the `Release` configuration, so the developer's running API keeps its `Debug` files, and outside the Development environment, so without the French demo lists), then English lists created through the API. New row in the gallery: the « Add to list » dialog, and three phone screens (the lists, a list's items to buy, the checked items in the cart).
 - 2026-10-27 — **Add a recipe to a shopping list** (#142). A button below the ingredients opens a CDK dialog: radios for the existing lists (the first one checked) and « Nouvelle liste » with a name field, the servings prefilled with the recipe's (hidden when it has none: nothing to scale). The dialog then says how many items were added and offers « Voir la liste » and « Fermer », instead of a toast with a link: a toast disappears on its own, so its link could vanish before a keyboard or screen reader user reaches it ([WCAG 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)); the focus moves to the result message. The dialog lives in `recipes/feature` and calls `shopping/data-access`, hence `scope:recipes` → `scope:shopping` (never the reverse). Native radios work with `[formField]` (Signal Forms gives them the field's `name`, so arrow keys move within the group). Two traps found by the end-to-end test: CDK `closeOnNavigation` only covers history navigation (back/forward), not a router link (doc comment of `DialogConfig.closeOnNavigation` in `@angular/cdk`: "does not apply to navigation via anchor element unless using URL-hash based routing"), so the link closes the dialog itself; and an error returned by a Signal Forms submission action makes the form invalid **until a value changes**, and `submit()` doesn't run the action of an invalid form, so after a server failure a plain retry did nothing. Field errors (400) stay submission errors; other failures go in a separate signal. After a failed add, a retry reuses the list just created instead of creating another one.
@@ -532,10 +546,20 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
 - Open questions: …
 -->
 
+#### 2026-11-06 — User accounts
+
+- In review: #197 accounts API (first of three parts of #53; then #198 pages, #199 ownership; email later in #200).
+- Learned:
+  - ASP.NET Core Identity without its UI: `AddIdentityCore`, `AddIdentityCookies`, `IdentityUserContext`, `UserManager`, `SignInManager`;
+  - cookies vs tokens in a browser, `HttpOnly` / `Secure` / `SameSite`, CSRF and antiforgery tokens tied to the user;
+  - OWASP advice: password length rather than composition rules, one generic login error, account lockout.
+- Next step: #198 sign up, sign in and sign out pages.
+- Open questions: the database for production (#91): PostgreSQL needs little rewriting, MongoDB a lot (no migrations, foreign keys or `Select` projections in its EF Core provider). To decide before the first deployment, since moving real data later is more work.
+
 #### 2026-11-03 → 04 — Phase 9
 
 - Done: Phase 9: #49 frontend unit tests (PR #195).
-- In review: #50 TypeScript types generated from the OpenAPI document.
+- Phase 9: #50 TypeScript types generated from the OpenAPI document (PR #196).
 - Learned:
   - the Angular `@angular/build:unit-test` builder on a non-buildable lib, through its `buildTarget` option;
   - Angular test tools: `TestBed.runInInjectionContext`, `TestBed.tick()` for effects, Vitest fake timers, `HttpTestingController`, a host component for inputs and outputs;

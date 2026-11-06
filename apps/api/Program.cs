@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 using Microsoft.EntityFrameworkCore;
 
+using RecipEBook.Api.Features.Accounts;
 using RecipEBook.Api.Features.Recipes;
 using RecipEBook.Api.Features.ShoppingLists;
 using RecipEBook.Api.Features.Tags;
@@ -40,6 +41,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
 builder.Services.AddHealthChecks();
+builder.Services.AddAccounts();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -71,9 +73,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapHealthChecks("/health");
 
 RouteGroupBuilder api = app.MapGroup("/api");
+api.MapAccountEndpoints();
 api.MapRecipeEndpoints();
 api.MapTagEndpoints();
 api.MapShoppingListEndpoints();

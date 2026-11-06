@@ -40,6 +40,12 @@
       ],
       "@recip-e-book/web-shared-api-types": [
         "./libs/web/shared/api-types/src/index.ts"
+      ],
+      "@recip-e-book/web-accounts-feature": [
+        "./libs/web/accounts/feature/src/index.ts"
+      ],
+      "@recip-e-book/web-accounts-data-access": [
+        "./libs/web/accounts/data-access/src/index.ts"
       ]
     }
   },

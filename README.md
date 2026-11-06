@@ -172,6 +172,9 @@ recip-e-book/
         │   ├── data-access/        ← read resources (httpResource), recipe-api.ts (HttpClient writes)
         │   ├── models/             ← TS models of the API DTOs (type:util, usable by every layer)
         │   └── ui/                 ← presentational components: recipe-card, ingredient-list…
+        ├── accounts/
+        │   ├── feature/            ← sign in and sign up pages
+        │   └── data-access/        ← session, sign in / up / out commands, route guards
         └── shared/
             ├── ui/                 ← generic Tailwind components: button, input, dialog, tag-chip…
             ├── api-types/          ← TypeScript types generated from the API's OpenAPI document (#50)
@@ -189,7 +192,7 @@ recip-e-book/
 | `type:ui`          | `ui`, `util`                           |
 | `type:util`        | `util`                                 |
 
-Plus `scope:recipes` / `scope:shopping` / `scope:shared`: a `scope:recipes` or `scope:shopping` lib can import `scope:shared`, not the other way around. `scope:recipes` can also import `scope:shopping` (a recipe can be added to a shopping list), never the reverse, so the two scopes can't form a cycle.
+Plus `scope:recipes` / `scope:shopping` / `scope:accounts` / `scope:shared` (`scope:accounts` may only import itself and `scope:shared`): a `scope:recipes` or `scope:shopping` lib can import `scope:shared`, not the other way around. `scope:recipes` can also import `scope:shopping` (a recipe can be added to a shopping list), never the reverse, so the two scopes can't form a cycle.
 
 Enforced by `@nx/enforce-module-boundaries` in the root `eslint.config.mjs` ([docs](https://nx.dev/docs/features/enforce-module-boundaries)). A project must satisfy every constraint matching one of its tags (its `type:` rule **and** its `scope:` rule).
 
@@ -530,6 +533,14 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - **Cookie:** `HttpOnly`, `Secure`, `SameSite=Lax`, persistent, so an installed PWA stays signed in.
   - **CSRF:** a browser sends the cookie by itself, so a write must also prove it comes from the app. `GET /session` writes a token in `XSRF-TOKEN`, which [Angular's HttpClient](https://angular.dev/best-practices/security#httpclient-xsrf-csrf-security) copies to the `X-XSRF-TOKEN` header on writes. Minimal APIs only check it by themselves for form data, so an endpoint filter calls `IAntiforgery.IsRequestValidAsync`. The token contains the user, so the app reads `/session` again after signing in or out. Only `/api/auth` for now: the rest of the API follows in #199, once the app reads the token (#198).
   - **Checked:** 20 integration tests, with clients that behave like a browser (HTTPS, cookies, the header). Three deliberate bugs (no lockout, no antiforgery, registration always open) each made the matching tests fail. In Chrome through the dev server's proxy: the `Secure` cookies work on `http://localhost`, the token cookie is readable and the authentication cookie isn't.
+- 2026-11-06 — **Accounts pages** (#198, part 2 of #53).
+  - **Libs:** `accounts/feature` (`/account/sign-in`, `/account/sign-up`, one lazy chunk each) and `accounts/data-access`, new scope `scope:accounts`. The header's `app-account-menu` and the landing page live in the app shell.
+  - **`AccountSession`:** reads `GET /api/auth/session` when the app starts, without blocking it, and again after signing in, up or out, because the antiforgery token depends on the user. Three states: signed in, visitor, or unknown (no answer, offline), when the header shows neither. This failure gets no toast: the app must stay usable offline. Angular's HttpClient sends the `XSRF-TOKEN` cookie as a header by itself ([XSRF](https://angular.dev/best-practices/security#httpclient-xsrf-csrf-security)). If a write is refused for its token, say after a session expired, the token is renewed and the write retried once.
+  - **Pages:** Signal Forms mirroring the API's rules; the minimum length only applies when creating an account, since an existing password is for the server to judge. `autocomplete` is `email`, `current-password` and `new-password`, for password managers. A closed registration replaces the form with a message, and the API refuses anyway.
+  - **Landing page:** its links now lead to sign in, and to sign up while registration is open. `visitorOnlyGuard` (a `CanActivateFn` returning a `UrlTree`, as the [guards guide](https://angular.dev/guide/routing/route-guards) advises) sends someone signed in from the landing and account pages to the recipes. Recipes and lists stay reachable without signing in until #199.
+  - **Service worker:** the session bypasses it with `ngsw-bypass` ([docs](https://angular.dev/ecosystem/service-workers/devops#bypassing-the-service-worker)): an old answer could say someone is signed in after they signed out. A data group can't exclude `/api/auth`: "Negative glob patterns are not supported" ([config](https://angular.dev/ecosystem/service-workers/config)). Signing in, up or out removes the cached API responses, by URL rather than by cache, since the names of its caches aren't Angular's API.
+  - **Checked** on a production build served statically, in headless Edge, with the service worker in its normal state. Real offline, both servers stopped: signed in, a read answers 200 from the cache (the control); after signing out, the entries are gone and it answers 504. Also: sign up, sign out, wrong then right password, both languages, 390 and 1280 px (a long email no longer overflows: hidden below `sm`), the keyboard reaches every field and link. 23 new unit tests, and two deliberate bugs (no cache clearing, no retry) each made a test fail.
+  - **A trap in testing:** `nx serve --configuration=production` leaves the service worker degraded ("Hash mismatch": the dev server changes the files), so nothing gets cached, and CDP's offline emulation doesn't reach the service worker's own requests. Both made a first test pass without proving anything.
 - 2026-10-30 — **Landing page** (#188, scope chosen by the developer: for visitors who aren't signed in, at `/`, done now rather than after accounts). `/` used to redirect to `/recipes`; it now shows what the app is, two links into it (« Ouvrir mes recettes », « Mes listes de courses ») and four features (recipes, cooking mode, shopping lists, phone and offline). Until accounts exist (#53) the links lead straight into the app; with #53 they will lead to signing up / in, and a signed-in user will skip the page. The page lives in the app shell next to `NotFound` (it belongs to no feature scope) and is lazy loaded with `loadComponent`, so `main` doesn't grow (its chunk is 2.3 kB). The header's « Marmite » drawing became an `app-logo` component, shared by the header and the page. The installed PWA keeps opening on the recipes: the manifest's `start_url` is now `./recipes`, and its `id` stays `./`, so browsers treat the new manifest as an update of the installed app, not a new one ([MDN `id`](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/id): "Browsers will treat this new manifest as an update to the existing app because the `id` values match"). Checked in both languages at 390 and 1280 px: one `h1`, headings in order, no horizontal scroll, the main link opens the recipes.
 - 2026-10-27 — **Screenshots retaken** (#176), same method as #160. The demo database got the shopping lists migration (`dotnet ef database update` with the `Release` configuration, so the developer's running API keeps its `Debug` files, and outside the Development environment, so without the French demo lists), then English lists created through the API. New row in the gallery: the « Add to list » dialog, and three phone screens (the lists, a list's items to buy, the checked items in the cart).
 - 2026-10-27 — **Add a recipe to a shopping list** (#142). A button below the ingredients opens a CDK dialog: radios for the existing lists (the first one checked) and « Nouvelle liste » with a name field, the servings prefilled with the recipe's (hidden when it has none: nothing to scale). The dialog then says how many items were added and offers « Voir la liste » and « Fermer », instead of a toast with a link: a toast disappears on its own, so its link could vanish before a keyboard or screen reader user reaches it ([WCAG 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)); the focus moves to the result message. The dialog lives in `recipes/feature` and calls `shopping/data-access`, hence `scope:recipes` → `scope:shopping` (never the reverse). Native radios work with `[formField]` (Signal Forms gives them the field's `name`, so arrow keys move within the group). Two traps found by the end-to-end test: CDK `closeOnNavigation` only covers history navigation (back/forward), not a router link (doc comment of `DialogConfig.closeOnNavigation` in `@angular/cdk`: "does not apply to navigation via anchor element unless using URL-hash based routing"), so the link closes the dialog itself; and an error returned by a Signal Forms submission action makes the form invalid **until a value changes**, and `submit()` doesn't run the action of an invalid form, so after a server failure a plain retry did nothing. Field errors (400) stay submission errors; other failures go in a separate signal. After a failed add, a retry reuses the list just created instead of creating another one.
@@ -548,12 +559,14 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
 
 #### 2026-11-06 — User accounts
 
-- In review: #197 accounts API (first of three parts of #53; then #198 pages, #199 ownership; email later in #200).
+- Done: #197 accounts API (PR #201), first of three parts of #53.
+- In review: #198 accounts pages. Then #199 ownership; email later in #200.
 - Learned:
   - ASP.NET Core Identity without its UI: `AddIdentityCore`, `AddIdentityCookies`, `IdentityUserContext`, `UserManager`, `SignInManager`;
   - cookies vs tokens in a browser, `HttpOnly` / `Secure` / `SameSite`, CSRF and antiforgery tokens tied to the user;
-  - OWASP advice: password length rather than composition rules, one generic login error, account lockout.
-- Next step: #198 sign up, sign in and sign out pages.
+  - OWASP advice: password length rather than composition rules, one generic login error, account lockout;
+  - functional route guards returning a `UrlTree`, `ngsw-bypass`, Cache Storage from the page, and testing a service worker by really stopping the servers, with a control.
+- Next step: #199 each user owns their recipes and shopping lists, which closes #53.
 - Open questions: the database for production (#91): PostgreSQL needs little rewriting, MongoDB a lot (no migrations, foreign keys or `Select` projections in its EF Core provider). To decide before the first deployment, since moving real data later is more work.
 
 #### 2026-11-03 → 04 — Phase 9
@@ -793,7 +806,7 @@ nx serve web                                                                    
 nx serve web
 nx build web
 nx serve-static web                     # serve the production build
-nx serve web --configuration=production # production build with the service worker, /api proxied (test the PWA on localhost)
+nx serve web --configuration=production # production build, /api proxied; the service worker registers but ends up degraded ("Hash mismatch"), so to test its cache serve dist/apps/web/browser statically
 nx build web --statsJson                # also writes dist/apps/web/stats.json, to open in https://esbuild.github.io/analyze/
 nx test web
 nx test web-shared-util                 # a lib's specs (libs with specs: shared util, ui, i18n, recipes and shopping feature)

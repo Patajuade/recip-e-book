@@ -44,3 +44,7 @@ jobs:
 
       - run: npx nx format:check --all
       - run: npx nx affected -t lint test build i18n-find
+      # Builds the API, which rewrites its OpenAPI document, then checks the TypeScript types made from it.
+      - run: npx nx run web-shared-api-types:check-generated
+      # The OpenAPI document committed with the API matches the one its build just wrote.
+      - run: git diff --exit-code -- apps/api/openapi

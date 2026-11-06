@@ -4,3 +4,6 @@ coverage
 .nx/workspace-data
 .angular
 package-lock.json
+# Generated: the OpenAPI document (API build) and the TypeScript types made from it.
+apps/api/openapi
+libs/web/shared/api-types/src/lib/api.ts

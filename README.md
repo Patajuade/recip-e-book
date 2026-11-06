@@ -131,7 +131,7 @@ Therefore:
 
 - In dev, the **Angular dev server proxy** forwards `/api/**` to the .NET API (`apps/web/src/proxy.conf.json`, [docs](https://angular.dev/tools/cli/serve#proxying-to-a-backend-server)) → the browser only talks to the dev server, no CORS issues. The API must run with the `https` launch profile.
 - An HTTP interceptor adds the `Accept-Language` header based on the active Transloco language.
-- Phase 9: **TypeScript type generation** from the OpenAPI document (e.g. `openapi-typescript`), exposed as an Nx task, so types aren't written twice.
+- **TypeScript types generated from the OpenAPI document** (#50): the API build writes `apps/api/openapi/RecipEBook.Api.json`, `openapi-typescript` turns it into `libs/web/shared/api-types`, and the models libs name those types. Types aren't written twice, and CI fails when they drift.
 
 ---
 
@@ -174,6 +174,7 @@ recip-e-book/
         │   └── ui/                 ← presentational components: recipe-card, ingredient-list…
         └── shared/
             ├── ui/                 ← generic Tailwind components: button, input, dialog, tag-chip…
+            ├── api-types/          ← TypeScript types generated from the API's OpenAPI document (#50)
             ├── i18n/               ← languages, language switcher, Accept-Language interceptor, title strategy, <html lang>
             └── util/               ← pipes (duration), helpers
 ```
@@ -508,6 +509,13 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - **What is tested** (39 tests): `delayedLoading` (fake timers: nothing before 300 ms, at least 500 ms once shown), `pagedResource` (`HttpTestingController`: cursor, start over on new filters, a late page dropped, retry after a failure), `DurationPipe`, `Toaster`, `ThemeSettings` (storage, unknown values, `<html>` attributes), `lib-load-more` (focus on the first new item after a click, not after a failure), the initial language and the `Accept-Language` interceptor, `splitDurations` (French and English, ranges, « 4 hamburgers »), the recipe form helpers (blank lines left out, API errors placed under the right field when blank lines shift the indexes, conditional ingredient name) and the item form helpers.
   - **Each test can fail:** four deliberate bugs (no minimum duration, a late page kept, no focus move, raw indexes for API errors) each made the matching test fail; the code was then restored.
   - **Adding specs to another lib:** copy a `test` target and `tsconfig.spec.json` from `shared/util` and add the reference in its `tsconfig.json`; a target without spec files fails (the builder stops with "No tests found matching the following patterns").
+- 2026-11-04 — **TypeScript types generated from the OpenAPI document** (#50, `openapi-typescript` as planned in §3).
+  - **The document:** `Microsoft.Extensions.ApiDescription.Server` "automatically generates the Open API documents associated with the app during build" ([docs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi?view=aspnetcore-10.0)); `OpenApiDocumentsDirectory` writes it to `apps/api/openapi/RecipEBook.Api.json`, committed so that API contract changes show up in pull requests. The generation runs `Program.cs` "with a mock server implementation", without the connection string: as the docs advise, `Program.cs` checks for the `GetDocument.Insider` entry assembly and then registers the `DbContext` with an in-memory SQLite connection that is never opened (unregistered, the handlers' `AppDbContext` parameter would be documented as a request body).
+  - **Numbers are numbers:** the web JSON defaults include `NumberHandling = AllowReadingFromString` ([System.Text.Json](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/configure-options#web-defaults-for-jsonserializeroptions)), so the document typed every integer as integer or string (`number | string` in TypeScript). `ConfigureHttpJsonOptions` sets it to `Strict`: `"servings": "4"` is now a 400. That test showed a 500 in Development: there, invalid requests throw (`RouteHandlerOptions.ThrowOnBadRequest` "defaults to IsDevelopment"), and the exception handler answered 500. Its `StatusCodeSelector` ([error handling](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-10.0#exception-handler-lambda)) now keeps a `BadHttpRequestException`'s own status code.
+  - **The types:** `libs/web/shared/api-types` (`type:util`, `scope:shared`) holds `src/lib/api.ts`, written by `nx run web-shared-api-types:generate` (`openapi-typescript <document> -o …`, cached on the document). The models libs keep their names (`RecipeSummary`, `ShoppingListItem`…) as aliases of `components['schemas'][…]`, so nothing else changes; write models are a bit looser than the hand-written ones (optional fields the API also accepts missing). Generated files are left out of Prettier.
+  - **In CI:** `check-generated` builds the API (rewriting the document), runs `openapi-typescript --check`, then `git diff --exit-code -- apps/api/openapi` fails if the committed document is out of date. Checked locally: the target passes, and fails on an edited `api.ts`.
+  - **TypeScript 6:** `openapi-typescript` 7.13, the latest, declares `typescript ^5.x` as a peer dependency; the project uses 6.0. Developer's choice: keep the planned tool with an npm `overrides` entry that gives it the project's TypeScript (it generates the same types; checked), version pinned so a minor update can't change the output. To remove once it declares TypeScript 6.
+  - **After an API change:** build the API (the document is rewritten), run `nx run web-shared-api-types:generate`, commit both.
 - 2026-10-30 — **Landing page** (#188, scope chosen by the developer: for visitors who aren't signed in, at `/`, done now rather than after accounts). `/` used to redirect to `/recipes`; it now shows what the app is, two links into it (« Ouvrir mes recettes », « Mes listes de courses ») and four features (recipes, cooking mode, shopping lists, phone and offline). Until accounts exist (#53) the links lead straight into the app; with #53 they will lead to signing up / in, and a signed-in user will skip the page. The page lives in the app shell next to `NotFound` (it belongs to no feature scope) and is lazy loaded with `loadComponent`, so `main` doesn't grow (its chunk is 2.3 kB). The header's « Marmite » drawing became an `app-logo` component, shared by the header and the page. The installed PWA keeps opening on the recipes: the manifest's `start_url` is now `./recipes`, and its `id` stays `./`, so browsers treat the new manifest as an update of the installed app, not a new one ([MDN `id`](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/id): "Browsers will treat this new manifest as an update to the existing app because the `id` values match"). Checked in both languages at 390 and 1280 px: one `h1`, headings in order, no horizontal scroll, the main link opens the recipes.
 - 2026-10-27 — **Screenshots retaken** (#176), same method as #160. The demo database got the shopping lists migration (`dotnet ef database update` with the `Release` configuration, so the developer's running API keeps its `Debug` files, and outside the Development environment, so without the French demo lists), then English lists created through the API. New row in the gallery: the « Add to list » dialog, and three phone screens (the lists, a list's items to buy, the checked items in the cart).
 - 2026-10-27 — **Add a recipe to a shopping list** (#142). A button below the ingredients opens a CDK dialog: radios for the existing lists (the first one checked) and « Nouvelle liste » with a name field, the servings prefilled with the recipe's (hidden when it has none: nothing to scale). The dialog then says how many items were added and offers « Voir la liste » and « Fermer », instead of a toast with a link: a toast disappears on its own, so its link could vanish before a keyboard or screen reader user reaches it ([WCAG 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)); the focus moves to the result message. The dialog lives in `recipes/feature` and calls `shopping/data-access`, hence `scope:recipes` → `scope:shopping` (never the reverse). Native radios work with `[formField]` (Signal Forms gives them the field's `name`, so arrow keys move within the group). Two traps found by the end-to-end test: CDK `closeOnNavigation` only covers history navigation (back/forward), not a router link (doc comment of `DialogConfig.closeOnNavigation` in `@angular/cdk`: "does not apply to navigation via anchor element unless using URL-hash based routing"), so the link closes the dialog itself; and an error returned by a Signal Forms submission action makes the form invalid **until a value changes**, and `submit()` doesn't run the action of an invalid form, so after a server failure a plain retry did nothing. Field errors (400) stay submission errors; other failures go in a separate signal. After a failed add, a retry reuses the list just created instead of creating another one.
@@ -524,16 +532,18 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
 - Open questions: …
 -->
 
-#### 2026-11-03 — Phase 9
+#### 2026-11-03 → 04 — Phase 9
 
-- Done: —
-- In review: #49 frontend unit tests (test targets in five libs, 39 tests).
+- Done: Phase 9: #49 frontend unit tests (PR #195).
+- In review: #50 TypeScript types generated from the OpenAPI document.
 - Learned:
   - the Angular `@angular/build:unit-test` builder on a non-buildable lib, through its `buildTarget` option;
   - Angular test tools: `TestBed.runInInjectionContext`, `TestBed.tick()` for effects, Vitest fake timers, `HttpTestingController`, a host component for inputs and outputs;
-  - checking that tests can fail: a deliberate bug per tested behavior, then the code restored.
-- Next step: #50 TS types from OpenAPI (phase 9), or phase 12; #132 waits for .NET 11 (after November 10).
-- Open questions: none.
+  - checking that tests can fail: a deliberate bug per tested behavior, then the code restored;
+  - build-time OpenAPI documents (`Microsoft.Extensions.ApiDescription.Server`), the app's entry point run by `GetDocument.Insider`, the web JSON defaults (`NumberHandling`), `ThrowOnBadRequest` and `StatusCodeSelector`;
+  - `openapi-typescript`, npm `overrides` for a peer dependency range.
+- Next step: phase 9 is done; phase 12 (meal planner), or the accounts (#53) that phase 15 waits for; #132 waits for .NET 11 (after November 10).
+- Open questions: `openapi-typescript` 7.13 declares TypeScript 5 only; the `overrides` entry in `package.json` can go once it declares TypeScript 6.
 
 #### 2026-10-23 → 31 — Phases 8 to 11 (+ planning of phases 11 to 15)
 
@@ -764,6 +774,7 @@ nx build web --statsJson                # also writes dist/apps/web/stats.json, 
 nx test web
 nx test web-shared-util                 # a lib's specs (libs with specs: shared util, ui, i18n, recipes and shopping feature)
 nx run-many -t test                     # every test target, the API integration tests included
+nx run web-shared-api-types:generate    # after an API change and an API build: regenerate the TypeScript types
 nx run web:i18n-find                    # translation files: valid JSON, no duplicate key, no key used in the code but missing
 nx g @nx/angular:component libs/web/recipes/ui/src/lib/recipe-card/recipe-card
 nx g @nx/angular:library libs/web/recipes/ui --tags=type:ui,scope:recipes

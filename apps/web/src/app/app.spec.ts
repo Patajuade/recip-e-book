@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -9,6 +11,8 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App, getTranslocoModule()],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([]),
         provideServiceWorker('ngsw-worker.js', { enabled: false }),
       ],

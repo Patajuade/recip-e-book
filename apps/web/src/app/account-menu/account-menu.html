@@ -1,0 +1,22 @@
+<ng-container *transloco="let t">
+  @if (session.email(); as email) {
+    <span
+      class="hidden max-w-48 truncate text-sm text-fg-muted sm:inline"
+      [title]="email"
+      >{{ email }}</span
+    >
+    <button
+      type="button"
+      class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg"
+      (click)="signOut()"
+    >
+      {{ t('accounts.menu.signOut') }}
+    </button>
+  } @else if (session.known()) {
+    <a
+      routerLink="/account/sign-in"
+      class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg"
+      >{{ t('accounts.menu.signIn') }}</a
+    >
+  }
+</ng-container>

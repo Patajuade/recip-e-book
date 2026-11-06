@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { marker } from '@jsverse/transloco-keys-manager/marker';
+import { visitorOnlyGuard } from '@recip-e-book/web-accounts-data-access';
 import { NotFound } from './not-found/not-found';
 
 export const appRoutes: Route[] = [
@@ -8,6 +9,14 @@ export const appRoutes: Route[] = [
     pathMatch: 'full',
     loadComponent: () => import('./landing/landing').then((m) => m.Landing),
     title: marker('landing.pageTitle'),
+    canActivate: [visitorOnlyGuard],
+  },
+  {
+    path: 'account',
+    loadChildren: () =>
+      import('@recip-e-book/web-accounts-feature').then(
+        (m) => m.accountsRoutes,
+      ),
   },
   {
     path: 'recipes',

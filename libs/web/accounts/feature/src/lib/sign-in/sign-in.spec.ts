@@ -46,7 +46,10 @@ describe('SignIn', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: 'recipes', component: Recipes }]),
+        provideRouter([
+          { path: 'recipes', component: Recipes },
+          { path: 'shopping/:id', component: Recipes },
+        ]),
       ],
     });
     http = TestBed.inject(HttpTestingController);
@@ -104,6 +107,22 @@ describe('SignIn', () => {
     });
 
     await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/recipes'));
+  });
+
+  it('goes back to the page that asked for signing in', async () => {
+    await setup();
+    fixture.componentRef.setInput('returnUrl', '/shopping/7');
+
+    await submit();
+    (await requestTo('/api/auth/login')).flush(null);
+    (await requestTo('/api/auth/session')).flush({
+      email: 'a@example.com',
+      registrationOpen: false,
+    });
+
+    await vi.waitFor(() =>
+      expect(TestBed.inject(Router).url).toBe('/shopping/7'),
+    );
   });
 
   it('says the sign-in was refused on a 401', async () => {

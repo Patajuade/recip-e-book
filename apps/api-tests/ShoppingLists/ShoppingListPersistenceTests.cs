@@ -11,14 +11,14 @@ namespace RecipEBook.Api.IntegrationTests.ShoppingLists;
 /// <summary>The delete behaviors of the shopping list tables, enforced by the database.</summary>
 public class ShoppingListPersistenceTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task DeletingARecipe_KeepsTheItemsCopiedFromItWithoutTheLink()
     {
         Guid recipeId = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Source"));
         Guid listId = await TestShoppingLists.AddAsync(
-            factory, "Test", DateTime.UtcNow, new ShoppingListItem { Name = "carrots", Quantity = 3, SourceRecipeId = recipeId });
+            factory, _client, "Test", DateTime.UtcNow, new ShoppingListItem { Name = "carrots", Quantity = 3, SourceRecipeId = recipeId });
 
         HttpResponseMessage response = await _client.DeleteAsync($"/api/recipes/{recipeId}");
 
@@ -26,6 +26,7 @@ public class ShoppingListPersistenceTests(RecipeBookApiFactory factory) : IClass
         using IServiceScope scope = factory.Services.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         ShoppingListItem item = await db.ShoppingLists
+            .IgnoreQueryFilters()
             .Where(l => l.Id == listId)
             .SelectMany(l => l.Items)
             .SingleAsync();
@@ -38,12 +39,12 @@ public class ShoppingListPersistenceTests(RecipeBookApiFactory factory) : IClass
     public async Task DeletingAList_DeletesItsItems()
     {
         Guid listId = await TestShoppingLists.AddAsync(
-            factory, "Test", DateTime.UtcNow, new ShoppingListItem { Name = "bread" }, new ShoppingListItem { Name = "milk" });
+            factory, _client, "Test", DateTime.UtcNow, new ShoppingListItem { Name = "bread" }, new ShoppingListItem { Name = "milk" });
 
         using IServiceScope scope = factory.Services.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         // Items aren't loaded: only the database cascade can delete them.
-        await db.ShoppingLists.Where(l => l.Id == listId).ExecuteDeleteAsync();
+        await db.ShoppingLists.IgnoreQueryFilters().Where(l => l.Id == listId).ExecuteDeleteAsync();
 
         int items = await db.Database
             .SqlQuery<int>($"""SELECT COUNT(*) AS "Value" FROM "ShoppingListItems" WHERE "ShoppingListId" = {listId}""")

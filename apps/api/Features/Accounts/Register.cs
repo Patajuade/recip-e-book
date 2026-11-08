@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 
+using RecipEBook.Api.Infrastructure.Persistence;
+
 namespace RecipEBook.Api.Features.Accounts;
 
 // The upper limit on the password stops very long ones from being sent to the hash function.
@@ -23,9 +25,11 @@ public static class Register
     public static async Task<Results<NoContent, ValidationProblem, ProblemHttpResult>> Handle(
         RegisterInput input,
         UserManager<IdentityUser> users,
+        AppDbContext db,
         SignInManager<IdentityUser> signIn,
         IConfiguration configuration,
-        IStringLocalizer<AccountMessages> localizer)
+        IStringLocalizer<AccountMessages> localizer,
+        CancellationToken cancellationToken)
     {
         if (!IsOpen(configuration))
         {
@@ -41,6 +45,7 @@ public static class Register
             return TypedResults.ValidationProblem(ToFieldErrors(result.Errors));
         }
 
+        await ClaimDataWithoutOwner.ForFirstAccountAsync(db, user.Id, cancellationToken);
         await signIn.SignInAsync(user, isPersistent: true);
         return TypedResults.NoContent();
     }

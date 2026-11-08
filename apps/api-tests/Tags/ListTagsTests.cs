@@ -7,7 +7,7 @@ namespace RecipEBook.Api.IntegrationTests.Tags;
 
 public class ListTagsTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task List_ReturnsTheWholeCatalogInCatalogOrder()

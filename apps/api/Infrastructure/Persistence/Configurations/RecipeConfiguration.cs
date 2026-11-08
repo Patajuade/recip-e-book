@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RecipEBook.Api.Domain;
@@ -13,7 +14,10 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
         builder.ComplexCollection(r => r.Ingredients, b => b.ToJson());
         builder.ComplexCollection(r => r.Steps, b => b.ToJson());
 
-        // Matches the list's paging order (EF Core pagination guide: a composite index).
-        builder.HasIndex(r => new { r.UpdatedAt, r.Id });
+        // The owner is an account; the domain doesn't know Identity, only this configuration does.
+        builder.HasOne<IdentityUser>().WithMany().HasForeignKey(r => r.OwnerId).OnDelete(DeleteBehavior.Cascade);
+
+        // Matches the list's query: one owner, in paging order (EF Core pagination guide).
+        builder.HasIndex(r => new { r.OwnerId, r.UpdatedAt, r.Id });
     }
 }

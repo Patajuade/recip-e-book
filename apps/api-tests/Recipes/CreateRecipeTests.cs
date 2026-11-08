@@ -10,7 +10,7 @@ namespace RecipEBook.Api.IntegrationTests.Recipes;
 
 public class CreateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Post_ValidRecipe_Returns201WithLocationOfTheNewRecipe()

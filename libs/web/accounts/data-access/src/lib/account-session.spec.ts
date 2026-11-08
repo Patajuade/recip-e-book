@@ -30,7 +30,28 @@ describe('AccountSession', () => {
   afterEach(() => {
     http.verify();
     vi.unstubAllGlobals();
+    localStorage.clear();
   });
+
+  // A fake Cache Storage with one API response and one app file.
+  function stubCaches() {
+    const entries = [
+      new Request('https://app.test/api/recipes?limit=20'),
+      new Request('https://app.test/main.js'),
+    ];
+    const cache = {
+      keys: vi.fn(async () => entries),
+      delete: vi.fn(async () => true),
+    };
+    vi.stubGlobal('caches', {
+      keys: async () => ['ngsw:data'],
+      open: async () => cache,
+    });
+    return { entries, cache };
+  }
+
+  const cacheOwner = (email: string | null) =>
+    localStorage.setItem('recip-e-book.cache-owner', JSON.stringify(email));
 
   async function start(session: Session = visitor) {
     const account = TestBed.inject(AccountSession);
@@ -111,19 +132,10 @@ describe('AccountSession', () => {
   });
 
   it('removes the cached API responses when signing out, and nothing else', async () => {
-    const entries = [
-      new Request('https://app.test/api/recipes?limit=20'),
-      new Request('https://app.test/main.js'),
-    ];
-    const cache = {
-      keys: vi.fn(async () => entries),
-      delete: vi.fn(async () => true),
-    };
-    vi.stubGlobal('caches', {
-      keys: async () => ['ngsw:data'],
-      open: async () => cache,
-    });
+    const { entries, cache } = stubCaches();
+    cacheOwner(signedIn.email);
     const account = await start(signedIn);
+    expect(cache.delete).not.toHaveBeenCalled();
 
     const signingOut = account.signOut();
     (await respondTo('/api/auth/logout')).flush(null);
@@ -133,6 +145,36 @@ describe('AccountSession', () => {
     expect(cache.delete).toHaveBeenCalledTimes(1);
     expect(cache.delete).toHaveBeenCalledWith(entries[0]);
     expect(account.signedIn()).toBe(false);
+  });
+
+  it('empties the cache at start when the session ended meanwhile', async () => {
+    // Signed in last time, but the session expired: nobody may read that data now.
+    const { cache } = stubCaches();
+    cacheOwner(signedIn.email);
+
+    await start(visitor);
+
+    expect(cache.delete).toHaveBeenCalledTimes(1);
+  });
+
+  it("empties the cache at start when it is someone else's", async () => {
+    const { cache } = stubCaches();
+    cacheOwner('b@example.com');
+
+    await start(signedIn);
+
+    expect(cache.delete).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the cache when offline: the session is unknown', async () => {
+    const { cache } = stubCaches();
+    cacheOwner(signedIn.email);
+    const account = TestBed.inject(AccountSession);
+
+    http.expectOne(SESSION).error(new ProgressEvent('error'), { status: 0 });
+    await account.ready;
+
+    expect(cache.delete).not.toHaveBeenCalled();
   });
 
   describe('visitorOnlyGuard', () => {

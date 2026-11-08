@@ -29,6 +29,10 @@ public class Recipe
     public int? CookTimeMinutes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+
+    /// <summary>The account it belongs to; null for data from before accounts, until claimed.</summary>
+    public string? OwnerId { get; set; }
+
     public List<Ingredient> Ingredients { get; set; } = [];
     public List<RecipeStep> Steps { get; set; } = [];
     public List<Tag> Tags { get; } = [];

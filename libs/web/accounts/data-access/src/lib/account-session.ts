@@ -10,6 +10,9 @@ export type LoginInput = Schemas['LoginInput'];
 
 const AUTH = '/api/auth';
 
+// The account the service worker's cached API responses belong to.
+const CACHE_OWNER_KEY = 'recip-e-book.cache-owner';
+
 /** Who is signed in, and the commands that change it. */
 @Service()
 export class AccountSession {
@@ -33,17 +36,19 @@ export class AccountSession {
    * old answer could say someone is signed in after they signed out.
    */
   async refresh(): Promise<void> {
+    let session: Session;
     try {
-      this.session.set(
-        await firstValueFrom(
-          this.http.get<Session>(`${AUTH}/session`, {
-            headers: { 'ngsw-bypass': '' },
-          }),
-        ),
+      session = await firstValueFrom(
+        this.http.get<Session>(`${AUTH}/session`, {
+          headers: { 'ngsw-bypass': '' },
+        }),
       );
     } catch {
       // Keeps what is known; offline, the app stays usable.
+      return;
     }
+    await this.keepCacheFor(session.email);
+    this.session.set(session);
   }
 
   async signIn(input: LoginInput): Promise<void> {
@@ -61,10 +66,23 @@ export class AccountSession {
     await this.afterChange();
   }
 
-  // The token depends on the user, and the next user must not read the last one's data.
+  // The token depends on the user.
   private async afterChange(): Promise<void> {
-    await clearCachedApiResponses();
     await this.refresh();
+  }
+
+  /**
+   * The service worker answers from its cache when the network fails or is slow, whoever
+   * asks. So when the session shows someone else than the cache's owner, or nobody (signed
+   * out, or a session that expired), the cache is emptied before any page reads it: the
+   * guards wait for the first answer.
+   */
+  private async keepCacheFor(email: string | null): Promise<void> {
+    if (readCacheOwner() === email) {
+      return;
+    }
+    await clearCachedApiResponses();
+    writeCacheOwner(email);
   }
 
   private async post(path: string, body: unknown): Promise<void> {
@@ -81,6 +99,24 @@ export class AccountSession {
       await this.refresh();
       await send();
     }
+  }
+}
+
+// Storage can be unavailable (private mode, blocked site data): the cache is then always emptied.
+function readCacheOwner(): string | null | undefined {
+  try {
+    const value = localStorage.getItem(CACHE_OWNER_KEY);
+    return value === null ? undefined : (JSON.parse(value) as string | null);
+  } catch {
+    return undefined;
+  }
+}
+
+function writeCacheOwner(email: string | null): void {
+  try {
+    localStorage.setItem(CACHE_OWNER_KEY, JSON.stringify(email));
+  } catch {
+    // See readCacheOwner.
   }
 }
 

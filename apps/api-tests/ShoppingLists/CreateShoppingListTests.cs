@@ -9,7 +9,7 @@ namespace RecipEBook.Api.IntegrationTests.ShoppingLists;
 
 public class CreateShoppingListTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Post_ValidName_Returns201AndAnEmptyListWithTheTrimmedName()

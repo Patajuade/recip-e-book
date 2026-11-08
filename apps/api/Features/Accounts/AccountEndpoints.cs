@@ -4,7 +4,7 @@ public static class AccountEndpoints
 {
     public static RouteGroupBuilder MapAccountEndpoints(this RouteGroupBuilder api)
     {
-        RouteGroupBuilder auth = api.MapGroup("/auth").WithTags("Accounts").RequireAntiforgeryToken();
+        RouteGroupBuilder auth = api.MapGroup("/auth").WithTags("Accounts");
 
         auth.MapGet("/session", GetSession.Handle).WithName("GetSession");
         auth.MapPost("/register", Register.Handle).WithName("Register").ProducesValidationProblem();

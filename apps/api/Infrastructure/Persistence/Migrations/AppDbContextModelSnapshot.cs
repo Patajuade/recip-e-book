@@ -164,6 +164,9 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("PrepTimeMinutes")
                         .HasColumnType("INTEGER");
 
@@ -211,7 +214,7 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UpdatedAt", "Id");
+                    b.HasIndex("OwnerId", "UpdatedAt", "Id");
 
                     b.ToTable("Recipes");
                 });
@@ -229,12 +232,15 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UpdatedAt", "Id");
+                    b.HasIndex("OwnerId", "UpdatedAt", "Id");
 
                     b.ToTable("ShoppingLists");
                 });
@@ -837,6 +843,22 @@ namespace RecipEBook.Api.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RecipEBook.Api.Domain.Recipe", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RecipEBook.Api.Domain.ShoppingList", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("RecipEBook.Api.Domain.ShoppingListItem", b =>

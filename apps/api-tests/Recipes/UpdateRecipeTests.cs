@@ -9,7 +9,7 @@ namespace RecipEBook.Api.IntegrationTests.Recipes;
 
 public class UpdateRecipeTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Put_ReplacesTheWholeRecipeAndKeepsCreatedAt()

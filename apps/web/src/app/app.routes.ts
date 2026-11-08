@@ -1,6 +1,9 @@
 import { Route } from '@angular/router';
 import { marker } from '@jsverse/transloco-keys-manager/marker';
-import { visitorOnlyGuard } from '@recip-e-book/web-accounts-data-access';
+import {
+  signedInGuard,
+  visitorOnlyGuard,
+} from '@recip-e-book/web-accounts-data-access';
 import { NotFound } from './not-found/not-found';
 
 export const appRoutes: Route[] = [
@@ -20,11 +23,13 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'recipes',
+    canActivate: [signedInGuard],
     loadChildren: () =>
       import('@recip-e-book/web-recipes-feature').then((m) => m.recipesRoutes),
   },
   {
     path: 'shopping',
+    canActivate: [signedInGuard],
     loadChildren: () =>
       import('@recip-e-book/web-shopping-feature').then(
         (m) => m.shoppingRoutes,

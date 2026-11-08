@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 
+using RecipEBook.Api.Common;
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
 
@@ -15,10 +16,17 @@ public static class CreateShoppingList
     public static async Task<CreatedAtRoute<Response>> Handle(
         ShoppingListInput input,
         AppDbContext db,
+        CurrentUser currentUser,
         CancellationToken cancellationToken)
     {
         DateTime now = DateTime.UtcNow;
-        ShoppingList list = new() { Name = input.Name.Trim(), CreatedAt = now, UpdatedAt = now };
+        ShoppingList list = new()
+        {
+            Name = input.Name.Trim(),
+            CreatedAt = now,
+            UpdatedAt = now,
+            OwnerId = currentUser.RequiredId,
+        };
 
         db.ShoppingLists.Add(list);
         await db.SaveChangesAsync(cancellationToken);

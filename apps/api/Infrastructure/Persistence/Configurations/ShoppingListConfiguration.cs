@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RecipEBook.Api.Domain;
@@ -15,7 +16,10 @@ public sealed class ShoppingListConfiguration : IEntityTypeConfiguration<Shoppin
             .HasForeignKey(i => i.ShoppingListId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Matches the list's paging order (EF Core pagination guide: a composite index).
-        builder.HasIndex(l => new { l.UpdatedAt, l.Id });
+        // The owner is an account; the domain doesn't know Identity, only this configuration does.
+        builder.HasOne<IdentityUser>().WithMany().HasForeignKey(l => l.OwnerId).OnDelete(DeleteBehavior.Cascade);
+
+        // Matches the list's query: one owner, in paging order (EF Core pagination guide).
+        builder.HasIndex(l => new { l.OwnerId, l.UpdatedAt, l.Id });
     }
 }

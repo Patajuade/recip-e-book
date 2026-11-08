@@ -7,5 +7,9 @@ public class ShoppingList
     public required string Name { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+
+    /// <summary>The account it belongs to; null for data from before accounts, until claimed.</summary>
+    public string? OwnerId { get; set; }
+
     public List<ShoppingListItem> Items { get; } = [];
 }

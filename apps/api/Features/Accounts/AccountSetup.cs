@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 
+using RecipEBook.Api.Common;
 using RecipEBook.Api.Infrastructure.Persistence;
 
 namespace RecipEBook.Api.Features.Accounts;
@@ -13,6 +14,8 @@ public static class AccountSetup
 
     public static IServiceCollection AddAccounts(this IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
+        services.AddScoped<CurrentUser>();
         services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
         services.AddAuthorization();
 

@@ -7,7 +7,8 @@ namespace RecipEBook.Api.Infrastructure.Persistence;
 /// <summary>
 /// Demo recipes and shopping list for local development, registered with
 /// UseSeeding/UseAsyncSeeding. Seeding runs after every migration/database update, so each
-/// kind of data is only inserted into a database that has none yet.
+/// kind of data is only inserted into a database that has none yet. The data has no owner:
+/// the first account created takes it (ClaimDataWithoutOwner).
 /// </summary>
 internal static class DemoData
 {
@@ -15,16 +16,16 @@ internal static class DemoData
 
     public static void Seed(DbContext context)
     {
-        if (!context.Set<Recipe>().Any())
+        if (!context.Set<Recipe>().IgnoreQueryFilters().Any())
         {
             Dictionary<string, Tag> tags = context.Set<Tag>().ToDictionary(t => t.Key);
             context.Set<Recipe>().AddRange(CreateRecipes(tags));
             context.SaveChanges();
         }
 
-        if (!context.Set<ShoppingList>().Any())
+        if (!context.Set<ShoppingList>().IgnoreQueryFilters().Any())
         {
-            Recipe? soup = context.Set<Recipe>().FirstOrDefault(r => r.Title == SoupTitle);
+            Recipe? soup = context.Set<Recipe>().IgnoreQueryFilters().FirstOrDefault(r => r.Title == SoupTitle);
             context.Set<ShoppingList>().Add(CreateShoppingList(soup));
             context.SaveChanges();
         }
@@ -32,16 +33,16 @@ internal static class DemoData
 
     public static async Task SeedAsync(DbContext context, CancellationToken cancellationToken)
     {
-        if (!await context.Set<Recipe>().AnyAsync(cancellationToken))
+        if (!await context.Set<Recipe>().IgnoreQueryFilters().AnyAsync(cancellationToken))
         {
             Dictionary<string, Tag> tags = await context.Set<Tag>().ToDictionaryAsync(t => t.Key, cancellationToken);
             context.Set<Recipe>().AddRange(CreateRecipes(tags));
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        if (!await context.Set<ShoppingList>().AnyAsync(cancellationToken))
+        if (!await context.Set<ShoppingList>().IgnoreQueryFilters().AnyAsync(cancellationToken))
         {
-            Recipe? soup = await context.Set<Recipe>().FirstOrDefaultAsync(r => r.Title == SoupTitle, cancellationToken);
+            Recipe? soup = await context.Set<Recipe>().IgnoreQueryFilters().FirstOrDefaultAsync(r => r.Title == SoupTitle, cancellationToken);
             context.Set<ShoppingList>().Add(CreateShoppingList(soup));
             await context.SaveChangesAsync(cancellationToken);
         }

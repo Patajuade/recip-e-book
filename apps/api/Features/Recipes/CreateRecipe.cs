@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Localization;
 
+using RecipEBook.Api.Common;
 using RecipEBook.Api.Domain;
 using RecipEBook.Api.Infrastructure.Persistence;
 
@@ -16,6 +17,7 @@ public static class CreateRecipe
     public static async Task<Results<CreatedAtRoute<Response>, ValidationProblem>> Handle(
         RecipeInput input,
         AppDbContext db,
+        CurrentUser currentUser,
         IStringLocalizer<RecipeInput> localizer,
         CancellationToken cancellationToken)
     {
@@ -27,7 +29,7 @@ public static class CreateRecipe
         }
 
         DateTime now = DateTime.UtcNow;
-        Recipe recipe = new() { Title = "", CreatedAt = now, UpdatedAt = now };
+        Recipe recipe = new() { Title = "", CreatedAt = now, UpdatedAt = now, OwnerId = currentUser.RequiredId };
         input.ApplyTo(recipe, tags);
 
         db.Recipes.Add(recipe);

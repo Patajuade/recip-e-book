@@ -4,6 +4,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { LanguageSwitcher } from '@recip-e-book/web-shared-i18n';
 import { ThemePicker, ToastList } from '@recip-e-book/web-shared-ui';
 import { NetworkStatus } from '@recip-e-book/web-shared-util';
+import { AccountMenu } from './account-menu/account-menu';
 import { AppUpdates } from './app-updates';
 import { Logo } from './logo/logo';
 
@@ -17,6 +18,7 @@ import { Logo } from './logo/logo';
     ThemePicker,
     ToastList,
     Logo,
+    AccountMenu,
   ],
   selector: 'app-root',
   templateUrl: './app.html',

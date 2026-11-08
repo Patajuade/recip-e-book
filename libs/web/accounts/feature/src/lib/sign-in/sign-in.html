@@ -1,0 +1,55 @@
+<section *transloco="let t" class="mx-auto flex max-w-md flex-col gap-6">
+  <h1 class="text-3xl">{{ t('accounts.signIn.heading') }}</h1>
+
+  <form [formRoot]="signInForm" class="flex flex-col gap-4">
+    <lib-labeled-field [label]="t('accounts.email')" [field]="signInForm.email">
+      <input
+        type="email"
+        autocomplete="email"
+        class="form-control"
+        [formField]="signInForm.email"
+      />
+    </lib-labeled-field>
+
+    <lib-labeled-field
+      [label]="t('accounts.password')"
+      [field]="signInForm.password"
+    >
+      <input
+        type="password"
+        autocomplete="current-password"
+        class="form-control"
+        [formField]="signInForm.password"
+      />
+    </lib-labeled-field>
+
+    @if (failure(); as kind) {
+      <p role="alert" class="alert-error p-3 text-sm">
+        {{
+          t(
+            kind === 'refused'
+              ? 'accounts.signIn.refused'
+              : 'accounts.signIn.unavailable'
+          )
+        }}
+      </p>
+    }
+
+    <button
+      type="submit"
+      class="btn-accent self-start"
+      [disabled]="signInForm().submitting()"
+    >
+      {{ t('accounts.signIn.submit') }}
+    </button>
+  </form>
+
+  @if (session.registrationOpen()) {
+    <p class="text-sm text-fg-muted">
+      {{ t('accounts.signIn.noAccount') }}
+      <a routerLink="/account/sign-up" class="text-primary-ink underline">{{
+        t('accounts.signIn.createAccount')
+      }}</a>
+    </p>
+  }
+</section>

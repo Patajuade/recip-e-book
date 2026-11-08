@@ -9,7 +9,7 @@ using RecipEBook.Api.Infrastructure.Persistence;
 
 namespace RecipEBook.Api.IntegrationTests;
 
-/// <summary>Creates shopping lists through the API, or straight in the database with given items.</summary>
+/// <summary>Creates shopping lists through the API, or straight in the database with given items and owner.</summary>
 internal static class TestShoppingLists
 {
     public static async Task<Guid> CreateAsync(HttpClient client, string name = "Week")
@@ -22,11 +22,12 @@ internal static class TestShoppingLists
     }
 
     public static async Task<Guid> AddAsync(
-        RecipeBookApiFactory factory, string name, DateTime updatedAt, params ShoppingListItem[] items)
+        RecipeBookApiFactory factory, HttpClient owner, string name, DateTime updatedAt, params ShoppingListItem[] items)
     {
+        string ownerId = await TestAccounts.UserIdAsync(factory, owner);
         using IServiceScope scope = factory.Services.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        ShoppingList list = new() { Name = name, CreatedAt = updatedAt, UpdatedAt = updatedAt };
+        ShoppingList list = new() { Name = name, CreatedAt = updatedAt, UpdatedAt = updatedAt, OwnerId = ownerId };
         list.Items.AddRange(items.Select((item, position) =>
         {
             item.Position = position;

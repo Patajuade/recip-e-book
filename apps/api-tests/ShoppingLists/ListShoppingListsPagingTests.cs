@@ -10,7 +10,7 @@ namespace RecipEBook.Api.IntegrationTests.ShoppingLists;
 
 public class ListShoppingListsPagingTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Pages_ReturnEveryListOnceInOrder_EvenWithTheSameUpdatedAt()
@@ -18,12 +18,12 @@ public class ListShoppingListsPagingTests(RecipeBookApiFactory factory) : IClass
         DateTime now = DateTime.UtcNow;
         List<Guid> ids =
         [
-            await TestShoppingLists.AddAsync(factory, "A", now),
+            await TestShoppingLists.AddAsync(factory, _client, "A", now),
             // Three lists updated at the same instant: only the Id can order them.
-            await TestShoppingLists.AddAsync(factory, "B", now.AddHours(-1)),
-            await TestShoppingLists.AddAsync(factory, "C", now.AddHours(-1)),
-            await TestShoppingLists.AddAsync(factory, "D", now.AddHours(-1)),
-            await TestShoppingLists.AddAsync(factory, "E", now.AddHours(-2)),
+            await TestShoppingLists.AddAsync(factory, _client, "B", now.AddHours(-1)),
+            await TestShoppingLists.AddAsync(factory, _client, "C", now.AddHours(-1)),
+            await TestShoppingLists.AddAsync(factory, _client, "D", now.AddHours(-1)),
+            await TestShoppingLists.AddAsync(factory, _client, "E", now.AddHours(-2)),
         ];
 
         List<List<Guid>> pages = [];

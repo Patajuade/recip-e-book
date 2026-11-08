@@ -14,7 +14,7 @@ namespace RecipEBook.Api.IntegrationTests.Recipes;
 // Each test searches its own title prefix, so the recipes of the other tests don't count.
 public class ListRecipesPagingTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Pages_ReturnEveryRecipeOnceInOrder_EvenWithTheSameUpdatedAt()
@@ -107,6 +107,7 @@ public class ListRecipesPagingTests(RecipeBookApiFactory factory) : IClassFixtur
         using IServiceScope scope = factory.Services.CreateScope();
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Recipes
+            .IgnoreQueryFilters()
             .Where(r => ids.Contains(r.Id))
             .ExecuteUpdateAsync(s => s.SetProperty(r => r.UpdatedAt, updatedAt));
     }

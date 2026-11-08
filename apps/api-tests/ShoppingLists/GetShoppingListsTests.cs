@@ -9,15 +9,15 @@ namespace RecipEBook.Api.IntegrationTests.ShoppingLists;
 
 public class GetShoppingListsTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task List_ReturnsCountsMostRecentlyUpdatedFirst()
     {
         DateTime now = DateTime.UtcNow;
-        Guid older = await TestShoppingLists.AddAsync(factory, "Older", now.AddDays(-1), new ShoppingListItem { Name = "bread" });
+        Guid older = await TestShoppingLists.AddAsync(factory, _client, "Older", now.AddDays(-1), new ShoppingListItem { Name = "bread" });
         Guid newer = await TestShoppingLists.AddAsync(
-            factory, "Newer", now, new ShoppingListItem { Name = "milk", Checked = true }, new ShoppingListItem { Name = "eggs" });
+            factory, _client, "Newer", now, new ShoppingListItem { Name = "milk", Checked = true }, new ShoppingListItem { Name = "eggs" });
 
         List<ListShoppingLists.ShoppingListSummary> lists =
             (await _client.GetFromJsonAsync<Page<ListShoppingLists.ShoppingListSummary>>("/api/shopping-lists"))!.Items;
@@ -33,7 +33,7 @@ public class GetShoppingListsTests(RecipeBookApiFactory factory) : IClassFixture
     {
         Guid recipeId = await TestRecipes.CreateAsync(_client, TestRecipes.Valid("Carrot soup"));
         Guid id = await TestShoppingLists.AddAsync(
-            factory,
+            factory, _client,
             "Week",
             DateTime.UtcNow,
             new ShoppingListItem { Name = "carrots", Quantity = 3, Unit = "piece", SourceRecipeId = recipeId },

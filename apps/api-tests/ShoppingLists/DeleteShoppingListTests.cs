@@ -4,7 +4,7 @@ namespace RecipEBook.Api.IntegrationTests.ShoppingLists;
 
 public class DeleteShoppingListTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Delete_ExistingList_Returns204ThenTheListIsGone()

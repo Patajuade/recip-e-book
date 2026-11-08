@@ -8,7 +8,7 @@ namespace RecipEBook.Api.IntegrationTests.Recipes;
 
 public class GetRecipeTests(RecipeBookApiFactory factory) : IClassFixture<RecipeBookApiFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = TestAccounts.SignedIn(factory);
 
     [Fact]
     public async Task Get_ExistingRecipe_ReturnsAllItsFields()

@@ -1,8 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { AccountSession } from '@recip-e-book/web-accounts-data-access';
+import {
+  AccountSession,
+  safeReturnUrl,
+} from '@recip-e-book/web-accounts-data-access';
 import { LabeledField } from '@recip-e-book/web-shared-ui';
 import {
   Credentials,
@@ -18,6 +21,9 @@ import {
   styleUrl: './sign-in.css',
 })
 export class SignIn {
+  /** Where to go once signed in (query parameter, set by the guard). */
+  readonly returnUrl = input<string>();
+
   protected readonly session = inject(AccountSession);
   private readonly router = inject(Router);
 
@@ -36,7 +42,7 @@ export class SignIn {
           this.failure.set(isStatus(error, 401) ? 'refused' : 'unavailable');
           return undefined;
         }
-        await this.router.navigateByUrl('/recipes');
+        await this.router.navigateByUrl(safeReturnUrl(this.returnUrl()));
         return undefined;
       },
     },

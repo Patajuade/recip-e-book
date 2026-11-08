@@ -8,28 +8,33 @@
         Recip-e-book
       </a>
 
-      <nav [attr.aria-label]="t('layout.mainNav.label')" class="flex-1">
-        <ul class="flex gap-1">
-          <li>
-            <a
-              routerLink="/recipes"
-              routerLinkActive="bg-surface-raised font-semibold"
-              ariaCurrentWhenActive="page"
-              class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg aria-[current=page]:text-fg"
-              >{{ t('layout.nav.recipes') }}</a
-            >
-          </li>
-          <li>
-            <a
-              routerLink="/shopping"
-              routerLinkActive="bg-surface-raised font-semibold"
-              ariaCurrentWhenActive="page"
-              class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg aria-[current=page]:text-fg"
-              >{{ t('layout.nav.shopping') }}</a
-            >
-          </li>
-        </ul>
-      </nav>
+      <!-- Visitors have nothing there yet; offline, the session is unknown and the links stay. -->
+      @if (session.signedIn() || !session.known()) {
+        <nav [attr.aria-label]="t('layout.mainNav.label')" class="flex-1">
+          <ul class="flex gap-1">
+            <li>
+              <a
+                routerLink="/recipes"
+                routerLinkActive="bg-surface-raised font-semibold"
+                ariaCurrentWhenActive="page"
+                class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg aria-[current=page]:text-fg"
+                >{{ t('layout.nav.recipes') }}</a
+              >
+            </li>
+            <li>
+              <a
+                routerLink="/shopping"
+                routerLinkActive="bg-surface-raised font-semibold"
+                ariaCurrentWhenActive="page"
+                class="rounded px-3 py-2 text-sm whitespace-nowrap text-fg-muted hover:bg-surface-raised hover:text-fg aria-[current=page]:text-fg"
+                >{{ t('layout.nav.shopping') }}</a
+              >
+            </li>
+          </ul>
+        </nav>
+      } @else {
+        <span class="flex-1"></span>
+      }
 
       <div class="flex min-w-0 flex-wrap items-center gap-2">
         <lib-theme-picker />

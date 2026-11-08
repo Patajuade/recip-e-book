@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LanguageSwitcher } from '@recip-e-book/web-shared-i18n';
 import { ThemePicker, ToastList } from '@recip-e-book/web-shared-ui';
+import { AccountSession } from '@recip-e-book/web-accounts-data-access';
 import { NetworkStatus } from '@recip-e-book/web-shared-util';
 import { AccountMenu } from './account-menu/account-menu';
 import { AppUpdates } from './app-updates';
@@ -27,4 +28,5 @@ import { Logo } from './logo/logo';
 export class App {
   protected readonly network = inject(NetworkStatus);
   protected readonly updates = inject(AppUpdates);
+  protected readonly session = inject(AccountSession);
 }

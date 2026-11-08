@@ -77,10 +77,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health");
 
-RouteGroupBuilder api = app.MapGroup("/api");
+// Every write of the API proves it comes from the app (antiforgery), and everything but the
+// accounts endpoints needs a signed-in user.
+RouteGroupBuilder api = app.MapGroup("/api").RequireAntiforgeryToken();
 api.MapAccountEndpoints();
-api.MapRecipeEndpoints();
-api.MapTagEndpoints();
-api.MapShoppingListEndpoints();
+RouteGroupBuilder signedIn = api.MapGroup("").RequireAuthorization().AddEndpointFilter((context, next) =>
+{
+    // Personal data: the browser's HTTP cache must not keep it for the next user of the device.
+    context.HttpContext.Response.Headers.CacheControl = "no-store";
+    return next(context);
+});
+signedIn.MapRecipeEndpoints();
+signedIn.MapTagEndpoints();
+signedIn.MapShoppingListEndpoints();
 
 app.Run();

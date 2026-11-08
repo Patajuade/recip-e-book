@@ -20,11 +20,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, Current
     // Read by the query filters at each query (EF Core parameterizes context members).
     private string? CurrentUserId => currentUser.Id;
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

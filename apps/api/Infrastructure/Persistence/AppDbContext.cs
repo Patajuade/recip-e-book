@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,11 @@ namespace RecipEBook.Api.Infrastructure.Persistence;
 
 // IdentityUserContext: the account tables, without the roles the app has no use for.
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options, CurrentUser currentUser)
-    : IdentityUserContext<IdentityUser>(options)
+    : IdentityUserContext<IdentityUser>(options), IDataProtectionKeyContext
 {
+    /// <summary>The keys protecting the sign-in and antiforgery cookies (Data Protection).</summary>
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
     /// <summary>Name of the query filter that keeps each user to their own data.</summary>
     public const string OwnerFilter = "Owner";
 

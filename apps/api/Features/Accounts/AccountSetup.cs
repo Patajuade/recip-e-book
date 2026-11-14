@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 
@@ -12,7 +13,8 @@ public static class AccountSetup
     /// <summary>The name Angular's HttpClient reads the antiforgery token from.</summary>
     public const string AntiforgeryCookie = "XSRF-TOKEN";
 
-    public static IServiceCollection AddAccounts(this IServiceCollection services)
+    /// <param name="keysInDatabase">False while the build generates the OpenAPI document: there is no database then.</param>
+    public static IServiceCollection AddAccounts(this IServiceCollection services, bool keysInDatabase = true)
     {
         services.AddHttpContextAccessor();
         services.AddScoped<CurrentUser>();
@@ -50,6 +52,15 @@ public static class AccountSetup
             options.HeaderName = "X-XSRF-TOKEN";
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
+
+        // Both cookies are protected by Data Protection keys. A container loses its files on every
+        // redeployment, which would sign everyone out, so the keys live in the database. The
+        // application name keeps them valid whatever the content root path.
+        IDataProtectionBuilder dataProtection = services.AddDataProtection().SetApplicationName("RecipEBook");
+        if (keysInDatabase)
+        {
+            dataProtection.PersistKeysToDbContext<AppDbContext>();
+        }
 
         return services;
     }

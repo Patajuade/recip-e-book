@@ -1,0 +1,16 @@
+# Local PostgreSQL for development: `docker compose up -d`. The password comes from the
+# untracked .env file next to this one (README, "Local database").
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: recipebook
+    # Reachable from this machine only, not from the local network.
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+volumes:
+  postgres-data:

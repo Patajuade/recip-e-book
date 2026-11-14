@@ -18,11 +18,11 @@ var builder = WebApplication.CreateBuilder(args);
 bool generatingOpenApiDocument = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
 var connectionString = builder.Configuration.GetConnectionString("RecipEBook")
     ?? (generatingOpenApiDocument
-        ? "Data Source=:memory:"
+        ? "Host=localhost"
         : throw new InvalidOperationException("Connection string 'RecipEBook' not found."));
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlite(connectionString);
+    options.UseNpgsql(connectionString);
 
     if (builder.Environment.IsDevelopment())
     {

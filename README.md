@@ -36,7 +36,7 @@ A web app to **write down and browse my recipes**, like a personal cookbook.
 
 ### Screenshots
 
-Built with **Angular 22** (signals, Signal Forms, Angular CDK, Tailwind CSS v4) and **ASP.NET Core 10** (Minimal APIs, EF Core, SQLite), in an Nx monorepo. The app is bilingual (English / French), offers 8 dark themes, and installs as a PWA. Screenshots come from a demo database with English sample recipes.
+Built with **Angular 22** (signals, Signal Forms, Angular CDK, Tailwind CSS v4) and **ASP.NET Core 10** (Minimal APIs, EF Core, PostgreSQL), in an Nx monorepo. The app is bilingual (English / French), offers 8 dark themes, and installs as a PWA. Screenshots come from a demo database with English sample recipes.
 
 |                                                                                                                                |                                                                                                                                                                                                                                                                                                                                  |
 | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -62,7 +62,7 @@ Built with **Angular 22** (signals, Signal Forms, Angular CDK, Tailwind CSS v4) 
 **Long-term vision** (not planned yet, we stick to recipes for now):
 
 - **Multiple users**: each user has their own recipes and shopping lists; tags are a shared catalog. Done in #53 (#197, #198, #199).
-- **A more suitable database** than SQLite once the needs are known (PostgreSQL, MongoDB…), compared then migrated with the existing data: [#91](https://github.com/Patajuade/recip-e-book/issues/91).
+- **PostgreSQL** instead of SQLite, chosen after comparing it with MongoDB, with the existing data migrated: done in [#91](https://github.com/Patajuade/recip-e-book/issues/91).
 - **A personal companion app**: recip-e-book becomes one module of a bigger app grouping several areas of life (budget, home improvement ideas…), with shared accounts: [#92](https://github.com/Patajuade/recip-e-book/issues/92).
 
 ---
@@ -114,18 +114,18 @@ Therefore:
 
 ### Backend
 
-| Topic        | Choice                                                                                                                                                                                       | Why                                                            |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Runtime      | **.NET 10 (LTS)**                                                                                                                                                                            | Current LTS                                                    |
-| API          | **ASP.NET Core Minimal APIs** organized by feature (`MapGroup`, `TypedResults`)                                                                                                              | Modern, low ceremony, close to Express/Fastify                 |
-| Organization | **Vertical slices** (one folder per feature) in a single API project                                                                                                                         | No 4-project Clean Architecture: overkill for this scope       |
-| ORM          | **Entity Framework Core 10**                                                                                                                                                                 | Already somewhat familiar                                      |
-| Database     | **SQLite** in dev (local file, zero install)                                                                                                                                                 | Docker isn't installed. Migration to PostgreSQL possible later |
-| Validation   | Built-in Minimal API validation (`AddValidation()` + DataAnnotations). FluentValidation if complex rules are needed                                                                          | Native since .NET 10                                           |
-| Errors       | **ProblemDetails** (RFC 9457) via `AddProblemDetails()`                                                                                                                                      | Standard error format, easy to consume on the frontend         |
-| i18n         | Recipe **content** isn't translated (it's what the user writes). The frontend sends `Accept-Language`. The backend localizes its error messages (`RequestLocalization` + `.resx`) in phase 8 | UI strings are translated on the frontend                      |
-| Docs         | Native **OpenAPI** (`Microsoft.AspNetCore.OpenApi`) + **Scalar** as UI                                                                                                                       | Swashbuckle is no longer the default                           |
-| Tests        | **xUnit** + `WebApplicationFactory` (integration tests)                                                                                                                                      | Tests the API end to end                                       |
+| Topic        | Choice                                                                                                                                                                                       | Why                                                                           |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Runtime      | **.NET 10 (LTS)**                                                                                                                                                                            | Current LTS                                                                   |
+| API          | **ASP.NET Core Minimal APIs** organized by feature (`MapGroup`, `TypedResults`)                                                                                                              | Modern, low ceremony, close to Express/Fastify                                |
+| Organization | **Vertical slices** (one folder per feature) in a single API project                                                                                                                         | No 4-project Clean Architecture: overkill for this scope                      |
+| ORM          | **Entity Framework Core 10**                                                                                                                                                                 | Already somewhat familiar                                                     |
+| Database     | **PostgreSQL 18** ([Npgsql](https://www.npgsql.org/efcore/) EF Core provider), in Docker locally (`compose.yaml`)                                                                            | Every EF Core feature the API uses works on it (#91). SQLite until 2026-11-08 |
+| Validation   | Built-in Minimal API validation (`AddValidation()` + DataAnnotations). FluentValidation if complex rules are needed                                                                          | Native since .NET 10                                                          |
+| Errors       | **ProblemDetails** (RFC 9457) via `AddProblemDetails()`                                                                                                                                      | Standard error format, easy to consume on the frontend                        |
+| i18n         | Recipe **content** isn't translated (it's what the user writes). The frontend sends `Accept-Language`. The backend localizes its error messages (`RequestLocalization` + `.resx`) in phase 8 | UI strings are translated on the frontend                                     |
+| Docs         | Native **OpenAPI** (`Microsoft.AspNetCore.OpenApi`) + **Scalar** as UI                                                                                                                       | Swashbuckle is no longer the default                                          |
+| Tests        | **xUnit** + `WebApplicationFactory` (integration tests), on PostgreSQL started by **Testcontainers**                                                                                         | Tests the API end to end, on the production database engine                   |
 
 ### Frontend ↔ backend glue
 
@@ -247,8 +247,8 @@ Tag (entity, fixed catalog — TagCatalog, inserted by migrations)
 Modeling choices (2026-10-18, from the EF Core docs):
 
 - **`Ingredient` and `RecipeStep` are complex types** (immutable `record`s): they have no identity of their own and only exist inside a recipe, which is what [complex types](https://learn.microsoft.com/en-us/ef/core/modeling/complex-types) are for. In EF Core 10, complex collections are mapped to a JSON column (`ComplexCollection(...).ToJson()`, configured in #12). No join, no `Position` column, and replacing all ingredients on `PUT` is a plain assignment.
-- **`DateTime` in UTC** rather than `DateTimeOffset`: the [SQLite provider](https://learn.microsoft.com/en-us/ef/core/providers/sqlite/limitations) can't compare or order `DateTimeOffset` in the database and recommends UTC `DateTime` values.
-- **`decimal` kept for quantities**: equality is supported on SQLite, and EF Core 10 added `MIN`/`MAX`/`ORDER BY` on `decimal` for SQLite ([what's new](https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-10.0/whatsnew)); quantities are never sorted anyway.
+- **`DateTime` in UTC** rather than `DateTimeOffset`: chosen for SQLite, which can't compare or order `DateTimeOffset` in the database ([SQLite provider](https://learn.microsoft.com/en-us/ef/core/providers/sqlite/limitations)). PostgreSQL stores them as `timestamp with time zone`, in UTC and to the microsecond, and Npgsql refuses to write a non-UTC `DateTime` there ([Npgsql date and time](https://www.npgsql.org/doc/types/datetime.html)).
+- **`decimal` for quantities**: `numeric` on PostgreSQL, and a JSON number inside the ingredients.
 - **`Guid` keys**, generated by EF Core when the value is `Guid.Empty` ([generated values](https://learn.microsoft.com/en-us/ef/core/modeling/generated-properties)), so `Id` is not `required`.
 
 > Units are **free text** entered by the user, so they're not translated (a list of predefined, translated units may come as a bonus). Tags come from a **fixed catalog** (#116) and are translated on the frontend (`tags.<key>`, `tagCategories.<category>`).
@@ -406,7 +406,7 @@ Added on 2026-10-25 at the developer's request, with phases 13 and 14.
 
 Added on 2026-10-30 at the developer's request, to do **after user accounts** (#53).
 
-- **Hosting and production database**: #60 and #91 (moved from phase 10).
+- **Hosting and production database**: #60, and #91 (done: PostgreSQL).
 - **Two environments** (#183): development and production, each with its own database. Development data and accounts never reach production. Which branch or tag feeds each environment is decided when starting.
 - **Automatic deployment** (#184): a GitHub Actions workflow deploys once CI is green. Each environment has its own GitHub environment and secrets. Migrations are applied on each deployment, and the app is served over HTTPS.
 - **Validation**: the production app runs on its own, without the development PC. A change reaches development, then production, without a manual step on the server. The phase 11 phone validation is done on production.
@@ -553,6 +553,15 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
   - **The service worker's cache belongs to an account:** it answers from its cache when the network fails or is slow, whoever asks. Clearing it at sign-out wasn't enough: a session that expires, or an app closed without signing out, left the last user's data for the next one. So the app remembers whose data is cached (`localStorage`), and when the session shows someone else or nobody, it empties the cache before the guards let a page read it. Offline (unknown session), the cache stays.
   - **Two bugs found in the browser:** the HTTP error interceptor resolved `AccountSession`, whose own first request goes through that interceptor: a circular dependency, swallowed by the session's `try`/`catch`, so the session was never read and the guards let everyone in. It now resolves it only on a 401, and a test reads the session through the real interceptor. And a test of the tests went wrong: after deliberate bugs, the files were restored with their old modification dates, so MSBuild's incremental build kept the bugged binaries; the code itself was right (the dates were updated, then everything rebuilt).
   - **Checked:** 9 new integration tests (two users on every endpoint, every `/api` endpoint answering 401 without a session, so a new endpoint is checked as well, antiforgery on the API, `no-store`, first account only). Three deliberate bugs (no filter, no sign-in required, every account claiming) each made them fail. In headless Edge, production build served statically, a fresh copy of the demo database: a visitor is sent to sign in, the first account gets the 6 demo recipes and 2 lists, the second sees none and gets « Cette recette n'existe pas » on the first's recipe URL, sign-in returns to the wanted page, an expired session leads to sign in and empties the cache, and offline reading still works.
+- 2026-11-08 — **PostgreSQL instead of SQLite** (#91, developer's choice after a comparison). Production needs a real server database before the first deployment, so it was decided now.
+  - **Why not MongoDB:** its EF Core provider supports neither migrations, nor foreign keys, nor `Select` projections ([limitations](https://www.mongodb.com/docs/entity-framework/current/limitations/)). Recipe ↔ tag, the cascade from an account to its data, and the read models of 14 endpoint files would all have to be redesigned, and ASP.NET Core Identity has no official MongoDB store.
+  - **Why not SQLite in production:** it is fine for "most low to medium traffic websites", but it allows "only one writer at any instant in time" and needs a persistent disk next to a single instance of the API ([sqlite.org](https://www.sqlite.org/whentouse.html)).
+  - **PostgreSQL** keeps everything the API uses: Identity, foreign keys, migrations, `ExecuteUpdate`, keyset paging. Npgsql 10 maps the EF 10 JSON complex types to `jsonb` ([release notes](https://www.npgsql.org/efcore/release-notes/10.0.html)).
+  - **Search:** `SearchTitle` (#15) stays. PostgreSQL's case-insensitive collations are nondeterministic, and the [Npgsql page](https://www.npgsql.org/efcore/misc/collations-and-case-sensitivity.html) warns that `LIKE` didn't work on such columns; a normalized column works on any database. Checked: « PATES » and « légumes » find their recipes.
+  - **Locally, PostgreSQL 18 in Docker** (developer's choice, so development matches production): `compose.yaml` at the root, port published on `127.0.0.1` only, data in a named volume mounted at `/var/lib/postgresql` (the path changed with the 18 image, [Docker Hub](https://hub.docker.com/_/postgres)). The password is in `.env` (git-ignored; `${POSTGRES_PASSWORD:?…}` stops compose without it, [interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)), and the connection string in the .NET user secrets, read only in Development ([Secret Manager](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)). No connection string in `appsettings*.json` any more (#60).
+  - **Migrations:** the seven SQLite migrations are replaced by one PostgreSQL `InitialCreate`: no database had to be upgraded in place. The UTC value converter (#16) is removed: `timestamp with time zone` is read back as UTC.
+  - **Integration tests:** one PostgreSQL container for the whole run ([Testcontainers](https://dotnet.testcontainers.org/modules/postgres/)), and one empty database per test class, created by the real migrations. The factory gives Program.cs the connection string, since CI has no user secrets. All 92 tests passed unchanged, also with the user secrets hidden, as on CI. GitHub's Linux runners have Docker.
+  - **The development data** (4 recipes, 2 lists, no account yet: that database was still at the shopping lists migration) was copied by a one-off script, outside the repository: read-only from SQLite, written in one transaction, refused if the target already has data. The schema was created outside Development, so without the demo seed. One trap: SQLite has no decimal type, so EF had written the JSON quantities as strings (`"200.0"`); jsonb gets numbers, or reading a recipe fails. Checked on a throwaway copy through the API: sign-up takes the data, then every recipe and list reads back in full. The old `apps/api/recipebook.db` is no longer read.
 - 2026-10-30 — **Landing page** (#188, scope chosen by the developer: for visitors who aren't signed in, at `/`, done now rather than after accounts). `/` used to redirect to `/recipes`; it now shows what the app is, two links into it (« Ouvrir mes recettes », « Mes listes de courses ») and four features (recipes, cooking mode, shopping lists, phone and offline). Until accounts exist (#53) the links lead straight into the app; with #53 they will lead to signing up / in, and a signed-in user will skip the page. The page lives in the app shell next to `NotFound` (it belongs to no feature scope) and is lazy loaded with `loadComponent`, so `main` doesn't grow (its chunk is 2.3 kB). The header's « Marmite » drawing became an `app-logo` component, shared by the header and the page. The installed PWA keeps opening on the recipes: the manifest's `start_url` is now `./recipes`, and its `id` stays `./`, so browsers treat the new manifest as an update of the installed app, not a new one ([MDN `id`](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/id): "Browsers will treat this new manifest as an update to the existing app because the `id` values match"). Checked in both languages at 390 and 1280 px: one `h1`, headings in order, no horizontal scroll, the main link opens the recipes.
 - 2026-10-27 — **Screenshots retaken** (#176), same method as #160. The demo database got the shopping lists migration (`dotnet ef database update` with the `Release` configuration, so the developer's running API keeps its `Debug` files, and outside the Development environment, so without the French demo lists), then English lists created through the API. New row in the gallery: the « Add to list » dialog, and three phone screens (the lists, a list's items to buy, the checked items in the cart).
 - 2026-10-27 — **Add a recipe to a shopping list** (#142). A button below the ingredients opens a CDK dialog: radios for the existing lists (the first one checked) and « Nouvelle liste » with a name field, the servings prefilled with the recipe's (hidden when it has none: nothing to scale). The dialog then says how many items were added and offers « Voir la liste » and « Fermer », instead of a toast with a link: a toast disappears on its own, so its link could vanish before a keyboard or screen reader user reaches it ([WCAG 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)); the focus moves to the result message. The dialog lives in `recipes/feature` and calls `shopping/data-access`, hence `scope:recipes` → `scope:shopping` (never the reverse). Native radios work with `[formField]` (Signal Forms gives them the field's `name`, so arrow keys move within the group). Two traps found by the end-to-end test: CDK `closeOnNavigation` only covers history navigation (back/forward), not a router link (doc comment of `DialogConfig.closeOnNavigation` in `@angular/cdk`: "does not apply to navigation via anchor element unless using URL-hash based routing"), so the link closes the dialog itself; and an error returned by a Signal Forms submission action makes the form invalid **until a value changes**, and `submit()` doesn't run the action of an invalid form, so after a server failure a plain retry did nothing. Field errors (400) stay submission errors; other failures go in a separate signal. After a failed add, a retry reuses the list just created instead of creating another one.
@@ -569,11 +578,17 @@ Added on 2026-10-30 at the developer's request, to do **after user accounts** (#
 - Open questions: …
 -->
 
+#### 2026-11-08 — Production database
+
+- In review: #91 PostgreSQL instead of SQLite, the development data migrated.
+- Learned: the Npgsql EF Core provider and how it maps dates (`timestamp with time zone`, UTC only); Docker Compose with a variable from `.env`; Testcontainers with `WebApplicationFactory`; .NET user secrets; one-file C# scripts (`dotnet run script.cs` with `#:package`).
+- Next step: hosting (#60), then the environments (#183) and the automatic deployment (#184).
+
 #### 2026-11-06 — User accounts
 
 - Done: #197 accounts API (PR #201), first of three parts of #53.
 - Done: #198 accounts pages (PR #202).
-- In review: #199 each user owns their data, which closes #53. Email later in #200.
+- Done: #199 each user owns their data (PR #203), which closes #53. Email later in #200.
 - Learned:
   - ASP.NET Core Identity without its UI: `AddIdentityCore`, `AddIdentityCookies`, `IdentityUserContext`, `UserManager`, `SignInManager`;
   - cookies vs tokens in a browser, `HttpOnly` / `Secure` / `SameSite`, CSRF and antiforgery tokens tied to the user;
@@ -836,12 +851,18 @@ nx g @nx/angular:library libs/web/recipes/ui --tags=type:ui,scope:recipes
 dotnet run --project apps/api --launch-profile https                          # API on https://localhost:7288 (/health, /scalar)
 dotnet watch run --project apps/api/RecipEBook.Api.csproj --launch-profile https  # same, with hot reload
 npm exec nx -- run RecipEBook.Api:run --launch-profile=https                   # same, through Nx
-npm exec nx -- test RecipEBook.Api.IntegrationTests                           # integration tests (or `dotnet test`)
+npm exec nx -- test RecipEBook.Api.IntegrationTests                           # integration tests (or `dotnet test`); Docker must be running: Testcontainers starts a PostgreSQL container
 
-# Backend (EF Core, from the root; database file: apps/api/recipebook.db, git-ignored)
+# Local database: PostgreSQL in Docker (Docker Desktop on Windows). Once: write POSTGRES_PASSWORD=<a password> in .env (git-ignored, read by compose.yaml), then store the connection string in the user secrets (Development only, outside the repository):
+dotnet user-secrets set "ConnectionStrings:RecipEBook" "Host=localhost;Port=5432;Database=recipebook;Username=postgres;Password=<the same password>" --project apps/api
+docker compose up -d                                   # start PostgreSQL, on 127.0.0.1:5432 only (data in the postgres-data volume)
+docker compose down                                    # stop it; the data stays (`down -v` deletes it)
+docker compose exec postgres psql -U postgres -d recipebook   # SQL shell on the local database (quote table names: SELECT * FROM "Recipes";)
+
+# Backend (EF Core, from the root; the API and `dotnet ef` read the connection string from the user secrets)
 dotnet ef migrations add <Name> --project apps/api --output-dir Infrastructure/Persistence/Migrations  # after a model change
 dotnet ef database update --project apps/api           # create/upgrade the local database (also after pulling new migrations); in Development it also inserts the demo recipes if the database has none
-# If `database update` hangs, a previous run was killed and left an abandoned lock: run `DELETE FROM "__EFMigrationsLock";` on apps/api/recipebook.db (https://learn.microsoft.com/en-us/ef/core/providers/sqlite/limitations#concurrent-migrations-protection)
+
 dotnet ef migrations has-pending-model-changes --project apps/api  # model changed without a migration?
 dotnet ef migrations remove --project apps/api          # undo the last, not yet applied, migration
 ```

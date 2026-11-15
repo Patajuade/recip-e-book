@@ -1,0 +1,14 @@
+# Keeps the build context small and secrets out of the image (Docker build context docs).
+.git
+.env
+**/node_modules
+**/bin
+**/obj
+dist
+tmp
+.nx
+.angular
+**/*.db
+**/*.db-shm
+**/*.db-wal
+docs

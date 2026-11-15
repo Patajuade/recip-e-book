@@ -41,7 +41,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
 builder.Services.AddHealthChecks();
-builder.Services.AddAccounts();
+builder.Services.AddAccounts(keysInDatabase: !generatingOpenApiDocument);
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -72,7 +72,29 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
+
+// In production the API also serves the Angular build, copied to wwwroot by the Dockerfile, so
+// the app and /api share one origin. In development the Angular dev server does it instead.
+bool servesWebApp = app.Environment.WebRootFileProvider.GetFileInfo("index.html").Exists;
+StaticFileOptions webAppFiles = new()
+{
+    // Revalidate every time (ETag): index.html and ngsw.json must never be served stale, or the
+    // service worker would miss new versions.
+    OnPrepareResponse = context => context.Context.Response.Headers.CacheControl = "no-cache",
+};
+if (servesWebApp)
+{
+    // "/" is served as index.html by the static files middleware, not by the fallback below.
+    app.UseDefaultFiles();
+    app.UseStaticFiles(webAppFiles);
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health");
@@ -90,5 +112,12 @@ RouteGroupBuilder signedIn = api.MapGroup("").RequireAuthorization().AddEndpoint
 signedIn.MapRecipeEndpoints();
 signedIn.MapTagEndpoints();
 signedIn.MapShoppingListEndpoints();
+
+if (servesWebApp)
+{
+    // The app's routes (/recipes/…) get index.html, as Angular's deployment guide asks. Not under
+    // /api: an unknown API route stays a 404 instead of answering a page.
+    app.MapFallbackToFile("{*path:nonfile:regex(^(?!api(/|$)))}", "index.html", webAppFiles);
+}
 
 app.Run();
